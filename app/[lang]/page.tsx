@@ -120,7 +120,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           </div>
 
           {hero ? (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-paper-2">
+            <div className="relative aspect-[3/2] overflow-hidden rounded-xl bg-paper-2 shadow-lift">
               <Image src={hero} alt="Oriano Pizza" fill priority sizes="(max-width: 1024px) 100vw, 540px" className="object-cover" />
             </div>
           ) : (

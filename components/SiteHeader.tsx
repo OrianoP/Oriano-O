@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Phone, ShoppingBag } from "lucide-react";
 import { cartCount, useCart } from "@/lib/cart";
 import type { Locale } from "@/lib/i18n";
 import type { Messages } from "@/messages/en";
@@ -23,23 +24,29 @@ export function SiteHeader({ lang, t, config }: { lang: Locale; t: Messages; con
   const phone = config?.shopPhone || "+961 3 515 078";
 
   return (
-    <header className="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-cream-300/70">
-      <div className="mx-auto max-w-6xl px-4 h-16 flex items-center gap-3">
-        <Link href={`/${lang}`} className="shrink-0 rounded-xl bg-[#080808] px-3 py-1.5 shadow-card" aria-label="Oriano Pizza — home">
-          <Image src="/logo.png" alt="Oriano Pizza" width={1284} height={371} priority className="h-8 w-auto" />
+    <header className="sticky top-0 z-40 bg-paper/90 backdrop-blur-md border-b border-line">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center gap-4">
+        <Link href={`/${lang}`} className="shrink-0 rounded-md bg-[#040706] px-2.5 py-1.5" aria-label="Oriano Pizza — home">
+          <Image src="/logo.png" alt="Oriano Pizza" width={1284} height={371} priority className="h-7 w-auto" />
         </Link>
 
-        <nav className="ms-auto flex items-center gap-1.5 sm:gap-2 text-sm font-semibold">
-          <Link href={`/${lang}/orders`} className="hidden sm:inline-flex rounded-full px-3 py-2 text-ink-soft hover:text-ink hover:bg-cream-200">
-            {t.nav.myOrders}
-          </Link>
-          <a href={`tel:${phone.replace(/\s/g, "")}`} className="hidden sm:inline-flex rounded-full px-3 py-2 text-ink-soft hover:text-ink hover:bg-cream-200">
-            {t.nav.call}
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-ink-2">
+          <Link href={`/${lang}#menu`} className="hover:text-ink">{t.nav.menu}</Link>
+          <Link href={`/${lang}/orders`} className="hover:text-ink">{t.nav.myOrders}</Link>
+        </nav>
+
+        <div className="ms-auto flex items-center gap-1 sm:gap-2">
+          <a
+            href={`tel:${phone.replace(/\s/g, "")}`}
+            className="hidden sm:inline-flex items-center gap-2 h-10 px-3 rounded-md text-sm font-medium text-ink-2 hover:bg-paper-2"
+            dir="ltr"
+          >
+            <Phone className="h-4 w-4" /> {phone}
           </a>
           <Link
             href={switchHref}
             onClick={() => { document.cookie = `lang=${other}; path=/; max-age=31536000; samesite=lax`; }}
-            className="rounded-full px-3 py-2 text-ink-soft hover:text-ink hover:bg-cream-200"
+            className="inline-flex items-center h-10 px-3 rounded-md text-sm font-medium text-ink-2 hover:bg-paper-2"
             hrefLang={other}
             lang={other}
           >
@@ -47,16 +54,16 @@ export function SiteHeader({ lang, t, config }: { lang: Locale; t: Messages; con
           </Link>
           <button
             onClick={() => setOpen(true)}
-            className="relative inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-white shadow-pop hover:bg-brand-600 active:scale-95 transition"
+            className="relative inline-flex items-center gap-2 h-10 rounded-md bg-ink px-4 text-sm font-semibold text-white hover:bg-ink-2"
             aria-label={`${t.cart.title} (${count})`}
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M6 7h12l-1 13H7L6 7Z" />
-              <path d="M9 7a3 3 0 0 1 6 0" />
-            </svg>
-            <span className="tabular-nums">{count}</span>
+            <ShoppingBag className="h-4 w-4" />
+            <span className="hidden sm:inline">{t.cart.title}</span>
+            {count > 0 && (
+              <span className="grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-[11px] font-bold tabular-nums">{count}</span>
+            )}
           </button>
-        </nav>
+        </div>
       </div>
     </header>
   );

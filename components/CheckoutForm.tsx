@@ -4,6 +4,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, Banknote, Bike, Check, Info, ShoppingBag, Store } from "lucide-react";
 import { cartSubtotal, loadProfile, saveOrder, saveProfile, useCart, type CartLine } from "@/lib/cart";
 import { money, unitPrice } from "@/lib/menu";
 import { lebaneseMobileNational } from "@/lib/phone";
@@ -25,8 +26,10 @@ function reconcile(lines: CartLine[], menu: Menu): CartLine[] {
   });
 }
 
-const input = "w-full h-12 rounded-2xl border-2 border-cream-300 bg-white px-4 text-ink placeholder:text-ink-soft/50 focus:border-brand outline-none transition";
-const label = "block text-sm font-bold text-ink mb-1.5";
+const input = "w-full h-11 rounded-md border border-line bg-surface px-3.5 text-ink placeholder:text-muted/60 focus:border-ink outline-none";
+const label = "block text-sm font-medium text-ink-2 mb-1.5";
+const card = "rounded-xl border border-line bg-surface p-5 sm:p-6";
+const heading = "text-base font-semibold text-ink";
 
 export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; config: ShopConfig; lang: Locale; t: Messages; preview: boolean }) {
   const router = useRouter();
@@ -133,9 +136,9 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
   if (!lines.length) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <div className="text-6xl" aria-hidden>🍕</div>
-        <p className="mt-4 text-ink-soft">{t.cart.empty}</p>
-        <Link href={`/${lang}#menu`} className="mt-6 inline-flex h-12 items-center rounded-full bg-brand px-6 font-black text-white shadow-pop">{t.checkout.back}</Link>
+        <ShoppingBag className="mx-auto h-10 w-10 text-line-strong" />
+        <p className="mt-4 text-muted">{t.cart.empty}</p>
+        <Link href={`/${lang}#menu`} className="mt-6 inline-flex h-11 items-center rounded-md bg-brand px-6 font-semibold text-white hover:bg-brand-600">{t.checkout.back}</Link>
       </div>
     );
   }
@@ -143,21 +146,21 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
   const err = (k: keyof typeof missing) => touched && missing[k];
 
   return (
-    <form onSubmit={submit} noValidate className="mx-auto max-w-6xl px-4 py-6 grid gap-6 lg:grid-cols-[1fr_380px] items-start">
+    <form onSubmit={submit} noValidate className="mx-auto max-w-6xl px-4 sm:px-6 py-8 grid gap-6 lg:grid-cols-[1fr_380px] items-start">
       {TURNSTILE_SITE_KEY && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
       <div className="space-y-6 min-w-0">
         <div className="flex items-center gap-3">
-          <Link href={`/${lang}#menu`} className="h-10 w-10 grid place-items-center rounded-full bg-white shadow-card text-ink rtl:rotate-180" aria-label={t.checkout.back}>←</Link>
-          <h1 className="font-display text-3xl sm:text-4xl font-black text-ink">{t.checkout.title}</h1>
+          <Link href={`/${lang}#menu`} className="grid h-10 w-10 place-items-center rounded-md border border-line bg-surface text-ink hover:border-ink" aria-label={t.checkout.back}><ArrowLeft className="h-4 w-4 rtl:rotate-180" /></Link>
+          <h1 className="font-display text-4xl font-extrabold uppercase text-ink rtl:normal-case">{t.checkout.title}</h1>
         </div>
 
         {removedSome && (
-          <p className="rounded-2xl bg-yolk-100 px-4 py-3 text-sm font-semibold text-ink">{t.checkout.removedItems}</p>
+          <p className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-ink">{t.checkout.removedItems}</p>
         )}
 
         {/* How */}
-        <section className="rounded-3xl bg-white p-5 shadow-card space-y-4">
-          <h2 className="font-display text-xl font-black text-ink">{t.checkout.how}</h2>
+        <section className={`${card} space-y-4`}>
+          <h2 className={heading}>{t.checkout.how}</h2>
           <div className="grid grid-cols-2 gap-3">
             {(["pickup", "delivery"] as const).map((type) => {
               const enabled = type === "pickup" ? canPickup : canDeliver;
@@ -167,12 +170,12 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
                   key={type}
                   disabled={!enabled}
                   onClick={() => setOrderType(type)}
-                  className={`rounded-2xl border-2 p-4 text-start transition disabled:opacity-40 ${orderType === type ? "border-brand bg-brand-50" : "border-cream-300 hover:border-brand/40"}`}
+                  className={`rounded-lg border p-4 text-start disabled:opacity-40 ${orderType === type ? "border-ink bg-paper ring-1 ring-ink" : "border-line hover:border-line-strong"}`}
                   aria-pressed={orderType === type}
                 >
-                  <span className="text-2xl" aria-hidden>{type === "pickup" ? "🛍️" : "🛵"}</span>
-                  <span className="block font-black text-ink mt-1">{type === "pickup" ? t.checkout.pickup : t.checkout.delivery}</span>
-                  <span className="block text-xs text-ink-soft mt-0.5">
+                  {type === "pickup" ? <Store className="h-5 w-5 text-ink" /> : <Bike className="h-5 w-5 text-ink" />}
+                  <span className="block font-semibold text-ink mt-2">{type === "pickup" ? t.checkout.pickup : t.checkout.delivery}</span>
+                  <span className="block text-xs text-muted mt-0.5">
                     {type === "pickup" ? fill(t.checkout.pickupHint, { min: config.pickupMinutes }) : enabled ? t.checkout.deliveryHint : t.checkout.deliveryOff}
                   </span>
                 </button>
@@ -192,7 +195,7 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
                     </option>
                   ))}
                 </select>
-                <p className="mt-1 text-xs text-ink-soft">{t.checkout.notListed}</p>
+                <p className="mt-1 text-xs text-muted">{t.checkout.notListed}</p>
               </div>
               <div className="sm:col-span-2">
                 <label className={label} htmlFor="street">{t.checkout.street}</label>
@@ -215,8 +218,8 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
         </section>
 
         {/* Who */}
-        <section className="rounded-3xl bg-white p-5 shadow-card grid gap-4 sm:grid-cols-2">
-          <h2 className="sm:col-span-2 font-display text-xl font-black text-ink">{t.checkout.you}</h2>
+        <section className={`${card} grid gap-4 sm:grid-cols-2`}>
+          <h2 className={`sm:col-span-2 ${heading}`}>{t.checkout.you}</h2>
           <div>
             <label className={label} htmlFor="name">{t.checkout.name}</label>
             <input id="name" value={form.name} onChange={set("name")} maxLength={80} autoComplete="name" className={`${input} ${err("name") ? "border-brand" : ""}`} />
@@ -224,8 +227,8 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
           </div>
           <div>
             <label className={label} htmlFor="phone">{t.checkout.phone}</label>
-            <div dir="ltr" className={`flex h-12 rounded-2xl border-2 bg-white overflow-hidden focus-within:border-brand transition ${err("phone") ? "border-brand" : "border-cream-300"}`}>
-              <span className="grid place-items-center px-3 bg-cream-200 font-bold text-ink-soft text-sm">🇱🇧 +961</span>
+            <div dir="ltr" className={`flex h-11 rounded-md border bg-surface overflow-hidden focus-within:border-ink ${err("phone") ? "border-brand" : "border-line"}`}>
+              <span className="grid place-items-center border-e border-line bg-paper px-3 text-sm font-medium text-muted">+961</span>
               <input
                 id="phone"
                 type="tel"
@@ -238,9 +241,9 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
                 aria-invalid={err("phone") || undefined}
                 aria-describedby="phone-hint"
               />
-              {phoneOk && <span className="grid place-items-center px-3 text-basil font-black" aria-hidden>✓</span>}
+              {phoneOk && <span className="grid place-items-center px-3 text-basil" aria-hidden><Check className="h-4 w-4" /></span>}
             </div>
-            <p id="phone-hint" className={`mt-1 text-xs ${err("phone") ? "font-semibold text-brand-700" : "text-ink-soft"}`}>
+            <p id="phone-hint" className={`mt-1 text-xs ${err("phone") ? "font-semibold text-brand-700" : "text-muted"}`}>
               {err("phone") ? t.checkout.phoneInvalid : t.checkout.phoneHint}
             </p>
           </div>
@@ -255,13 +258,13 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
           </div>
         </section>
 
-        <section className="rounded-3xl bg-white p-5 shadow-card space-y-2">
-          <h2 className="font-display text-xl font-black text-ink">{t.checkout.payment}</h2>
-          <div className="flex items-center gap-3 rounded-2xl border-2 border-brand bg-brand-50 p-4">
-            <span className="text-2xl" aria-hidden>💵</span>
+        <section className={`${card} space-y-3`}>
+          <h2 className={heading}>{t.checkout.payment}</h2>
+          <div className="flex items-center gap-3 rounded-lg border border-ink bg-paper p-4 ring-1 ring-ink">
+            <Banknote className="h-5 w-5 shrink-0 text-ink" />
             <div>
-              <p className="font-black text-ink">{orderType === "delivery" ? t.checkout.cashDelivery : t.checkout.cashPickup}</p>
-              <p className="text-xs text-ink-soft">{t.checkout.cashNote}</p>
+              <p className="font-semibold text-ink">{orderType === "delivery" ? t.checkout.cashDelivery : t.checkout.cashPickup}</p>
+              <p className="text-xs text-muted">{t.checkout.cashNote}</p>
             </div>
           </div>
         </section>
@@ -269,35 +272,35 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
 
       {/* Summary */}
       <aside className="lg:sticky lg:top-24 space-y-4 min-w-0">
-        <section className="rounded-3xl bg-white p-5 shadow-card">
-          <h2 className="font-display text-xl font-black text-ink mb-3">{t.checkout.summary}</h2>
-          <ul className="divide-y divide-cream-200 text-sm">
+        <section className={card}>
+          <h2 className={`${heading} mb-3`}>{t.checkout.summary}</h2>
+          <ul className="divide-y divide-line text-sm">
             {lines.map((l) => (
               <li key={l.key} className="py-2 flex gap-2">
-                <span className="font-black text-brand">{l.quantity}×</span>
+                <span className="font-semibold tabular-nums text-ink">{l.quantity}×</span>
                 <span className="flex-1 text-ink">
                   {l.name}
-                  {l.sizeName && <span className="text-ink-soft"> · {sizeLabel(l.sizeName, lang)}</span>}
-                  {l.addonNames.length > 0 && <span className="block text-xs text-ink-soft">+ {l.addonNames.join(", ")}</span>}
+                  {l.sizeName && <span className="text-muted"> · {sizeLabel(l.sizeName, lang)}</span>}
+                  {l.addonNames.length > 0 && <span className="block text-xs text-muted">+ {l.addonNames.join(", ")}</span>}
                 </span>
-                <span className="font-bold tabular-nums">{money(l.unitPrice * l.quantity)}</span>
+                <span className="tabular-nums">{money(l.unitPrice * l.quantity)}</span>
               </li>
             ))}
           </ul>
-          <div className="mt-3 space-y-1 border-t border-cream-200 pt-3 text-sm">
-            <div className="flex justify-between text-ink-soft"><span>{t.cart.subtotal}</span><span className="tabular-nums">{money(subtotal)}</span></div>
+          <div className="mt-3 space-y-1 border-t border-line pt-3 text-sm">
+            <div className="flex justify-between text-muted"><span>{t.cart.subtotal}</span><span className="tabular-nums">{money(subtotal)}</span></div>
             {orderType === "delivery" && (
-              <div className="flex justify-between text-ink-soft"><span>{t.cart.delivery}</span><span className="tabular-nums">{zone ? money(fee) : "—"}</span></div>
+              <div className="flex justify-between text-muted"><span>{t.cart.delivery}</span><span className="tabular-nums">{zone ? money(fee) : "—"}</span></div>
             )}
-            <div className="flex justify-between text-xl font-black text-ink pt-1"><span>{t.cart.total}</span><span className="tabular-nums">{money(total)}</span></div>
+            <div className="flex justify-between text-lg font-semibold text-ink pt-2"><span>{t.cart.total}</span><span className="tabular-nums">{money(total)}</span></div>
           </div>
         </section>
 
-        <section className="rounded-3xl bg-yolk-100 border-2 border-yolk p-5 space-y-3">
-          <h2 className="font-black text-ink">⚠️ {t.checkout.confirmTitle}</h2>
-          <p className="text-sm text-ink">{t.checkout.confirmText}</p>
-          <label className="flex items-start gap-3 text-sm font-semibold text-ink cursor-pointer">
-            <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 h-5 w-5 accent-[#ff3300]" />
+        <section className="rounded-xl border border-line bg-surface p-5 space-y-3">
+          <h2 className="flex items-center gap-2 font-semibold text-ink"><Info className="h-4 w-4 text-muted" /> {t.checkout.confirmTitle}</h2>
+          <p className="text-sm leading-relaxed text-muted">{t.checkout.confirmText}</p>
+          <label className="flex items-start gap-3 text-sm font-medium text-ink cursor-pointer">
+            <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#1c1714]" />
             {t.checkout.agree}
           </label>
         </section>
@@ -307,10 +310,10 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
         )}
 
         {problems.map((p) => (
-          <p key={p} className="rounded-2xl bg-brand-50 border border-brand-100 px-4 py-3 text-sm font-semibold text-brand-700">{p}</p>
+          <p key={p} className="rounded-md bg-brand-50 border border-brand-100 px-4 py-3 text-sm text-brand-700">{p}</p>
         ))}
         {error && (
-          <div role="alert" className="rounded-2xl bg-brand-50 border border-brand-100 px-4 py-3 text-sm font-semibold text-brand-700 space-y-2">
+          <div role="alert" className="rounded-md bg-brand-50 border border-brand-100 px-4 py-3 text-sm text-brand-700 space-y-2">
             <p>{error.message}</p>
             {error.code === "menu_changed" && (
               <button type="button" onClick={() => router.refresh()} className="underline">{t.checkout.refreshMenu}</button>
@@ -321,11 +324,11 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
         <button
           type="submit"
           disabled={submitting || preview || (touched && !valid)}
-          className="w-full h-16 rounded-full bg-brand text-white text-lg font-black shadow-pop hover:bg-brand-600 active:scale-[0.98] transition disabled:bg-cream-300 disabled:text-ink-soft disabled:shadow-none"
+          className="w-full h-12 rounded-md bg-brand text-white font-semibold hover:bg-brand-600 disabled:bg-paper-2 disabled:text-muted"
         >
           {submitting ? t.checkout.placing : `${t.checkout.place} · ${money(total)}`}
         </button>
-        {preview && <p className="text-center text-sm font-semibold text-ink-soft">{t.status.preview}</p>}
+        {preview && <p className="text-center text-sm text-muted">{t.status.preview}</p>}
       </aside>
     </form>
   );

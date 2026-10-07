@@ -4,7 +4,7 @@ import { ArrowRight, Banknote, Clock, Phone, Store } from "lucide-react";
 import { MenuBrowser } from "@/components/MenuBrowser";
 import { StatusPill } from "@/components/StatusPill";
 import { pagePhoto, withPhotos } from "@/lib/photos";
-import { getConfig, getMenu, PREVIEW_MODE } from "@/lib/pos";
+import { getConfigSafe, getMenuSafe, PREVIEW_MODE } from "@/lib/pos";
 import { getMessages, hasLocale, term } from "@/lib/i18n";
 import { cleanDescription } from "@/lib/menu";
 import { ADDRESS, MAPS_URL, SITE_URL } from "@/lib/site";
@@ -82,7 +82,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = getMessages(lang);
-  const [rawMenu, config] = await Promise.all([getMenu(), getConfig()]);
+  const [rawMenu, config] = await Promise.all([getMenuSafe(), getConfigSafe()]);
   const menu = withPhotos(rawMenu);
   const hero = pagePhoto("hero");
   const story = pagePhoto("story");

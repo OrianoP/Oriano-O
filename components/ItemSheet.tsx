@@ -49,7 +49,7 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose }: {
       <button className="absolute inset-0 bg-ink/40 animate-fade" onClick={onClose} aria-label={t.item.close} />
       <div className="relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl bg-surface shadow-2xl animate-sheet sm:max-w-lg sm:rounded-2xl">
         {p.imageUrl && (
-          <div className="relative aspect-[16/10] shrink-0 bg-paper-2">
+          <div className="relative aspect-[3/2] shrink-0 bg-paper-2">
             <Image src={p.imageUrl} alt={p.name} fill sizes="(max-width: 640px) 100vw, 512px" className="object-cover" />
           </div>
         )}

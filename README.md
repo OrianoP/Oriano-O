@@ -70,6 +70,17 @@ Customer phone ──▶ this site (Next.js on Vercel)
    - `NEXT_PUBLIC_SITE_URL`: `https://order.orianopizza.com`
 4. In Vercel → Domains, add `order.orianopizza.com`, then create the `CNAME` record at your domain registrar.
 
+**Check the connection:** open `https://<your-site>/api/status`. It says in plain words whether the site is connected and taking orders, and if not, why. Possible reasons:
+- the variables are missing, or Vercel wasn't redeployed after they were added
+- the secret doesn't match the POS
+- the POS can't be reached, or is an old version
+- ordering is paused in the POS
+- it's outside opening hours
+
+It never shows secrets.
+
+If the POS is unreachable, the site still loads. It shows the menu with ordering marked unavailable, and recovers automatically within a minute.
+
 Without `POS_API_URL` / `ONLINE_ORDERS_SECRET`, the site runs in **preview mode**. It shows the bundled sample menu (`data/sample-menu.json`) and ordering is disabled.
 
 ## Development

@@ -51,6 +51,10 @@ async function posFetch<T>(method: "GET" | "POST", path: string, opts: FetchOpts
   } catch {
     throw new PosError(503, "unreachable", "We can't reach the restaurant right now. Please try again or call us.");
   }
+  // An old POS build (without the online-ordering API) answers with its web page instead of JSON.
+  if (!(res.headers.get("content-type") || "").includes("application/json")) {
+    throw new PosError(502, "pos_outdated", "The POS isn't running the online-ordering version yet.");
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new PosError(res.status, data.code || "error", data.message || "Something went wrong.");
   return data as T;
@@ -84,6 +88,29 @@ export async function getConfig(): Promise<ShopConfig> {
 export async function getConfigFresh(): Promise<ShopConfig> {
   if (PREVIEW_MODE) return PREVIEW_CONFIG;
   return posFetch<ShopConfig>("GET", "/api/public/config");
+}
+
+/**
+ * Page-safe versions: if the POS is unreachable (asleep, redeploying, misconfigured)
+ * the site still renders the menu and shows ordering as unavailable instead of
+ * failing — and recovers on its own once the POS answers again.
+ */
+export async function getMenuSafe(): Promise<Menu> {
+  try {
+    return await getMenu();
+  } catch (e) {
+    console.error("[pos] menu unavailable, showing bundled menu:", (e as Error).message);
+    return sampleMenu as Menu;
+  }
+}
+
+export async function getConfigSafe(fresh = false): Promise<ShopConfig> {
+  try {
+    return await (fresh ? getConfigFresh() : getConfig());
+  } catch (e) {
+    console.error("[pos] config unavailable:", (e as Error).message);
+    return { ...PREVIEW_CONFIG, message: "We can't take online orders right now — please call us." };
+  }
 }
 
 export function placeOrder(body: unknown, customerIp: string) {

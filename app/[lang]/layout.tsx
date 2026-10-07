@@ -4,7 +4,7 @@ import { Barlow_Condensed, IBM_Plex_Sans_Arabic, Inter } from "next/font/google"
 import "../globals.css";
 import { LOCALES, getMessages, hasLocale } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
-import { getConfig } from "@/lib/pos";
+import { getConfigSafe } from "@/lib/pos";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
@@ -63,7 +63,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = getMessages(lang);
-  const config = await getConfig().catch(() => null);
+  const config = await getConfigSafe();
 
   return (
     <html lang={lang} dir={t.dir} className={`${display.variable} ${inter.variable} ${arabic.variable}`}>

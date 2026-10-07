@@ -1,5 +1,6 @@
 import "server-only";
-import { readdirSync } from "fs";
+import { createHash } from "crypto";
+import { readFileSync, readdirSync, statSync } from "fs";
 import path from "path";
 import { slugify } from "./menu";
 import type { Menu } from "./types";
@@ -13,12 +14,30 @@ import type { Menu } from "./types";
 const PHOTO_DIR = path.join(process.cwd(), "public/photos");
 const EXT = /\.(webp|jpe?g|png|avif)$/i;
 
+// "?v=<content hash>" so a replaced photo gets a new URL and no cache
+// (browser, CDN or the image optimiser) keeps serving the old one.
+const versions = new Map<string, { stamp: string; v: string }>();
+function version(file: string): string {
+  try {
+    const st = statSync(file);
+    const stamp = `${st.size}:${st.mtimeMs}`;
+    const hit = versions.get(file);
+    if (hit?.stamp === stamp) return hit.v;
+    const v = createHash("sha1").update(readFileSync(file)).digest("hex").slice(0, 10);
+    versions.set(file, { stamp, v });
+    return v;
+  } catch {
+    return "0";
+  }
+}
+
 function listPhotos(sub = ""): Map<string, string> {
   const map = new Map<string, string>();
   try {
     for (const f of readdirSync(path.join(PHOTO_DIR, sub))) {
       if (!EXT.test(f)) continue;
-      map.set(f.replace(EXT, "").toLowerCase(), `/photos/${sub ? `${sub}/` : ""}${f}`);
+      const rel = `${sub ? `${sub}/` : ""}${f}`;
+      map.set(f.replace(EXT, "").toLowerCase(), `/photos/${rel}?v=${version(path.join(PHOTO_DIR, rel))}`);
     }
   } catch {}
   return map;

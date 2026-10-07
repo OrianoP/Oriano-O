@@ -46,8 +46,19 @@ Customer phone ──▶ this site (Next.js on Vercel)
 - `sitemap.xml`, `robots.txt`, an Open Graph share image, and a web app manifest.
 
 **Design**
-- Warm cream and Oriano red `#FF3300`, with the yellow logo kept on a black tab like the printed menu.
-- Illustrated pizzas drawn from each item's real toppings, until photos are added in the POS (`products.image_url`).
+- Calm and photography-led: warm off-white paper, near-black type, condensed New York-style headings (Barlow Condensed), Inter for reading and IBM Plex Sans Arabic for Arabic.
+- Oriano red `#FF3300` is kept for actions (order, add, checkout). The yellow logo sits on its own black tab.
+- No emojis or cartoon art; icons come from Lucide.
+
+**Photos**
+- Drop dish photos into `public/photos/menu/`, named after the dish (`pepperoni-overload-ranch.webp`). They appear automatically on the menu and the item sheet.
+- `public/photos/hero.webp` replaces the sizes panel at the top of the home page.
+- `public/photos/story.webp` sits next to the "New York style" section.
+- A photo URL set on the product in the POS takes priority over the bundled file.
+- See `public/photos/README.md`.
+
+**Language**
+- Visitors always land on English (`/en`). Arabic is used only when someone picks it with the language switch, and that choice is remembered.
 
 ## Setup
 

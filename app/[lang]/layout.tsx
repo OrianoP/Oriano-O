@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Cairo, Fraunces, Inter } from "next/font/google";
+import { Barlow_Condensed, IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
 import "../globals.css";
 import { LOCALES, getMessages, hasLocale } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
@@ -9,9 +9,10 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
 
-const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", axes: ["SOFT", "opsz"], display: "swap" });
+// Condensed headings (New York signage feel), Inter for reading, Plex Arabic for Arabic.
+const display = Barlow_Condensed({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-display-face", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const cairo = Cairo({ subsets: ["arabic", "latin"], variable: "--font-cairo", display: "swap" });
+const arabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-arabic-face", display: "swap" });
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }));
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
 }
 
 export const viewport: Viewport = {
-  themeColor: "#ff3300",
+  themeColor: "#faf7f2",
   width: "device-width",
   initialScale: 1,
 };
@@ -65,9 +66,9 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const config = await getConfig().catch(() => null);
 
   return (
-    <html lang={lang} dir={t.dir} className={`${fraunces.variable} ${inter.variable} ${cairo.variable}`}>
+    <html lang={lang} dir={t.dir} className={`${display.variable} ${inter.variable} ${arabic.variable}`}>
       <body className="min-h-dvh flex flex-col">
-        <a href="#menu" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:start-2 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:rounded-lg">
+        <a href="#menu" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:start-2 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:rounded-md">
           {t.nav.menu}
         </a>
         <SiteHeader lang={lang} t={t} config={config} />

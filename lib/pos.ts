@@ -67,7 +67,7 @@ const PREVIEW_CONFIG: ShopConfig = {
   message: "Online ordering opens soon — call us to order!",
   pickupEnabled: true,
   deliveryEnabled: false,
-  openingHours: Object.fromEntries(Array.from({ length: 7 }, (_, d) => [String(d), { open: "12:00", close: "00:00" }])),
+  openingHours: Object.fromEntries(Array.from({ length: 7 }, (_, d) => [String(d), { open: "12:00", close: "23:30" }])),
   maxOrderUsd: 150,
   pickupMinutes: 20,
   shopPhone: "+961 3 515 078",

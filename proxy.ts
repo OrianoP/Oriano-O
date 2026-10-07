@@ -2,14 +2,16 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const LOCALES = ["en", "ar"];
 
-/** Sends visitors without a language prefix to /en or /ar (saved choice, then browser language). */
+/**
+ * Visitors without a language prefix go to English. Arabic is only used when
+ * the visitor picked it with the language switch (saved in the "lang" cookie).
+ */
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (LOCALES.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`))) return;
 
   const saved = request.cookies.get("lang")?.value;
-  const prefersArabic = /(^|,)\s*ar\b/i.test(request.headers.get("accept-language") || "");
-  const locale = saved && LOCALES.includes(saved) ? saved : prefersArabic ? "ar" : "en";
+  const locale = saved === "ar" ? "ar" : "en";
 
   const url = request.nextUrl.clone();
   url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;

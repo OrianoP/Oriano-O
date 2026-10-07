@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Banknote, Check, CircleX, Clock, Lock, MessageCircle, Phone } from "lucide-react";
 import { money } from "@/lib/menu";
 import { sizeLabel, type Locale } from "@/lib/i18n";
 import type { Stage, TrackedOrder } from "@/lib/types";
@@ -39,6 +40,7 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
   const stageForSteps: Stage = order.stage === "preparing" ? "in_oven" : order.stage === "ready" && order.orderType === "delivery" ? "in_oven" : order.stage;
   const current = steps.indexOf(stageForSteps);
   const cancelled = order.stage === "cancelled";
+  const live = !FINAL.includes(order.stage);
   const tel = `tel:${order.shopPhone.replace(/\s/g, "")}`;
   const wa = `https://wa.me/${order.whatsapp}?text=${encodeURIComponent(`Hi Oriano! About my order ${order.orderNumber}`)}`;
 
@@ -48,64 +50,71 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
   const stageLabel = (s: Stage) => (s === "ready" && order.orderType === "pickup" ? t.track.readyForPickup : t.track.stages[s]);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 space-y-5">
-      <div className="text-center">
-        <p className="text-sm font-bold uppercase tracking-widest text-ink-soft">{t.track.title} #{order.orderNumber.slice(-3)}</p>
-        <h1 className={`mt-1 font-display text-4xl sm:text-5xl font-black ${cancelled ? "text-brand-700" : "text-ink"}`}>
-          {order.customerFirstName ? `${stageLabel(order.stage)}${order.stage === "completed" ? ` ${order.customerFirstName}` : ""}` : stageLabel(order.stage)}
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 space-y-6">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">{t.track.title} {order.orderNumber}</p>
+        <h1 className={`mt-2 font-display text-5xl font-extrabold uppercase rtl:normal-case ${cancelled ? "text-brand-700" : "text-ink"}`}>
+          {stageLabel(order.stage)}
         </h1>
-        {!FINAL.includes(order.stage) && (
-          <p className="mt-2 inline-flex items-center gap-2 text-xs font-bold text-basil">
-            <span className="h-2 w-2 rounded-full bg-basil animate-pulse" /> {t.track.live}
+        {live && (
+          <p className="mt-2 inline-flex items-center gap-2 text-sm text-muted">
+            <span className="h-2 w-2 rounded-full bg-basil shadow-[0_0_0_4px_rgb(31_122_58_/_0.15)]" /> {t.track.live}
           </p>
         )}
       </div>
 
-      {/* Hero card */}
-      <div className={`rounded-3xl p-6 text-center shadow-card ${cancelled ? "bg-brand-50 border-2 border-brand-100" : order.stage === "awaiting_confirmation" ? "bg-yolk-100 border-2 border-yolk" : "bg-white"}`}>
+      {/* Status card */}
+      <div className={`rounded-xl border p-6 ${cancelled ? "border-brand-100 bg-brand-50" : order.stage === "awaiting_confirmation" ? "border-amber-200 bg-amber-50" : "border-line bg-surface"}`}>
         {order.stage === "awaiting_confirmation" && (
-          <>
-            <div className="text-5xl animate-bounce" aria-hidden>⏳</div>
-            <p className="mt-3 font-semibold text-ink">{t.track.awaitingHint}</p>
-          </>
+          <div className="flex gap-4">
+            <Clock className="h-6 w-6 shrink-0 text-amber-600" />
+            <p className="text-ink-2">{t.track.awaitingHint}</p>
+          </div>
         )}
         {cancelled && (
-          <>
-            <div className="text-5xl" aria-hidden>😔</div>
-            <p className="mt-3 font-bold text-brand-700">{order.cancelReason}</p>
-            <p className="mt-1 text-sm text-ink-soft">{t.track.cancelledHint}</p>
-          </>
+          <div className="flex gap-4">
+            <CircleX className="h-6 w-6 shrink-0 text-brand-700" />
+            <div>
+              <p className="font-semibold text-brand-700">{order.cancelReason}</p>
+              <p className="mt-1 text-sm text-muted">{t.track.cancelledHint}</p>
+            </div>
+          </div>
         )}
         {!cancelled && order.stage !== "awaiting_confirmation" && (
-          <>
-            <div className="text-5xl" aria-hidden>{order.stage === "completed" ? "🍕" : order.stage === "out_for_delivery" ? "🛵" : order.stage === "ready" ? "✅" : "🔥"}</div>
-            {eta && order.stage !== "completed" && (
-              <div className="mt-3">
-                <p className="text-sm font-bold uppercase tracking-wide text-ink-soft">{order.orderType === "delivery" ? t.track.etaDelivery : t.track.eta}</p>
-                <p className="font-display text-4xl font-black text-brand tabular-nums">{time(eta)}</p>
-                {etaMins !== null && etaMins > 0 && <p className="text-sm text-ink-soft">~{etaMins} min</p>}
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            {eta && order.stage !== "completed" ? (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted">{order.orderType === "delivery" ? t.track.etaDelivery : t.track.eta}</p>
+                <p className="mt-1 font-display text-5xl font-extrabold tabular-nums text-ink">{time(eta)}</p>
+                {etaMins !== null && etaMins > 0 && <p className="text-sm text-muted">~{etaMins} min</p>}
               </div>
+            ) : (
+              <p className="font-semibold text-ink">{stageLabel(order.stage)}</p>
             )}
-            {order.stage !== "completed" && <p className="mt-3 text-sm font-semibold text-basil">🔒 {t.track.confirmedHint}</p>}
-          </>
+            {order.stage !== "completed" && (
+              <p className="flex items-center gap-2 text-sm text-basil"><Lock className="h-4 w-4" /> {t.track.confirmedHint}</p>
+            )}
+          </div>
         )}
       </div>
 
       {/* Timeline */}
       {!cancelled && (
-        <ol className="rounded-3xl bg-white p-5 shadow-card space-y-0">
+        <ol className="rounded-xl border border-line bg-surface p-6">
           {steps.map((s, i) => {
             const done = i < current || order.stage === "completed";
             const active = i === current && order.stage !== "completed";
             return (
               <li key={s} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <span className={`grid h-8 w-8 place-items-center rounded-full text-sm font-black ${done ? "bg-basil text-white" : active ? "bg-brand text-white ring-4 ring-brand-100" : "bg-cream-200 text-ink-soft"}`}>
-                    {done ? "✓" : i + 1}
+                  <span className={`grid h-7 w-7 place-items-center rounded-full border text-xs font-semibold ${
+                    done ? "border-ink bg-ink text-white" : active ? "border-brand bg-brand text-white" : "border-line-strong text-muted"
+                  }`}>
+                    {done ? <Check className="h-3.5 w-3.5" /> : i + 1}
                   </span>
-                  {i < steps.length - 1 && <span className={`w-0.5 flex-1 min-h-6 ${done ? "bg-basil" : "bg-cream-300"}`} />}
+                  {i < steps.length - 1 && <span className={`w-px flex-1 min-h-6 ${done ? "bg-ink" : "bg-line"}`} />}
                 </div>
-                <p className={`pb-5 pt-1 font-bold ${active ? "text-ink" : done ? "text-ink-soft" : "text-ink-soft/60"}`}>{stageLabel(s)}</p>
+                <p className={`pb-5 pt-0.5 ${active ? "font-semibold text-ink" : done ? "text-ink-2" : "text-muted"}`}>{stageLabel(s)}</p>
               </li>
             );
           })}
@@ -114,40 +123,45 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
 
       {/* Contact */}
       <div className="grid grid-cols-2 gap-3">
-        <a href={tel} className="flex h-14 items-center justify-center gap-2 rounded-full bg-brand font-black text-white shadow-pop">📞 {t.track.call}</a>
-        <a href={wa} target="_blank" rel="noreferrer" className="flex h-14 items-center justify-center gap-2 rounded-full bg-[#25d366] font-black text-white shadow-card">💬 {t.track.whatsapp}</a>
+        <a href={tel} className="flex h-12 items-center justify-center gap-2 rounded-md bg-ink font-semibold text-white hover:bg-ink-2">
+          <Phone className="h-4 w-4" /> {t.track.call}
+        </a>
+        <a href={wa} target="_blank" rel="noreferrer" className="flex h-12 items-center justify-center gap-2 rounded-md border border-line-strong bg-surface font-semibold text-ink hover:border-ink">
+          <MessageCircle className="h-4 w-4" /> {t.track.whatsapp}
+        </a>
       </div>
-      {!FINAL.includes(order.stage) && <p className="text-center text-xs text-ink-soft">{t.track.noCancel}</p>}
+      {live && <p className="text-center text-sm text-muted">{t.track.noCancel}</p>}
 
       {/* Summary */}
-      <section className="rounded-3xl bg-white p-5 shadow-card">
-        <h2 className="font-display text-xl font-black text-ink mb-3">{t.track.summary}</h2>
-        <ul className="divide-y divide-cream-200 text-sm">
+      <section className="rounded-xl border border-line bg-surface p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">{t.track.summary}</h2>
+        <ul className="mt-3 divide-y divide-line text-sm">
           {order.items.map((it, i) => (
-            <li key={i} className="py-2 flex gap-2">
-              <span className="font-black text-brand">{it.quantity}×</span>
+            <li key={i} className="flex gap-3 py-3">
+              <span className="font-semibold tabular-nums text-ink">{it.quantity}×</span>
               <span className="flex-1 text-ink">
                 {it.name}
-                {it.size && <span className="text-ink-soft"> · {sizeLabel(it.size, lang)}</span>}
-                {it.extras.length > 0 && <span className="block text-xs text-ink-soft">+ {it.extras.join(", ")}</span>}
+                {it.size && <span className="text-muted"> · {sizeLabel(it.size, lang)}</span>}
+                {it.extras.length > 0 && <span className="block text-xs text-muted">+ {it.extras.join(", ")}</span>}
               </span>
-              <span className="font-bold tabular-nums">{money(it.totalPrice)}</span>
+              <span className="tabular-nums text-ink">{money(it.totalPrice)}</span>
             </li>
           ))}
         </ul>
-        <div className="mt-3 border-t border-cream-200 pt-3 space-y-1 text-sm">
+        <div className="mt-2 space-y-1.5 border-t border-line pt-4 text-sm">
           {order.deliveryFee > 0 && (
-            <div className="flex justify-between text-ink-soft"><span>{t.cart.delivery}{order.deliveryArea ? ` · ${order.deliveryArea}` : ""}</span><span>{money(order.deliveryFee)}</span></div>
+            <div className="flex justify-between text-muted"><span>{t.cart.delivery}{order.deliveryArea ? ` · ${order.deliveryArea}` : ""}</span><span className="tabular-nums">{money(order.deliveryFee)}</span></div>
           )}
-          <div className="flex justify-between text-lg font-black text-ink"><span>{t.cart.total}</span><span>{money(order.total)}</span></div>
-          <p className="text-xs text-ink-soft">
-            💵 {order.orderType === "delivery" ? t.checkout.cashDelivery : t.checkout.cashPickup} · {t.track.placedAt} {time(new Date(order.createdAt))}
+          <div className="flex justify-between text-base font-semibold text-ink"><span>{t.cart.total}</span><span className="tabular-nums">{money(order.total)}</span></div>
+          <p className="flex items-center gap-2 pt-1 text-xs text-muted">
+            <Banknote className="h-3.5 w-3.5" />
+            {order.orderType === "delivery" ? t.checkout.cashDelivery : t.checkout.cashPickup} · {t.track.placedAt} {time(new Date(order.createdAt))}
           </p>
         </div>
       </section>
 
       <div className="text-center">
-        <Link href={`/${lang}#menu`} className="inline-flex h-12 items-center rounded-full bg-white px-6 font-bold text-ink shadow-card hover:shadow-pop transition">
+        <Link href={`/${lang}#menu`} className="inline-flex h-11 items-center rounded-md px-5 font-semibold text-ink underline-offset-4 hover:underline">
           {t.track.orderAgain}
         </Link>
       </div>

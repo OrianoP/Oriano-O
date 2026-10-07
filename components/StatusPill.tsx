@@ -1,30 +1,21 @@
 import type { ShopConfig } from "@/lib/types";
 import type { Messages } from "@/messages/en";
 
-/** Open / closed / paused indicator shown in the hero and checkout. */
+/** Open / closed / paused indicator. */
 export function StatusPill({ config, t, preview }: { config: ShopConfig; t: Messages; preview?: boolean }) {
-  if (preview) {
-    return (
-      <div className="inline-flex items-center gap-2 rounded-2xl bg-yolk-100 px-4 py-2 text-sm font-bold text-ink">
-        <span className="h-2.5 w-2.5 rounded-full bg-yolk" /> {t.status.preview}
-      </div>
-    );
-  }
-  if (config.open) {
-    return (
-      <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold text-basil shadow-card">
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-basil opacity-60" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-basil" />
-        </span>
-        {t.status.open}
-      </div>
-    );
-  }
+  const tone = preview ? "amber" : config.open ? "open" : "closed";
+  const label = preview ? t.status.preview : config.open ? t.status.open : config.reason === "paused" ? t.status.paused : t.status.closed;
+  const hint = !preview && !config.open ? (config.reason === "paused" && config.message ? config.message : t.status.closedHint) : null;
   return (
-    <div className="inline-flex flex-col rounded-2xl bg-brand-50 border border-brand-100 px-4 py-2 text-sm text-ink">
-      <span className="font-bold text-brand-700">● {config.reason === "paused" ? t.status.paused : t.status.closed}</span>
-      <span className="text-ink-soft">{config.reason === "paused" && config.message ? config.message : t.status.closedHint}</span>
+    <div className="inline-flex items-start gap-2.5 text-sm">
+      <span
+        className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${tone === "open" ? "bg-basil shadow-[0_0_0_4px_rgb(31_122_58_/_0.15)]" : tone === "amber" ? "bg-amber-500" : "bg-brand"}`}
+        aria-hidden
+      />
+      <span>
+        <span className="font-semibold text-ink">{label}</span>
+        {hint && <span className="block text-muted">{hint}</span>}
+      </span>
     </div>
   );
 }

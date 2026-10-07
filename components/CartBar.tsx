@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ShoppingBag } from "lucide-react";
 import { cartCount, cartSubtotal, useCart } from "@/lib/cart";
 import { money } from "@/lib/menu";
 import type { Messages } from "@/messages/en";
@@ -15,13 +16,15 @@ export function CartBar({ t }: { t: Messages }) {
   if (!mounted || !lines.length || open) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:hidden">
       <button
         onClick={() => setOpen(true)}
-        className="w-full h-14 rounded-full bg-brand text-white font-black shadow-pop flex items-center justify-between px-5 animate-pop"
+        className="flex h-12 w-full items-center justify-between rounded-md bg-brand px-4 font-semibold text-white"
       >
-        <span className="grid h-8 min-w-8 place-items-center rounded-full bg-white/20 px-2 tabular-nums">{cartCount(lines)}</span>
-        <span>{t.cart.viewCart}</span>
+        <span className="flex items-center gap-2">
+          <ShoppingBag className="h-4 w-4" />
+          {t.cart.viewCart} · {cartCount(lines)}
+        </span>
         <span className="tabular-nums">{money(cartSubtotal(lines))}</span>
       </button>
     </div>

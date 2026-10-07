@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SearchX } from "lucide-react";
 import { notFound } from "next/navigation";
 import { OrderTracker } from "@/components/OrderTracker";
 import { trackOrder } from "@/lib/pos";
@@ -23,9 +24,9 @@ export default async function TrackPage({ params }: PageProps<"/[lang]/track/[to
   if (!order) {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <div className="text-6xl" aria-hidden>🔎</div>
-        <p className="mt-4 font-semibold text-ink">{t.track.notFound}</p>
-        <Link href={`/${lang}`} className="mt-6 inline-flex h-12 items-center rounded-full bg-brand px-6 font-black text-white shadow-pop">{t.checkout.back}</Link>
+        <SearchX className="mx-auto h-10 w-10 text-line-strong" />
+        <p className="mt-4 text-ink">{t.track.notFound}</p>
+        <Link href={`/${lang}`} className="mt-6 inline-flex h-11 items-center rounded-md bg-brand px-6 font-semibold text-white hover:bg-brand-600">{t.checkout.back}</Link>
       </div>
     );
   }

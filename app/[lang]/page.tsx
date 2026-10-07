@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
+import { ArrowRight, Banknote, Clock, Phone, Store } from "lucide-react";
 import { MenuBrowser } from "@/components/MenuBrowser";
-import { PizzaArt } from "@/components/FoodArt";
 import { StatusPill } from "@/components/StatusPill";
+import { pagePhoto, withPhotos } from "@/lib/photos";
 import { getConfig, getMenu, PREVIEW_MODE } from "@/lib/pos";
 import { getMessages, hasLocale, term } from "@/lib/i18n";
 import { cleanDescription } from "@/lib/menu";
@@ -67,13 +69,25 @@ function jsonLd(menu: Menu, config: ShopConfig, lang: string) {
   };
 }
 
+/** Today's hours in Beirut, e.g. "12:00 – 23:30", or null if closed today. */
+function todayHours(config: ShopConfig) {
+  const day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(
+    new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Beirut", weekday: "short" }).format(new Date()),
+  );
+  const h = config.openingHours[String(day)];
+  return !h || h.closed ? null : `${h.open} – ${h.close}`;
+}
+
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = getMessages(lang);
-  const [menu, config] = await Promise.all([getMenu(), getConfig()]);
-  const heroPizza = menu.products.find((p) => /pepperoni/i.test(p.name) && p.itemType === "pizza") || menu.products[0];
-  const heroLabel = menu.labels.find((l) => l.id === heroPizza?.labelId)?.name;
+  const [rawMenu, config] = await Promise.all([getMenu(), getConfig()]);
+  const menu = withPhotos(rawMenu);
+  const hero = pagePhoto("hero");
+  const story = pagePhoto("story");
+  const hours = todayHours(config);
+  const tel = `tel:${config.shopPhone.replace(/\s/g, "")}`;
 
   return (
     <>
@@ -83,55 +97,95 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(menu, config, lang)).replace(/</g, "\\u003c") }}
       />
 
-      <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-6xl px-4 pt-8 pb-10 sm:pt-14 sm:pb-16 grid gap-8 md:grid-cols-[1.15fr_1fr] items-center">
-          <div className="relative z-10">
-            <span className="inline-flex items-center gap-2 rounded-full bg-yolk px-3 py-1 text-xs font-black uppercase tracking-wider text-ink">
-              🗽 {t.hero.badge}
-            </span>
-            <h1 className="mt-4 font-display font-black leading-[0.95] rtl:leading-[1.3] text-[2.6rem] sm:text-6xl lg:text-7xl text-ink">
+      <section className="border-b border-line">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-16 grid gap-10 lg:grid-cols-[1.1fr_1fr] items-center">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">{t.hero.badge}</p>
+            <h1 className="mt-4 font-display font-extrabold uppercase leading-[0.92] text-[3rem] sm:text-7xl text-ink rtl:leading-[1.2] rtl:normal-case">
               {t.hero.titleA}
-              <span className="block text-brand">{t.hero.titleB}</span>
+              <span className="block text-ink-2">{t.hero.titleB}</span>
             </h1>
-            <p className="mt-4 max-w-lg text-lg text-ink-soft">{t.hero.subtitle}</p>
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <a href="#menu" className="inline-flex h-14 items-center rounded-full bg-brand px-8 text-lg font-black text-white shadow-pop hover:bg-brand-600 active:scale-95 transition">
-                {t.hero.order} <span className="inline-block ms-2 rtl:rotate-180" aria-hidden>→</span>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">{t.hero.subtitle}</p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <a href="#menu" className="inline-flex h-12 items-center gap-2 rounded-md bg-brand px-6 text-[15px] font-semibold text-white hover:bg-brand-600">
+                {t.hero.order} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
               </a>
-              <a href={`tel:${config.shopPhone.replace(/\s/g, "")}`} className="inline-flex h-14 items-center rounded-full bg-white px-6 font-bold text-ink shadow-card hover:shadow-pop transition">
-                📞 {t.hero.callToOrder}
+              <a href={tel} className="inline-flex h-12 items-center gap-2 rounded-md border border-line-strong bg-surface px-5 text-[15px] font-semibold text-ink hover:border-ink">
+                <Phone className="h-4 w-4" /> {t.hero.callToOrder}
               </a>
             </div>
-            <div className="mt-5">
+            <div className="mt-6">
               <StatusPill config={config} t={t} preview={PREVIEW_MODE} />
             </div>
-            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-ink-soft">
-              {t.hero.perks.map((perk) => (
-                <li key={perk} className="flex items-center gap-1.5"><span className="text-brand">✔</span>{perk}</li>
-              ))}
-            </ul>
           </div>
 
-          <div className="relative mx-auto w-full max-w-md aspect-square">
-            <div className="absolute inset-[6%] rounded-full bg-brand" />
-            <div className="absolute inset-0 rounded-full border-[10px] border-dashed border-yolk/70 animate-[spin_60s_linear_infinite]" aria-hidden />
-            {heroPizza && <PizzaArt product={heroPizza} labelName={heroLabel} className="relative h-full w-full drop-shadow-2xl animate-[spin_90s_linear_infinite]" />}
-            <span className="absolute -bottom-2 start-2 rotate-[-8deg] rounded-2xl bg-white px-4 py-2 font-display text-lg font-black text-ink shadow-card">
-              NY XL · 45cm
-            </span>
-          </div>
+          {hero ? (
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-paper-2">
+              <Image src={hero} alt="Oriano Pizza" fill priority sizes="(max-width: 1024px) 100vw, 540px" className="object-cover" />
+            </div>
+          ) : (
+            <div className="rounded-xl border border-line bg-surface p-6 sm:p-8 shadow-soft">
+              <div className="inline-block rounded-md bg-[#040706] px-4 py-3">
+                <Image src="/logo.png" alt="Oriano Pizza" width={1284} height={371} className="h-12 w-auto" priority />
+              </div>
+              <p className="mt-6 font-display text-sm font-bold uppercase tracking-[0.16em] text-muted">{t.hero.sizesTitle}</p>
+              <dl className="mt-2 divide-y divide-line">
+                {t.hero.sizes.map(([name, size]) => (
+                  <div key={name} className="flex items-baseline justify-between py-3">
+                    <dt className="font-display text-2xl font-bold uppercase text-ink rtl:normal-case">{name}</dt>
+                    <dd className="text-muted">{size}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="mt-4 text-sm text-muted">{t.hero.first}.</p>
+            </div>
+          )}
         </div>
-        <div className="checker h-4" aria-hidden />
+
+        <div className="border-t border-line bg-surface">
+          <dl className="mx-auto max-w-6xl px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x rtl:divide-x-reverse divide-line">
+            <div className="flex items-center gap-3 py-4 sm:pe-6">
+              <Clock className="h-5 w-5 text-muted shrink-0" />
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-muted">{hours ? t.hero.todayOpen : t.hero.todayClosed}</dt>
+                <dd className="font-semibold text-ink tabular-nums" dir="ltr">{hours ?? "—"}</dd>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 py-4 sm:px-6">
+              <Store className="h-5 w-5 text-muted shrink-0" />
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-muted">{t.footer.address}</dt>
+                <dd className="font-semibold text-ink">{t.hero.service}</dd>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 py-4 sm:ps-6">
+              <Banknote className="h-5 w-5 text-muted shrink-0" />
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-muted">{t.checkout.payment}</dt>
+                <dd className="font-semibold text-ink">{t.hero.payment}</dd>
+              </div>
+            </div>
+          </dl>
+        </div>
       </section>
 
       <MenuBrowser menu={menu} config={config} lang={lang} t={t} />
 
-      <section className="mx-auto max-w-3xl px-4 pt-4 pb-6 text-center">
-        <h2 className="font-display text-3xl font-black text-ink">{t.seo.heading}</h2>
-        {t.seo.body.map((p, i) => (
-          <p key={i} className="mt-3 text-ink-soft leading-relaxed">{p}</p>
-        ))}
-        <p className="mt-3 text-sm text-ink-soft">{menu.categories.map((c) => term(c.name, lang)).join(" · ")}</p>
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 pt-8">
+        <div className={`grid gap-8 items-center rounded-xl border border-line bg-surface p-6 sm:p-10 ${story ? "lg:grid-cols-[1fr_1.1fr]" : ""}`}>
+          {story && (
+            <div className="relative aspect-square overflow-hidden rounded-lg bg-paper-2">
+              <Image src={story} alt="" fill sizes="(max-width: 1024px) 100vw, 480px" className="object-cover" />
+            </div>
+          )}
+          <div className={story ? "" : "max-w-3xl"}>
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase text-ink rtl:normal-case">{t.seo.heading}</h2>
+            {t.seo.body.map((p, i) => (
+              <p key={i} className="mt-4 leading-relaxed text-muted">{p}</p>
+            ))}
+            <p className="mt-4 text-sm text-muted">{menu.categories.map((c) => term(c.name, lang)).join(" · ")}</p>
+          </div>
+        </div>
       </section>
     </>
   );

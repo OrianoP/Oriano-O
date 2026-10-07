@@ -12,26 +12,15 @@ export default async function OgImage() {
   const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", background: "#fff6ec" }}>
-        <div style={{ flex: 1, display: "flex", alignItems: "center", padding: "0 80px", gap: 60 }}>
-          <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-            <div style={{ display: "flex", background: "#080808", borderRadius: 28, padding: "18px 26px", alignSelf: "flex-start" }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={logoSrc} width={360} height={104} alt="" />
-            </div>
-            <div style={{ marginTop: 36, fontSize: 76, fontWeight: 900, color: "#2b1a12", lineHeight: 1 }}>
-              Real New York pizza.
-            </div>
-            <div style={{ fontSize: 76, fontWeight: 900, color: "#ff3300", lineHeight: 1.05 }}>
-              Right here in Lebanon.
-            </div>
-            <div style={{ marginTop: 24, fontSize: 30, color: "#6b5446" }}>Zouk Mikael · Pickup & delivery · Order online</div>
-          </div>
-          <div style={{ width: 360, height: 360, borderRadius: 999, background: "#ff3300", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 220 }}>
-            🍕
-          </div>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 90px", background: "#faf7f2" }}>
+        <div style={{ display: "flex", background: "#040706", borderRadius: 14, padding: "18px 26px", alignSelf: "flex-start" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={logoSrc} width={340} height={98} alt="" />
         </div>
-        <div style={{ height: 36, display: "flex", backgroundImage: "linear-gradient(90deg, #ff3300 50%, #fff6ec 50%)", backgroundSize: "72px 36px" }} />
+        <div style={{ marginTop: 44, fontSize: 28, letterSpacing: 4, color: "#ff3300", fontWeight: 700 }}>NEW YORK STYLE PIZZERIA · ZOUK MIKAEL</div>
+        <div style={{ marginTop: 14, fontSize: 82, fontWeight: 800, color: "#1c1714", lineHeight: 1.02 }}>Real New York pizza.</div>
+        <div style={{ fontSize: 82, fontWeight: 800, color: "#3b332d", lineHeight: 1.02 }}>Made in Lebanon.</div>
+        <div style={{ marginTop: 30, fontSize: 30, color: "#6e655c" }}>Order online · Pickup & delivery</div>
       </div>
     ),
     size,

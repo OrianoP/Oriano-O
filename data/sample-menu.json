@@ -1,0 +1,2506 @@
+{
+ "categories": [
+  {
+   "id": 1,
+   "name": "Pizza",
+   "slug": "pizza",
+   "sortOrder": 1
+  },
+  {
+   "id": 3,
+   "name": "Drinks",
+   "slug": "drinks",
+   "sortOrder": 3
+  },
+  {
+   "id": 4,
+   "name": "Sides",
+   "slug": "sides",
+   "sortOrder": 4
+  },
+  {
+   "id": 5,
+   "name": "Dips",
+   "slug": "dips",
+   "sortOrder": 5
+  }
+ ],
+ "labels": [
+  {
+   "id": 1,
+   "categoryId": 1,
+   "name": "Red Base",
+   "sortOrder": 0
+  },
+  {
+   "id": 7,
+   "categoryId": 3,
+   "name": "Classic Soda",
+   "sortOrder": 0
+  },
+  {
+   "id": 8,
+   "categoryId": 3,
+   "name": "Water",
+   "sortOrder": 1
+  },
+  {
+   "id": 2,
+   "categoryId": 1,
+   "name": "White Base",
+   "sortOrder": 1
+  },
+  {
+   "id": 3,
+   "categoryId": 1,
+   "name": "Truffle Base",
+   "sortOrder": 2
+  },
+  {
+   "id": 4,
+   "categoryId": 1,
+   "name": "Vodka Base",
+   "sortOrder": 3
+  },
+  {
+   "id": 5,
+   "categoryId": 1,
+   "name": "BBQ Base",
+   "sortOrder": 4
+  },
+  {
+   "id": 6,
+   "categoryId": 1,
+   "name": "Pizza Salad",
+   "sortOrder": 5
+  }
+ ],
+ "products": [
+  {
+   "id": 1,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Classic Margherita",
+   "description": "Tomato base, mozzarella cheese blend, Parmigiano Reggiano — Red Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 12,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 1,
+     "name": "Regular (30cm)",
+     "price": 12
+    },
+    {
+     "id": 2,
+     "name": "XL (45cm)",
+     "price": 16
+    }
+   ],
+   "addons": [
+    {
+     "id": 1,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 2,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 3,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 4,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 5,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 6,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 7,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 8,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 158,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 177,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 196,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 215,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Pepperoni",
+   "description": "Tomato base, mozzarella cheese blend, classic pepperoni — Red Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 14,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 3,
+     "name": "Regular (30cm)",
+     "price": 14
+    },
+    {
+     "id": 4,
+     "name": "XL (45cm)",
+     "price": 18
+    }
+   ],
+   "addons": [
+    {
+     "id": 9,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 10,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 11,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 12,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 13,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 14,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 15,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 16,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 17,
+     "name": "Extra Pepperoni",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 3,
+     "priceXl": 4.5
+    },
+    {
+     "id": 159,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 178,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 197,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 216,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Pepperoni Sausage",
+   "description": "Tomato base, mozzarella cheese blend, pepperoni and Italian sausage — Red Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 16,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 5,
+     "name": "Regular (30cm)",
+     "price": 16
+    },
+    {
+     "id": 6,
+     "name": "XL (45cm)",
+     "price": 21
+    }
+   ],
+   "addons": [
+    {
+     "id": 18,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 19,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 20,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 21,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 22,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 23,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 24,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 25,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 26,
+     "name": "Extra Pepperoni",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 3,
+     "priceXl": 4.5
+    },
+    {
+     "id": 27,
+     "name": "Italian Sausage",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 2.5,
+     "priceXl": 3.5
+    },
+    {
+     "id": 160,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 179,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 198,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 217,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Beirut Classic",
+   "description": "Tomato base, mozzarella cheese blend, ham, fresh mushroom, oregano — Red Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 14,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 7,
+     "name": "Regular (30cm)",
+     "price": 14
+    },
+    {
+     "id": 8,
+     "name": "XL (45cm)",
+     "price": 18
+    }
+   ],
+   "addons": [
+    {
+     "id": 28,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 29,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 30,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 31,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 32,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 33,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 34,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 35,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 161,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 180,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 199,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 218,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Hot Honey Pepperoni Goat Cheese",
+   "description": "Tomato base, mozzarella blend, pepperoni, goat cheese, hot honey drizzle — Red Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 18,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 9,
+     "name": "Regular (30cm)",
+     "price": 18
+    },
+    {
+     "id": 10,
+     "name": "XL (45cm)",
+     "price": 22
+    }
+   ],
+   "addons": [
+    {
+     "id": 36,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 37,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 38,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 39,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 40,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 41,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 42,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 43,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 44,
+     "name": "Extra Pepperoni",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 3,
+     "priceXl": 4.5
+    },
+    {
+     "id": 45,
+     "name": "Hot Honey",
+     "category": "sauce",
+     "isFree": false,
+     "priceRegular": 1,
+     "priceXl": 1
+    },
+    {
+     "id": 46,
+     "name": "Goat Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3
+    },
+    {
+     "id": 162,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 181,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 200,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 219,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Pepperoni Overload Ranch",
+   "description": "Tomato base, mozzarella blend, triple pepperoni, house ranch sauce — Red Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 19.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 13,
+     "name": "Regular (30cm)",
+     "price": 19.5
+    },
+    {
+     "id": 14,
+     "name": "XL (45cm)",
+     "price": 25.5
+    }
+   ],
+   "addons": [
+    {
+     "id": 55,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 56,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 57,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 58,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 59,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 60,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 61,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 62,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 63,
+     "name": "Extra Pepperoni",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 3,
+     "priceXl": 4.5
+    },
+    {
+     "id": 163,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 182,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 201,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 220,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Vegetarian",
+   "description": "Tomato base, mozzarella blend, onions, fresh mushrooms, artichoke — Red Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 15.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 15,
+     "name": "Regular (30cm)",
+     "price": 15.5
+    },
+    {
+     "id": 16,
+     "name": "XL (45cm)",
+     "price": 19.5
+    }
+   ],
+   "addons": [
+    {
+     "id": 64,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 65,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 66,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 67,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 68,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 69,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 70,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 71,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 72,
+     "name": "Artichoke",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 2.5
+    },
+    {
+     "id": 164,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 183,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 202,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 221,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "categoryId": 1,
+   "labelId": 2,
+   "name": "Classic White",
+   "description": "White base, mozzarella cheese blend — White Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 15,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 17,
+     "name": "Regular (30cm)",
+     "price": 15
+    },
+    {
+     "id": 18,
+     "name": "XL (45cm)",
+     "price": 20
+    }
+   ],
+   "addons": [
+    {
+     "id": 73,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 74,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 75,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 76,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 77,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 78,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 79,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 80,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 165,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 184,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 203,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 222,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "categoryId": 1,
+   "labelId": 2,
+   "name": "Chicken BBQ",
+   "description": "White base, mozzarella cheese blend, chicken, BBQ drizzle — White Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 17,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 19,
+     "name": "Regular (30cm)",
+     "price": 17
+    },
+    {
+     "id": 20,
+     "name": "XL (45cm)",
+     "price": 23
+    }
+   ],
+   "addons": [
+    {
+     "id": 81,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 82,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 83,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 84,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 85,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 86,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 87,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 88,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 89,
+     "name": "Chicken",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 2.5,
+     "priceXl": 4
+    },
+    {
+     "id": 166,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 185,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 204,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 223,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "categoryId": 1,
+   "labelId": 2,
+   "name": "Four Cheese",
+   "description": "White base, mozzarella blend, provolone, blue cheese, parmigiano reggiano — White Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 17,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 21,
+     "name": "Regular (30cm)",
+     "price": 17
+    },
+    {
+     "id": 22,
+     "name": "XL (45cm)",
+     "price": 23
+    }
+   ],
+   "addons": [
+    {
+     "id": 90,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 91,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 92,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 93,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 94,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 95,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 96,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 97,
+     "name": "Blue Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3
+    },
+    {
+     "id": 98,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 167,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 186,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 205,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 224,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "categoryId": 1,
+   "labelId": 4,
+   "name": "Classic Vodka",
+   "description": "Vodka sauce, mozzarella cheese blend — Vodka Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 14.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 23,
+     "name": "Regular (30cm)",
+     "price": 14.5
+    },
+    {
+     "id": 24,
+     "name": "XL (45cm)",
+     "price": 18.5
+    }
+   ],
+   "addons": [
+    {
+     "id": 99,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 100,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 101,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 102,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 103,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 104,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 105,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 106,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 168,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 187,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 206,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 225,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "categoryId": 1,
+   "labelId": 4,
+   "name": "Vodka Pepperoni",
+   "description": "Vodka sauce, mozzarella cheese blend, pepperoni — Vodka Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 16.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 25,
+     "name": "Regular (30cm)",
+     "price": 16.5
+    },
+    {
+     "id": 26,
+     "name": "XL (45cm)",
+     "price": 20.5
+    }
+   ],
+   "addons": [
+    {
+     "id": 107,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 108,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 109,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 110,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 111,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 112,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 113,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 114,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 115,
+     "name": "Extra Pepperoni",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 3,
+     "priceXl": 4.5
+    },
+    {
+     "id": 169,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 188,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 207,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 226,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "categoryId": 1,
+   "labelId": 4,
+   "name": "La Latina",
+   "description": "Vodka sauce, mozzarella blend, pepperoni, sautéed mushrooms, onions, jalapeño, parmigiano reggiano — Vodka Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 18,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 27,
+     "name": "Regular (30cm)",
+     "price": 18
+    },
+    {
+     "id": 28,
+     "name": "XL (45cm)",
+     "price": 22
+    }
+   ],
+   "addons": [
+    {
+     "id": 116,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 117,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 118,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 119,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 120,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 121,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 122,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 123,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 124,
+     "name": "Extra Pepperoni",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 3,
+     "priceXl": 4.5
+    },
+    {
+     "id": 170,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 189,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 208,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 227,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "categoryId": 1,
+   "labelId": 3,
+   "name": "Classic Truffle",
+   "description": "Truffle base, mozzarella cheese blend, truffle oil drizzle — Truffle Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 19,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 29,
+     "name": "Regular (30cm)",
+     "price": 19
+    },
+    {
+     "id": 30,
+     "name": "XL (45cm)",
+     "price": 24
+    }
+   ],
+   "addons": [
+    {
+     "id": 125,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 126,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 127,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 128,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 129,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 171,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 190,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 209,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 228,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "categoryId": 1,
+   "labelId": 3,
+   "name": "Truffle Chicken",
+   "description": "Truffle base, mozzarella cheese blend, chicken, truffle oil drizzle — Truffle Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 21,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 31,
+     "name": "Regular (30cm)",
+     "price": 21
+    },
+    {
+     "id": 32,
+     "name": "XL (45cm)",
+     "price": 26
+    }
+   ],
+   "addons": [
+    {
+     "id": 130,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 131,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 132,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 133,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 134,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 135,
+     "name": "Chicken",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 2.5,
+     "priceXl": 4
+    },
+    {
+     "id": 172,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 191,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 210,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 229,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "categoryId": 1,
+   "labelId": 5,
+   "name": "BBQ Chicken",
+   "description": "BBQ base, mozzarella cheese blend, chicken — BBQ Base — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 14.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 33,
+     "name": "Regular (30cm)",
+     "price": 14.5
+    },
+    {
+     "id": 34,
+     "name": "XL (45cm)",
+     "price": 18.5
+    }
+   ],
+   "addons": [
+    {
+     "id": 136,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 137,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 138,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 139,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 140,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 141,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 142,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 143,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 144,
+     "name": "Chicken",
+     "category": "meat",
+     "isFree": false,
+     "priceRegular": 2.5,
+     "priceXl": 4
+    },
+    {
+     "id": 174,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 193,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 212,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 231,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "categoryId": 1,
+   "labelId": 6,
+   "name": "Caprino",
+   "description": "Olive oil base, light mozzarella, goat cheese, mesclun, cherry tomatoes, pecorino romano, balsamic — Pizza Salad — 30cm · 45cm",
+   "itemType": "pizza",
+   "basePrice": 17,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 35,
+     "name": "Regular (30cm)",
+     "price": 17
+    },
+    {
+     "id": 36,
+     "name": "XL (45cm)",
+     "price": 22
+    }
+   ],
+   "addons": [
+    {
+     "id": 145,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 146,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 147,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 148,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 149,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 175,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 194,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 213,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 232,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "categoryId": 1,
+   "labelId": 1,
+   "name": "Chorizo",
+   "description": "Tomato base, mozzarella blend, chorizo sausage.",
+   "itemType": "pizza",
+   "basePrice": 14,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [
+    {
+     "id": 37,
+     "name": "Regular (30cm)",
+     "price": 15
+    },
+    {
+     "id": 38,
+     "name": "XL (45cm)",
+     "price": 19
+    }
+   ],
+   "addons": [
+    {
+     "id": 150,
+     "name": "Mozzarella Cheese",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 1.5,
+     "priceXl": 3
+    },
+    {
+     "id": 151,
+     "name": "Extra Mushrooms",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.75
+    },
+    {
+     "id": 152,
+     "name": "Jalapeños",
+     "category": "veggie",
+     "isFree": false,
+     "priceRegular": 0.5,
+     "priceXl": 0.5
+    },
+    {
+     "id": 153,
+     "name": "Onions",
+     "category": "veggie",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 154,
+     "name": "Oregano",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 155,
+     "name": "Chili Flakes",
+     "category": "herb",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 156,
+     "name": "Parmigiano Reggiano",
+     "category": "cheese",
+     "isFree": false,
+     "priceRegular": 2,
+     "priceXl": 3.5
+    },
+    {
+     "id": 157,
+     "name": "Complete Your Meal",
+     "category": "combo",
+     "isFree": false,
+     "priceRegular": 3.75,
+     "priceXl": 3.75
+    },
+    {
+     "id": 176,
+     "name": "Hot Honey Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 195,
+     "name": "Ranch Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 214,
+     "name": "BBQ Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    },
+    {
+     "id": 233,
+     "name": "Buffalo Drizzle",
+     "category": "drizzle",
+     "isFree": true,
+     "priceRegular": 0,
+     "priceXl": 0
+    }
+   ]
+  },
+  {
+   "id": 23,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "Pepsi Original",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 24,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "Pepsi Diet",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 25,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "Pepsi Max",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 26,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "7UP Original",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 27,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "7UP Diet",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 28,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "Miranda Original",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 29,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "Miranda Diet",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 30,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "Ice Tea Peach",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 31,
+   "categoryId": 3,
+   "labelId": 7,
+   "name": "Ice Tea Red Fruit",
+   "description": "330ml can",
+   "itemType": "drink",
+   "basePrice": 1.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 32,
+   "categoryId": 3,
+   "labelId": 8,
+   "name": "Sparkling Water",
+   "description": "500ml",
+   "itemType": "drink",
+   "basePrice": 2,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 33,
+   "categoryId": 3,
+   "labelId": 8,
+   "name": "Water",
+   "description": "500ml",
+   "itemType": "drink",
+   "basePrice": 1,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 34,
+   "categoryId": 4,
+   "labelId": null,
+   "name": "Fries",
+   "description": "Crispy golden fries",
+   "itemType": "side",
+   "basePrice": 4.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 35,
+   "categoryId": 5,
+   "labelId": null,
+   "name": "Ranch Sauce",
+   "description": "50cc",
+   "itemType": "dip",
+   "basePrice": 1,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 36,
+   "categoryId": 5,
+   "labelId": null,
+   "name": "Hot Honey",
+   "description": "50cc",
+   "itemType": "dip",
+   "basePrice": 1,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 37,
+   "categoryId": 5,
+   "labelId": null,
+   "name": "BBQ Sauce",
+   "description": "50cc",
+   "itemType": "dip",
+   "basePrice": 0.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  },
+  {
+   "id": 38,
+   "categoryId": 5,
+   "labelId": null,
+   "name": "Buffalo",
+   "description": "50cc",
+   "itemType": "dip",
+   "basePrice": 0.5,
+   "imageUrl": null,
+   "isFeatured": false,
+   "sizes": [],
+   "addons": []
+  }
+ ]
+}

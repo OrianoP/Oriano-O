@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+/* Oriano brand — warm, bright and appetising (no dark backgrounds). */
+@theme {
+  --color-brand: #ff3300;
+  --color-brand-600: #e62e00;
+  --color-brand-700: #c8202e;
+  --color-brand-50: #fff1eb;
+  --color-brand-100: #ffe3d9;
+  --color-yolk: #ffd60a;
+  --color-yolk-100: #fff6c7;
+  --color-cream: #fff6ec;
+  --color-cream-200: #fcead6;
+  --color-cream-300: #f6dcbd;
+  --color-ink: #2b1a12;
+  --color-ink-soft: #6b5446;
+  --color-basil: #1f8a3b;
+
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: var(--font-cairo), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 1px 2px rgb(43 26 18 / 0.06), 0 8px 24px -12px rgb(43 26 18 / 0.18);
+  --shadow-pop: 0 18px 40px -16px rgb(255 51 0 / 0.45);
+
+  --animate-pop: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-slide-up: slide-up 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade: fade 0.2s ease-out;
+
+  @keyframes pop {
+    0% { transform: scale(0.85); }
+    100% { transform: scale(1); }
+  }
+  @keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  @keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+html {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: clip;
+  font-family: var(--font-sans);
+  background: var(--color-cream);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+html[lang="ar"] body {
+  font-family: var(--font-arabic);
+}
+html[lang="ar"] .font-display {
+  font-family: var(--font-arabic);
+  font-weight: 800;
+}
+
+/* Diner checkerboard strip, as on the printed menu. */
+.checker {
+  background-color: var(--color-cream);
+  background-image:
+    linear-gradient(45deg, var(--color-brand) 25%, transparent 25%, transparent 75%, var(--color-brand) 75%),
+    linear-gradient(45deg, var(--color-brand) 25%, transparent 25%, transparent 75%, var(--color-brand) 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+}
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

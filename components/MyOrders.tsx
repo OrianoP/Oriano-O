@@ -18,14 +18,17 @@ export function MyOrders({ lang, t }: { lang: Locale; t: Messages }) {
       <ul className="mt-6 space-y-3">
         {orders?.map((o) => (
           <li key={o.token}>
-            <Link href={`/${lang}/track/${o.token}`} className="flex items-center gap-4 rounded-xl border border-line bg-surface p-4 hover:border-line-strong hover:shadow-lift">
-              <span className="grid h-12 w-12 place-items-center rounded-lg bg-paper-2 font-semibold tabular-nums text-ink">#{o.orderNumber.slice(-3)}</span>
-              <span className="flex-1">
-                <span className="block font-bold text-ink">{o.orderNumber}</span>
-                <span className="block text-sm text-muted">{new Date(o.createdAt).toLocaleString(lang === "ar" ? "ar-LB" : "en-GB", { dateStyle: "medium", timeStyle: "short" })}</span>
+            <Link href={`/${lang}/track/${o.token}`} className="flex items-center gap-3 sm:gap-4 rounded-xl border border-line bg-surface p-4 hover:border-line-strong hover:shadow-lift">
+              <span className="grid h-11 w-11 sm:h-12 sm:w-12 shrink-0 place-items-center rounded-lg bg-paper-2 text-sm sm:text-base font-semibold tabular-nums text-ink">#{o.orderNumber.slice(-3)}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-bold text-ink rtl:text-right" dir="ltr">{o.orderNumber}</span>
+                <span className="block truncate text-sm text-muted">{new Date(o.createdAt).toLocaleString(lang === "ar" ? "ar-LB" : "en-GB", { dateStyle: "medium", timeStyle: "short" })}</span>
               </span>
-              <span className="font-semibold tabular-nums text-ink">{money(o.total)}</span>
-              <span className="text-sm font-semibold text-brand">{t.myOrders.view} <span className="inline-block rtl:rotate-180" aria-hidden>→</span></span>
+              {/* Stacked on phones so the order number keeps its room. */}
+              <span className="flex shrink-0 flex-col items-end gap-0.5 sm:flex-row sm:items-center sm:gap-4">
+                <span className="font-semibold tabular-nums text-ink">{money(o.total)}</span>
+                <span className="text-sm font-semibold text-brand">{t.myOrders.view} <span className="inline-block rtl:rotate-180" aria-hidden>→</span></span>
+              </span>
             </Link>
           </li>
         ))}

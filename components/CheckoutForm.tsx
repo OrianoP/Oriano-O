@@ -26,7 +26,9 @@ function reconcile(lines: CartLine[], menu: Menu): CartLine[] {
   });
 }
 
-const input = "w-full h-11 rounded-md border border-line bg-surface px-3.5 text-ink placeholder:text-muted/60 focus:border-ink outline-none";
+// Border colour is set per field (line or brand for errors): two colour utilities on one element don't override reliably.
+const field = "w-full h-11 rounded-md border bg-surface px-3.5 text-ink placeholder:text-muted/60 focus:border-ink outline-none";
+const input = `${field} border-line`;
 const label = "block text-sm font-medium text-ink-2 mb-1.5";
 const card = "rounded-xl border border-line bg-surface p-5 sm:p-6";
 const heading = "text-base font-semibold text-ink";
@@ -105,6 +107,7 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
           } : undefined,
           items: lines.map((l) => ({ productId: l.productId, sizeId: l.sizeId, quantity: l.quantity, addonIds: l.addonIds, notes: l.notes })),
           notes: form.notes.trim(),
+          lang,
           website: form.website,
           formMs: Date.now() - openedAt.current,
           turnstileToken,
@@ -146,12 +149,12 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
   const err = (k: keyof typeof missing) => touched && missing[k];
 
   return (
-    <form onSubmit={submit} noValidate className="mx-auto max-w-6xl px-4 sm:px-6 py-8 grid gap-6 lg:grid-cols-[1fr_380px] items-start">
+    <form onSubmit={submit} noValidate className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-[1fr_380px] items-start">
       {TURNSTILE_SITE_KEY && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />}
-      <div className="space-y-6 min-w-0">
+      <div className="space-y-4 sm:space-y-6 min-w-0">
         <div className="flex items-center gap-3">
-          <Link href={`/${lang}#menu`} className="grid h-10 w-10 place-items-center rounded-md border border-line bg-surface text-ink hover:border-ink" aria-label={t.checkout.back}><ArrowLeft className="h-4 w-4 rtl:rotate-180" /></Link>
-          <h1 className="font-display text-4xl font-extrabold uppercase text-ink rtl:normal-case">{t.checkout.title}</h1>
+          <Link href={`/${lang}#menu`} className="grid h-11 w-11 shrink-0 place-items-center rounded-md border border-line bg-surface text-ink hover:border-ink" aria-label={t.checkout.back}><ArrowLeft className="h-4 w-4 rtl:rotate-180" /></Link>
+          <h1 className="font-display text-[2rem] sm:text-4xl font-extrabold uppercase text-ink rtl:normal-case">{t.checkout.title}</h1>
         </div>
 
         {removedSome && (
@@ -170,7 +173,7 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
                   key={type}
                   disabled={!enabled}
                   onClick={() => setOrderType(type)}
-                  className={`rounded-lg border p-4 text-start disabled:opacity-40 ${orderType === type ? "border-ink bg-paper ring-1 ring-ink" : "border-line hover:border-line-strong"}`}
+                  className={`flex flex-col items-start rounded-lg border p-3.5 sm:p-4 text-start disabled:opacity-40 ${orderType === type ? "border-ink bg-paper ring-1 ring-ink" : "border-line hover:border-line-strong"}`}
                   aria-pressed={orderType === type}
                 >
                   {type === "pickup" ? <Store className="h-5 w-5 text-ink" /> : <Bike className="h-5 w-5 text-ink" />}
@@ -184,26 +187,29 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
           </div>
 
           {orderType === "delivery" && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className={label} htmlFor="zone">{t.checkout.area}</label>
-                <select id="zone" value={form.zoneId} onChange={set("zoneId")} className={`${input} ${err("zone") ? "border-brand" : ""}`} required>
+                <select id="zone" value={form.zoneId} onChange={set("zoneId")} className={`${field} ${err("zone") ? "border-brand" : "border-line"}`} required>
                   <option value="">{t.checkout.chooseArea}</option>
                   {config.zones.map((z) => (
+                    // Short on purpose: long option text gets cut off in phone pickers. Full terms show below.
                     <option key={z.id} value={z.id}>
-                      {zoneName(z)} — {fill(t.checkout.areaFee, { fee: money(z.fee), min: money(z.minOrder) })}
+                      {zoneName(z)} · {money(z.fee)}
                     </option>
                   ))}
                 </select>
-                <p className="mt-1 text-xs text-muted">{t.checkout.notListed}</p>
+                <p className="mt-1 text-xs text-muted">
+                  {zone ? fill(t.checkout.areaFee, { fee: money(zone.fee), min: money(zone.minOrder) }) : t.checkout.notListed}
+                </p>
               </div>
               <div className="sm:col-span-2">
                 <label className={label} htmlFor="street">{t.checkout.street}</label>
-                <input id="street" value={form.street} onChange={set("street")} maxLength={160} autoComplete="street-address" className={`${input} ${err("street") ? "border-brand" : ""}`} />
+                <input id="street" value={form.street} onChange={set("street")} maxLength={160} autoComplete="street-address" className={`${field} ${err("street") ? "border-brand" : "border-line"}`} />
               </div>
               <div>
                 <label className={label} htmlFor="building">{t.checkout.building}</label>
-                <input id="building" value={form.building} onChange={set("building")} maxLength={120} className={`${input} ${err("building") ? "border-brand" : ""}`} />
+                <input id="building" value={form.building} onChange={set("building")} maxLength={120} className={`${field} ${err("building") ? "border-brand" : "border-line"}`} />
               </div>
               <div>
                 <label className={label} htmlFor="floor">{t.checkout.floor}</label>
@@ -218,11 +224,11 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
         </section>
 
         {/* Who */}
-        <section className={`${card} grid gap-4 sm:grid-cols-2`}>
+        <section className={`${card} grid grid-cols-1 gap-4 sm:grid-cols-2`}>
           <h2 className={`sm:col-span-2 ${heading}`}>{t.checkout.you}</h2>
           <div>
             <label className={label} htmlFor="name">{t.checkout.name}</label>
-            <input id="name" value={form.name} onChange={set("name")} maxLength={80} autoComplete="name" className={`${input} ${err("name") ? "border-brand" : ""}`} />
+            <input id="name" value={form.name} onChange={set("name")} maxLength={80} autoComplete="name" className={`${field} ${err("name") ? "border-brand" : "border-line"}`} />
             {err("name") && <p className="mt-1 text-xs font-semibold text-brand-700">{t.checkout.required}</p>}
           </div>
           <div>
@@ -237,7 +243,7 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
                 value={form.phone}
                 onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value.replace(/[^\d\s+()-]/g, "").slice(0, 20) }))}
                 placeholder="03 123 456"
-                className="flex-1 min-w-0 px-3 text-ink outline-none"
+                className="w-0 flex-1 min-w-0 px-3 text-ink outline-none"
                 aria-invalid={err("phone") || undefined}
                 aria-describedby="phone-hint"
               />
@@ -278,7 +284,7 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
             {lines.map((l) => (
               <li key={l.key} className="py-2 flex gap-2">
                 <span className="font-semibold tabular-nums text-ink">{l.quantity}×</span>
-                <span className="flex-1 text-ink">
+                <span className="min-w-0 flex-1 break-words text-ink">
                   {l.name}
                   {l.sizeName && <span className="text-muted"> · {sizeLabel(l.sizeName, lang)}</span>}
                   {l.addonNames.length > 0 && <span className="block text-xs text-muted">+ {l.addonNames.join(", ")}</span>}
@@ -296,11 +302,11 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
           </div>
         </section>
 
-        <section className="rounded-xl border border-line bg-surface p-5 space-y-3">
+        <section className={`rounded-xl border bg-surface p-5 space-y-3 ${touched && !agree ? "border-brand" : "border-line"}`}>
           <h2 className="flex items-center gap-2 font-semibold text-ink"><Info className="h-4 w-4 text-muted" /> {t.checkout.confirmTitle}</h2>
           <p className="text-sm leading-relaxed text-muted">{t.checkout.confirmText}</p>
-          <label className="flex items-start gap-3 text-sm font-medium text-ink cursor-pointer">
-            <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#1c1714]" />
+          <label className="-mx-2 flex items-start gap-3 rounded-md p-2 text-sm font-medium text-ink cursor-pointer">
+            <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 h-5 w-5 shrink-0 accent-[#1c1714]" />
             {t.checkout.agree}
           </label>
         </section>
@@ -324,12 +330,33 @@ export function CheckoutForm({ menu, config, lang, t, preview }: { menu: Menu; c
         <button
           type="submit"
           disabled={submitting || preview || (touched && !valid)}
-          className="w-full h-12 rounded-md bg-brand text-white font-semibold hover:bg-brand-600 disabled:bg-paper-2 disabled:text-muted"
+          className="hidden lg:block w-full h-12 rounded-md bg-brand text-white font-semibold hover:bg-brand-600 disabled:bg-paper-2 disabled:text-muted"
         >
           {submitting ? t.checkout.placing : `${t.checkout.place} · ${money(total)}`}
         </button>
         {preview && <p className="text-center text-sm text-muted">{t.status.preview}</p>}
       </aside>
+
+      {/* Phones & tablets: total and "Place order" always in reach. Same form, same submit. */}
+      <div data-bottom-bar className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6">
+          <div className="shrink-0 leading-tight">
+            <p className="text-xs text-muted">{t.cart.total}</p>
+            <p className="text-lg font-semibold tabular-nums text-ink">{money(total)}</p>
+          </div>
+          <button
+            type="submit"
+            disabled={submitting || preview || (touched && !valid)}
+            onClick={() => {
+              // Bring the first thing that needs attention into view (fields can be off-screen above).
+              if (!valid) setTimeout(() => document.querySelector("form .border-brand")?.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
+            }}
+            className="h-12 min-w-0 flex-1 truncate rounded-md bg-brand px-4 font-semibold text-white hover:bg-brand-600 disabled:bg-paper-2 disabled:text-muted"
+          >
+            {submitting ? t.checkout.placing : t.checkout.place}
+          </button>
+        </div>
+      </div>
     </form>
   );
 }

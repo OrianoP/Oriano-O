@@ -13,7 +13,16 @@ export function CartBar({ t }: { t: Messages }) {
   const setOpen = useCart((s) => s.setOpen);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted || !lines.length || open) return null;
+  const visible = mounted && lines.length > 0;
+
+  // Reserve room at the bottom of the page (phones only, see globals.css) so the bar never hides the footer.
+  useEffect(() => {
+    if (!visible) return;
+    document.body.classList.add("has-cartbar");
+    return () => document.body.classList.remove("has-cartbar");
+  }, [visible]);
+
+  if (!visible || open) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:hidden">

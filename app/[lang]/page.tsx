@@ -98,29 +98,29 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       />
 
       <section className="border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-16 grid gap-10 lg:grid-cols-[1.1fr_1fr] items-center">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-16 grid gap-6 sm:gap-10 lg:grid-cols-[1.1fr_1fr] items-center">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand">{t.hero.badge}</p>
-            <h1 className="mt-4 font-display font-extrabold uppercase leading-[0.92] text-[3rem] sm:text-7xl text-ink rtl:leading-[1.2] rtl:normal-case">
+            <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.16em] sm:tracking-[0.18em] text-brand">{t.hero.badge}</p>
+            <h1 className="mt-3 sm:mt-4 font-display font-extrabold uppercase leading-[0.92] text-[2.6rem] sm:text-7xl text-ink rtl:leading-[1.2] rtl:normal-case rtl:text-[2.2rem] sm:rtl:text-7xl">
               {t.hero.titleA}
               <span className="block text-ink-2">{t.hero.titleB}</span>
             </h1>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">{t.hero.subtitle}</p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <a href="#menu" className="inline-flex h-12 items-center gap-2 rounded-md bg-brand px-6 text-[15px] font-semibold text-white hover:bg-brand-600">
-                {t.hero.order} <ArrowRight className="h-4 w-4 rtl:rotate-180" />
+            <p className="mt-3 sm:mt-5 max-w-md text-base sm:text-lg leading-relaxed text-muted">{t.hero.subtitle}</p>
+            <div className="mt-5 sm:mt-7 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
+              <a href="#menu" className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-brand px-3 sm:px-6 text-[15px] font-semibold text-white hover:bg-brand-600">
+                {t.hero.order} <ArrowRight className="h-4 w-4 shrink-0 rtl:rotate-180" />
               </a>
-              <a href={tel} className="inline-flex h-12 items-center gap-2 rounded-md border border-line-strong bg-surface px-5 text-[15px] font-semibold text-ink hover:border-ink">
-                <Phone className="h-4 w-4" /> {t.hero.callToOrder}
+              <a href={tel} className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-line-strong bg-surface px-3 sm:px-5 text-[15px] font-semibold text-ink hover:border-ink">
+                <Phone className="h-4 w-4 shrink-0" /> {t.hero.callToOrder}
               </a>
             </div>
-            <div className="mt-6">
+            <div className="mt-4 sm:mt-6">
               <StatusPill config={config} t={t} preview={PREVIEW_MODE} />
             </div>
           </div>
 
           {hero ? (
-            <div className="relative aspect-[3/2] overflow-hidden rounded-xl bg-paper-2 shadow-lift">
+            <div className="relative aspect-[16/10] lg:aspect-[3/2] overflow-hidden rounded-xl bg-paper-2 shadow-lift">
               <Image src={hero} alt="Oriano Pizza" fill priority sizes="(max-width: 1024px) 100vw, 540px" className="object-cover" />
             </div>
           ) : (
@@ -143,26 +143,27 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
 
         <div className="border-t border-line bg-surface">
-          <dl className="mx-auto max-w-6xl px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x rtl:divide-x-reverse divide-line">
-            <div className="flex items-center gap-3 py-4 sm:pe-6">
+          {/* Phones: a compact three-column row (icon above two short lines). sm+: icon beside text. */}
+          <dl className="mx-auto max-w-6xl px-2 sm:px-6 grid grid-cols-3 divide-x divide-line">
+            <div className="flex flex-col items-center gap-1.5 px-2 py-3 text-center sm:flex-row sm:gap-3 sm:py-4 sm:ps-0 sm:pe-6 sm:text-start">
               <Clock className="h-5 w-5 text-muted shrink-0" />
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-muted">{hours ? t.hero.todayOpen : t.hero.todayClosed}</dt>
-                <dd className="font-semibold text-ink tabular-nums" dir="ltr">{hours ?? "—"}</dd>
+              <div className="min-w-0">
+                <dt className="text-[10px] sm:text-xs uppercase tracking-wider text-muted">{hours ? t.hero.todayOpen : t.hero.todayClosed}</dt>
+                <dd className="text-xs sm:text-base font-semibold text-ink tabular-nums" dir="ltr">{hours ?? "—"}</dd>
               </div>
             </div>
-            <div className="flex items-center gap-3 py-4 sm:px-6">
+            <div className="flex flex-col items-center gap-1.5 px-2 py-3 text-center sm:flex-row sm:gap-3 sm:py-4 sm:px-6 sm:text-start">
               <Store className="h-5 w-5 text-muted shrink-0" />
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-muted">{t.footer.address}</dt>
-                <dd className="font-semibold text-ink">{t.hero.service}</dd>
+              <div className="min-w-0">
+                <dt className="text-[10px] sm:text-xs uppercase tracking-wider text-muted">{t.footer.address}</dt>
+                <dd className="text-xs sm:text-base font-semibold text-ink">{t.hero.service}</dd>
               </div>
             </div>
-            <div className="flex items-center gap-3 py-4 sm:ps-6">
+            <div className="flex flex-col items-center gap-1.5 px-2 py-3 text-center sm:flex-row sm:gap-3 sm:py-4 sm:ps-6 sm:pe-0 sm:text-start">
               <Banknote className="h-5 w-5 text-muted shrink-0" />
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-muted">{t.checkout.payment}</dt>
-                <dd className="font-semibold text-ink">{t.hero.payment}</dd>
+              <div className="min-w-0">
+                <dt className="text-[10px] sm:text-xs uppercase tracking-wider text-muted">{t.checkout.payment}</dt>
+                <dd className="text-xs sm:text-base font-semibold text-ink">{t.hero.payment}</dd>
               </div>
             </div>
           </dl>

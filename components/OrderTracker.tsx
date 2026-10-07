@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Banknote, Check, CircleX, Clock, Lock, MessageCircle, Phone } from "lucide-react";
+import { Banknote, Check, CircleX, Clock, Lock, MessageCircle, Phone, Receipt } from "lucide-react";
 import { money } from "@/lib/menu";
 import { sizeLabel, type Locale } from "@/lib/i18n";
 import type { Stage, TrackedOrder } from "@/lib/types";
@@ -50,10 +50,10 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
   const stageLabel = (s: Stage) => (s === "ready" && order.orderType === "pickup" ? t.track.readyForPickup : t.track.stages[s]);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 space-y-6">
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-10 space-y-5 sm:space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">{t.track.title} {order.orderNumber}</p>
-        <h1 className={`mt-2 font-display text-5xl font-extrabold uppercase rtl:normal-case ${cancelled ? "text-brand-700" : "text-ink"}`}>
+        <h1 className={`mt-2 font-display text-4xl sm:text-5xl font-extrabold uppercase rtl:normal-case ${cancelled ? "text-brand-700" : "text-ink"}`}>
           {stageLabel(order.stage)}
         </h1>
         {live && (
@@ -64,7 +64,7 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
       </div>
 
       {/* Status card */}
-      <div className={`rounded-xl border p-6 ${cancelled ? "border-brand-100 bg-brand-50" : order.stage === "awaiting_confirmation" ? "border-amber-200 bg-amber-50" : "border-line bg-surface"}`}>
+      <div className={`rounded-xl border p-5 sm:p-6 ${cancelled ? "border-brand-100 bg-brand-50" : order.stage === "awaiting_confirmation" ? "border-amber-200 bg-amber-50" : "border-line bg-surface"}`}>
         {order.stage === "awaiting_confirmation" && (
           <div className="flex gap-4">
             <Clock className="h-6 w-6 shrink-0 text-amber-600" />
@@ -85,7 +85,7 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
             {eta && order.stage !== "completed" ? (
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted">{order.orderType === "delivery" ? t.track.etaDelivery : t.track.eta}</p>
-                <p className="mt-1 font-display text-5xl font-extrabold tabular-nums text-ink">{time(eta)}</p>
+                <p className="mt-1 font-display text-4xl sm:text-5xl font-extrabold tabular-nums text-ink">{time(eta)}</p>
                 {etaMins !== null && etaMins > 0 && <p className="text-sm text-muted">~{etaMins} min</p>}
               </div>
             ) : (
@@ -100,7 +100,7 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
 
       {/* Timeline */}
       {!cancelled && (
-        <ol className="rounded-xl border border-line bg-surface p-6">
+        <ol className="rounded-xl border border-line bg-surface p-5 sm:p-6">
           {steps.map((s, i) => {
             const done = i < current || order.stage === "completed";
             const active = i === current && order.stage !== "completed";
@@ -133,13 +133,13 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
       {live && <p className="text-center text-sm text-muted">{t.track.noCancel}</p>}
 
       {/* Summary */}
-      <section className="rounded-xl border border-line bg-surface p-6">
+      <section className="rounded-xl border border-line bg-surface p-5 sm:p-6">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">{t.track.summary}</h2>
         <ul className="mt-3 divide-y divide-line text-sm">
           {order.items.map((it, i) => (
             <li key={i} className="flex gap-3 py-3">
               <span className="font-semibold tabular-nums text-ink">{it.quantity}×</span>
-              <span className="flex-1 text-ink">
+              <span className="min-w-0 flex-1 break-words text-ink">
                 {it.name}
                 {it.size && <span className="text-muted"> · {sizeLabel(it.size, lang)}</span>}
                 {it.extras.length > 0 && <span className="block text-xs text-muted">+ {it.extras.join(", ")}</span>}
@@ -160,9 +160,13 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
         </div>
       </section>
 
-      <div className="text-center">
-        <Link href={`/${lang}#menu`} className="inline-flex h-11 items-center rounded-md px-5 font-semibold text-ink underline-offset-4 hover:underline">
+      <div className="flex flex-wrap items-center justify-center gap-x-2">
+        <Link href={`/${lang}#menu`} className="inline-flex h-11 items-center rounded-md px-4 font-semibold text-ink underline-offset-4 hover:underline">
           {t.track.orderAgain}
+        </Link>
+        <span className="h-4 w-px bg-line-strong" aria-hidden />
+        <Link href={`/${lang}/orders`} className="inline-flex h-11 items-center gap-2 rounded-md px-4 font-semibold text-ink-2 underline-offset-4 hover:text-ink hover:underline">
+          <Receipt className="h-4 w-4 text-muted" /> {t.nav.myOrders}
         </Link>
       </div>
     </div>

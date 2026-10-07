@@ -47,6 +47,9 @@ html {
 
 body {
   overflow-x: clip;
+  /* viewport-fit=cover: keep content clear of the notch in landscape. */
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   font-family: var(--font-sans);
   background: var(--color-paper);
   color: var(--color-ink);
@@ -63,6 +66,15 @@ html[lang="ar"] body,
 html[lang="ar"] .font-display {
   font-family: var(--font-arabic);
   letter-spacing: 0;
+}
+
+/* Room at the end of the page for fixed bottom bars, so they never hide the footer or the last fields.
+   Both bars are the same height: 1px border + 12px top padding + 48px button + bottom padding / safe area. */
+@media (width < 40rem) {
+  body.has-cartbar { padding-bottom: calc(3.8125rem + max(0.75rem, env(safe-area-inset-bottom))); }
+}
+@media (width < 64rem) {
+  body:has([data-bottom-bar]) { padding-bottom: calc(3.8125rem + max(0.75rem, env(safe-area-inset-bottom))); }
 }
 
 .no-scrollbar { scrollbar-width: none; }

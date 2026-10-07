@@ -57,6 +57,8 @@ export const viewport: Viewport = {
   themeColor: "#faf7f2",
   width: "device-width",
   initialScale: 1,
+  // Lets the page draw under the notch / home indicator; env(safe-area-inset-*) pads what matters.
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({ children, params }: LayoutProps<"/[lang]">) {

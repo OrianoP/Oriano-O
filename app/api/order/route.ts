@@ -40,6 +40,8 @@ export async function POST(req: NextRequest) {
         }))
       : [],
     notes: typeof body.notes === "string" ? body.notes : "",
+    // So the POS can WhatsApp the customer in the language they ordered in.
+    lang: body.lang === "ar" ? "ar" : "en",
   };
 
   try {

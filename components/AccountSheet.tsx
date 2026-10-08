@@ -9,13 +9,15 @@ import { fill, type Locale } from "@/lib/i18n";
 import type { Zone } from "@/lib/types";
 import type { Messages } from "@/messages/en";
 import { SignInForm } from "./SignInForm";
+import { GoogleButton } from "./GoogleButton";
+import { GOOGLE_CLIENT_ID } from "@/lib/account";
 import { AddressForm, addressSummary, labelIcon, labelText, zoneLabel } from "./AddressForm";
 import { spring } from "./motion";
 import { useIsPhone } from "@/lib/useIsPhone";
 
 /** Side panel: sign in, or see your name and manage saved addresses. */
 export function AccountSheet({ lang, t, zones }: { lang: Locale; t: Messages; zones: Zone[] }) {
-  const { sheetOpen, setSheetOpen, load, signedIn, signInAvailable, me, signOut, removeAddress, updateAddress } = useAccount();
+  const { sheetOpen, setSheetOpen, load, signedIn, signInAvailable, phoneSignIn, me, signOut, removeAddress, updateAddress } = useAccount();
   const addresses = useAccount((s) => (s.signedIn ? s.me?.addresses ?? [] : s.guestAddresses));
   const reduce = useReducedMotion();
   const panel = useRef<HTMLElement>(null);
@@ -62,7 +64,9 @@ export function AccountSheet({ lang, t, zones }: { lang: Locale; t: Messages; zo
                   <span className="grid h-11 w-11 place-items-center rounded-full bg-ink text-white"><UserRound className="h-5 w-5" /></span>
                   <div className="min-w-0 flex-1 text-sm">
                     <div className="font-semibold text-ink">{me?.name || "—"}</div>
-                    <div className="text-muted" dir="ltr">{fill(a.signedInAs, { phone: national ? formatLebaneseMobile(national) : me?.phone || "" })}</div>
+                    {me?.provider === "google"
+                      ? <div className="truncate text-muted">{a.signedInGoogle}{me.email ? <> · <span dir="ltr">{me.email}</span></> : null}</div>
+                      : <div className="text-muted" dir="ltr">{fill(a.signedInAs, { phone: national ? formatLebaneseMobile(national) : me?.phone || "" })}</div>}
                   </div>
                   <button onClick={() => void signOut()} className="inline-flex h-10 items-center gap-1.5 rounded-full border border-line px-3 text-sm font-semibold text-ink hover:border-ink" data-testid="sign-out">
                     <LogOut className="h-4 w-4" /> {a.signOut}
@@ -70,8 +74,14 @@ export function AccountSheet({ lang, t, zones }: { lang: Locale; t: Messages; zo
                 </div>
               ) : signInAvailable ? (
                 <section className="space-y-3">
-                  <p className="text-sm text-muted">{a.why}</p>
-                  <SignInForm lang={lang} t={t} />
+                  <p className="text-sm text-muted">{GOOGLE_CLIENT_ID ? a.whyGoogle : a.why}</p>
+                  <GoogleButton lang={lang} t={t} />
+                  {GOOGLE_CLIENT_ID && phoneSignIn && (
+                    <div className="flex items-center gap-3 text-xs font-semibold uppercase text-muted" aria-hidden>
+                      <span className="h-px flex-1 bg-line" /> {a.or} <span className="h-px flex-1 bg-line" />
+                    </div>
+                  )}
+                  {phoneSignIn && <SignInForm lang={lang} t={t} />}
                 </section>
               ) : (
                 <p className="text-sm text-muted">{a.guestHint}</p>

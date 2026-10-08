@@ -112,6 +112,9 @@ const en = {
     hello: "Hi {name}",
     helloNoName: "Hi!",
     signedInAs: "Signed in with {phone}",
+    signedInGoogle: "Signed in with Google",
+    whyGoogle: "Sign in to keep your name and delivery addresses on any phone. Or just order as a guest.",
+    or: "or",
     signOut: "Sign out",
     addresses: "Saved addresses",
     noAddresses: "No saved addresses yet. They're added when you order a delivery.",
@@ -122,7 +125,7 @@ const en = {
     edit: "Edit",
     save: "Save",
     cancel: "Cancel",
-    errors: { phone: "Please enter a valid Lebanese mobile number.", code: "Enter the 6-digit code.", wrong_code: "That code isn't right. Check WhatsApp and try again.", expired: "This code has expired. Ask for a new one.", rate: "Too many tries. Please wait a few minutes.", unavailable: "Sign-in isn't available right now. You can still order as a guest.", send_failed: "We couldn't send the code on WhatsApp. Check the number, or order as a guest.", server: "Something went wrong. Please try again." },
+    errors: { phone: "Please enter a valid Lebanese mobile number.", code: "Enter the 6-digit code.", wrong_code: "That code isn't right. Check WhatsApp and try again.", expired: "This code has expired. Ask for a new one.", rate: "Too many tries. Please wait a few minutes.", unavailable: "Sign-in isn't available right now. You can still order as a guest.", send_failed: "We couldn't send the code on WhatsApp. Check the number, or order as a guest.", google: "Google sign-in didn't work. Please try again.", server: "Something went wrong. Please try again." },
   },
   addresses: {
     deliverTo: "Deliver to",

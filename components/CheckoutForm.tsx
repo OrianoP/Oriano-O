@@ -243,7 +243,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
         if (addrChoice !== "new") void account.markUsed(addrChoice);
         else if (saveAddress) void account.addAddress({ label: addrLabel, zoneId: zone.id, street: form.street.trim(), building: form.building.trim(), floor: form.floor.trim(), landmark: form.landmark.trim() }).catch(() => {});
       }
-      if (account.signedIn && account.me && !account.me.name && name) void account.setName(name).catch(() => {});
+      if (account.signedIn) void account.saveDetails(name, form.phone).catch(() => {});
       markJustPlaced(data.trackingToken);
       clear();
       setPlaced({ orderNumber: data.orderNumber, token: data.trackingToken, name });

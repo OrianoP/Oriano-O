@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { PREVIEW_MODE, PosError, posFetch } from "@/lib/pos";
 import { clientIp, limited, sameOrigin } from "@/lib/guard";
-import { SESSION_COOKIE, type AccountMe, type AccountState } from "@/lib/account";
+import { GOOGLE_CLIENT_ID, SESSION_COOKIE, type AccountMe, type AccountState } from "@/lib/account";
 
 /**
  * Customer accounts, forwarded to the POS. The POS session token lives only
@@ -11,17 +11,27 @@ import { SESSION_COOKIE, type AccountMe, type AccountState } from "@/lib/account
  *   GET    /api/account/me                 → AccountState
  *   POST   /api/account/start              { phone, lang }   sends a WhatsApp code
  *   POST   /api/account/verify             { phone, code, name? } signs in
+ *   POST   /api/account/google             { credential }  signs in with a Google ID token
  *   POST   /api/account/logout
- *   PATCH  /api/account/me                 { name }
+ *   PATCH  /api/account/me                 { name, phone? }  (phone: Google accounts only)
  *   POST   /api/account/addresses          { label, zoneId, street, building, floor, landmark }
  *   PATCH  /api/account/addresses/:id      same fields, or { used: true }
  *   DELETE /api/account/addresses/:id
  */
 export const dynamic = "force-dynamic";
 
-type PosMe = { name: string; phone: string; addresses: { id: number; label: string; zoneId: number | null; street: string; building: string; floor: string; landmark: string }[] };
-const toMe = (m: PosMe): AccountMe => ({ name: m.name, phone: m.phone, addresses: m.addresses.map((a) => ({ ...a, id: `a${a.id}` })) });
+type PosMe = { name: string; phone: string; email?: string; provider?: "phone" | "google"; addresses: { id: number; label: string; zoneId: number | null; street: string; building: string; floor: string; landmark: string }[] };
+const toMe = (m: PosMe): AccountMe => ({ name: m.name, phone: m.phone, email: m.email || "", provider: m.provider || "phone", addresses: m.addresses.map((a) => ({ ...a, id: `a${a.id}` })) });
 const fail = (status: number, code: string, message: string) => NextResponse.json({ code, message }, { status });
+
+const ON = { signInAvailable: true as const, phoneSignIn: true };
+async function signedIn(r: { token: string; maxAgeDays: number; me: PosMe }) {
+  const res = NextResponse.json({ signedIn: true, me: toMe(r.me), ...ON } satisfies AccountState);
+  res.cookies.set(SESSION_COOKIE, r.token, {
+    httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: r.maxAgeDays * 86_400,
+  });
+  return res;
+}
 
 async function token() {
   return (await cookies()).get(SESSION_COOKIE)?.value || "";
@@ -45,10 +55,10 @@ async function handle(req: NextRequest, path: string[]) {
     if (first === "me" && req.method === "GET") {
       if (!tok) {
         const avail = await posFetch<{ signIn: boolean }>("GET", "/api/public/account/available").catch(() => ({ signIn: false }));
-        return NextResponse.json({ signedIn: false, me: null, signInAvailable: avail.signIn } satisfies AccountState, { headers: { "Cache-Control": "no-store" } });
+        return NextResponse.json({ signedIn: false, me: null, signInAvailable: avail.signIn || !!GOOGLE_CLIENT_ID, phoneSignIn: avail.signIn } satisfies AccountState, { headers: { "Cache-Control": "no-store" } });
       }
       const me = await posFetch<PosMe>("GET", "/api/public/account/me", { customerToken: tok });
-      return NextResponse.json({ signedIn: true, me: toMe(me), signInAvailable: true } satisfies AccountState, { headers: { "Cache-Control": "no-store" } });
+      return NextResponse.json({ signedIn: true, me: toMe(me), ...ON } satisfies AccountState, { headers: { "Cache-Control": "no-store" } });
     }
 
     // ── Sign in ──
@@ -62,26 +72,31 @@ async function handle(req: NextRequest, path: string[]) {
       const r = await posFetch<{ token: string; maxAgeDays: number; me: PosMe }>("POST", "/api/public/account/verify", {
         body: { phone: String(body?.phone || ""), code: String(body?.code || ""), name: String(body?.name || "") }, customerIp: ip,
       });
-      const res = NextResponse.json({ signedIn: true, me: toMe(r.me), signInAvailable: true } satisfies AccountState);
-      res.cookies.set(SESSION_COOKIE, r.token, {
-        httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: r.maxAgeDays * 86_400,
-      });
-      return res;
+      return signedIn(r);
+    }
+    if (first === "google" && req.method === "POST") {
+      if (!GOOGLE_CLIENT_ID) return fail(503, "unavailable", "Google sign-in isn't set up yet.");
+      if (limited(`acct-google:${ip}`, 20, 10 * 60_000)) return fail(429, "rate", "Too many tries. Please wait a few minutes.");
+      const credential = String(body?.credential || "");
+      if (credential.length < 100 || credential.length > 4096) return fail(422, "google", "Google sign-in didn't work. Please try again.");
+      return signedIn(await posFetch<{ token: string; maxAgeDays: number; me: PosMe }>("POST", "/api/public/account/google", {
+        body: { credential, clientId: GOOGLE_CLIENT_ID }, customerIp: ip,
+      }));
     }
     if (first === "logout" && req.method === "POST") {
       if (tok) await posFetch("POST", "/api/public/account/logout", { body: {}, customerToken: tok }).catch(() => {});
-      return clearCookie(NextResponse.json({ signedIn: false, me: null, signInAvailable: true } satisfies AccountState));
+      return clearCookie(NextResponse.json({ signedIn: false, me: null, signInAvailable: true, phoneSignIn: false } satisfies AccountState));
     }
 
     // ── Signed-in only ──
     if (!tok) return fail(401, "signed_out", "Please sign in again.");
     let me: PosMe | null = null;
-    if (first === "me" && req.method === "PATCH") me = await posFetch<PosMe>("PATCH", "/api/public/account/me", { body: { name: String(body?.name || "") }, customerToken: tok });
+    if (first === "me" && req.method === "PATCH") me = await posFetch<PosMe>("PATCH", "/api/public/account/me", { body: { name: String(body?.name || ""), phone: body?.phone ? String(body.phone) : undefined }, customerToken: tok });
     else if (first === "addresses" && !second && req.method === "POST") me = await posFetch<PosMe>("POST", "/api/public/account/addresses", { body, customerToken: tok });
     else if (first === "addresses" && posId(second) && req.method === "PATCH") me = await posFetch<PosMe>("PATCH", `/api/public/account/addresses/${posId(second)}`, { body, customerToken: tok });
     else if (first === "addresses" && posId(second) && req.method === "DELETE") me = await posFetch<PosMe>("DELETE", `/api/public/account/addresses/${posId(second)}`, { customerToken: tok });
     else return fail(404, "not_found", "Not found.");
-    return NextResponse.json({ signedIn: true, me: toMe(me), signInAvailable: true } satisfies AccountState);
+    return NextResponse.json({ signedIn: true, me: toMe(me), ...ON } satisfies AccountState);
   } catch (e) {
     if (e instanceof PosError) {
       const res = fail(e.status, e.code, e.message);

@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import type { AccountMe, AccountState, SavedAddress } from "./account";
+import { lebaneseMobileNational } from "./phone";
 
 /**
  * The customer's account and address book in the browser.
@@ -51,6 +52,7 @@ type Store = {
   status: "idle" | "loading" | "ready";
   signedIn: boolean;
   signInAvailable: boolean;
+  phoneSignIn: boolean;
   me: AccountMe | null;
   guestAddresses: SavedAddress[];
   sheetOpen: boolean;
@@ -58,8 +60,11 @@ type Store = {
   load: () => Promise<void>;
   startSignIn: (phone: string, lang: string) => Promise<{ devCode?: string }>;
   verify: (phone: string, code: string, name?: string) => Promise<void>;
+  googleSignIn: (credential: string) => Promise<void>;
   signOut: () => Promise<void>;
   setName: (name: string) => Promise<void>;
+  /** After an order: keep the name, and the number a Google account orders with. */
+  saveDetails: (name: string, phone: string) => Promise<void>;
   addresses: () => SavedAddress[];
   addAddress: (a: AddressInput) => Promise<SavedAddress | null>;
   updateAddress: (id: string, a: AddressInput) => Promise<void>;
@@ -69,10 +74,20 @@ type Store = {
 
 export const useAccount = create<Store>((set, get) => {
   const apply = (s: AccountState) => set({ signedIn: s.signedIn, me: s.me, signInAvailable: s.signInAvailable, status: "ready" });
+  // Addresses saved on this phone as a guest move into the account.
+  const moveGuestAddresses = async () => {
+    const local = get().guestAddresses;
+    for (const a of local) {
+      const { id: _id, ...rest } = a;
+      if (rest.zoneId) { try { apply(await api("POST", "addresses", rest)); } catch {} }
+    }
+    if (local.length) { writeGuest([]); set({ guestAddresses: [] }); }
+  };
   return {
     status: "idle",
     signedIn: false,
     signInAvailable: false,
+    phoneSignIn: false,
     me: null,
     guestAddresses: [],
     sheetOpen: false,
@@ -81,7 +96,7 @@ export const useAccount = create<Store>((set, get) => {
     load: async () => {
       if (get().status !== "idle") return;
       set({ status: "loading", guestAddresses: readGuest() });
-      try { apply(await api("GET", "me")); } catch { set({ status: "ready" }); }
+      try { const s = await api("GET", "me"); apply(s); set({ phoneSignIn: s.phoneSignIn }); } catch { set({ status: "ready" }); }
     },
 
     startSignIn: async (phone, lang) => {
@@ -91,13 +106,12 @@ export const useAccount = create<Store>((set, get) => {
 
     verify: async (phone, code, name) => {
       apply(await api("POST", "verify", { phone, code, name }));
-      // Addresses saved on this phone as a guest move into the account.
-      const local = get().guestAddresses;
-      for (const a of local) {
-        const { id: _id, ...rest } = a;
-        if (rest.zoneId) { try { apply(await api("POST", "addresses", rest)); } catch {} }
-      }
-      if (local.length) { writeGuest([]); set({ guestAddresses: [] }); }
+      await moveGuestAddresses();
+    },
+
+    googleSignIn: async (credential) => {
+      apply(await api("POST", "google", { credential }));
+      await moveGuestAddresses();
     },
 
     signOut: async () => {
@@ -105,6 +119,15 @@ export const useAccount = create<Store>((set, get) => {
     },
 
     setName: async (name) => { if (get().signedIn) apply(await api("PATCH", "me", { name })); },
+
+    saveDetails: async (name, phone) => {
+      const me = get().me;
+      if (!get().signedIn || !me) return;
+      const newName = !me.name && name ? name : "";
+      const national = lebaneseMobileNational(phone);
+      const newPhone = me.provider === "google" && national && national !== lebaneseMobileNational(me.phone) ? phone : "";
+      if (newName || newPhone) apply(await api("PATCH", "me", { name: newName || me.name, ...(newPhone ? { phone: newPhone } : {}) }));
+    },
 
     addresses: () => (get().signedIn ? get().me?.addresses ?? [] : get().guestAddresses),
 

@@ -115,7 +115,8 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose }: {
           )}
 
           <div className="space-y-7 px-5 pb-5 sm:px-7">
-            <div className={p.imageUrl ? "-mt-2" : "pe-12 pt-6"}>
+            {/* relative: paints above the photo's gradient even when the Arabic font sits taller */}
+            <div className={`relative ${p.imageUrl ? "-mt-2 rtl:mt-1" : "pe-12 pt-6"}`}>
               <h2 id="item-title" className="font-display text-4xl leading-none text-ink sm:text-5xl">{p.name}</h2>
               {desc && <p className="mt-2.5 text-[15px] leading-relaxed text-muted">{desc}</p>}
             </div>

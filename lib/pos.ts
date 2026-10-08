@@ -23,9 +23,9 @@ export class PosError extends Error {
   }
 }
 
-type FetchOpts = { body?: unknown; customerIp?: string; revalidate?: number | false; tags?: string[] };
+type FetchOpts = { body?: unknown; customerIp?: string; customerToken?: string; revalidate?: number | false; tags?: string[] };
 
-async function posFetch<T>(method: "GET" | "POST", path: string, opts: FetchOpts = {}): Promise<T> {
+export async function posFetch<T>(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, opts: FetchOpts = {}): Promise<T> {
   if (PREVIEW_MODE) throw new PosError(503, "preview", "Online ordering is not connected yet.");
   const body = opts.body === undefined ? "" : JSON.stringify(opts.body);
   const ts = String(Date.now());
@@ -36,6 +36,7 @@ async function posFetch<T>(method: "GET" | "POST", path: string, opts: FetchOpts
   };
   if (body) headers["content-type"] = "application/json";
   if (opts.customerIp) headers["x-customer-ip"] = opts.customerIp;
+  if (opts.customerToken) headers["x-customer-token"] = opts.customerToken;
 
   let res: Response;
   try {

@@ -8,6 +8,7 @@ import { getConfigSafe } from "@/lib/pos";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
+import { AccountSheet } from "@/components/AccountSheet";
 import { MotionProvider } from "@/components/motion";
 
 // Oswald is cut from Alternate Gothic, the condensed gothic of New York street and subway signage:
@@ -80,6 +81,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           <main id="main" className="flex-1">{children}</main>
           <SiteFooter lang={lang} t={t} config={config} />
           <CartDrawer lang={lang} t={t} />
+          <AccountSheet lang={lang} t={t} zones={config?.zones ?? []} />
         </MotionProvider>
       </body>
     </html>

@@ -5,7 +5,7 @@ import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowLeft, ArrowRight, Banknote, Bike, Check, Info, ShoppingBag, Store } from "lucide-react";
+import { ArrowLeft, ArrowRight, Banknote, Bike, Check, Info, Plus, ShoppingBag, Store, UserRound } from "lucide-react";
 import { cartSubtotal, loadProfile, markJustPlaced, reconcileLines, saveOrder, saveProfile, useCart } from "@/lib/cart";
 import { money } from "@/lib/menu";
 import { lebaneseMobileNational } from "@/lib/phone";
@@ -13,6 +13,8 @@ import { fill, sizeLabel, type Locale } from "@/lib/i18n";
 import type { Menu, ShopConfig } from "@/lib/types";
 import type { Messages } from "@/messages/en";
 import { Photo } from "./Photo";
+import { useAccount } from "@/lib/accountStore";
+import { AddressForm, addressSummary, labelIcon, labelText } from "./AddressForm";
 import { easeOut, spring } from "./motion";
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
@@ -68,6 +70,49 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
   const [sendingName, setSendingName] = useState<string | null>(null);
   const [error, setError] = useState<{ code: string; message: string } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string>();
+
+  // ── Saved addresses (account or this phone) ──
+  const account = useAccount();
+  const savedAddresses = account.signedIn ? account.me?.addresses ?? [] : account.guestAddresses;
+  const [addrChoice, setAddrChoice] = useState<string>("new"); // a saved address id, or "new"
+  const [addrLabel, setAddrLabel] = useState("Home");
+  const [saveAddress, setSaveAddress] = useState(true);
+  const addrPicked = useRef(false);
+  useEffect(() => { void account.load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const deliverable = (zoneId: number | null) => !!zoneId && config.zones.some((z) => z.id === zoneId);
+  const chooseAddress = (id: string) => {
+    const a = savedAddresses.find((x) => x.id === id);
+    if (!a || !deliverable(a.zoneId)) return;
+    setAddrChoice(id);
+    setForm((f) => ({ ...f, zoneId: String(a.zoneId), street: a.street, building: a.building, floor: a.floor, landmark: a.landmark }));
+  };
+  const newAddress = () => {
+    setAddrChoice("new"); setAddrLabel(savedAddresses.some((a) => a.label === "Home") ? "Other" : "Home");
+    setForm((f) => ({ ...f, zoneId: "", street: "", building: "", floor: "", landmark: "" }));
+  };
+  // Once the account/address book has loaded: pick the most recent address we still deliver to,
+  // and fill in the signed-in customer's name and number.
+  useEffect(() => {
+    if (account.status !== "ready" || addrPicked.current) return;
+    addrPicked.current = true;
+    if (account.signedIn && account.me) {
+      const me = account.me;
+      setForm((f) => ({ ...f, name: f.name || me.name, phone: f.phone || me.phone }));
+    }
+    const first = savedAddresses.find((a) => deliverable(a.zoneId));
+    if (first) chooseAddress(first.id);
+  }, [account.status, account.signedIn]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Signed in from the checkout: show their saved addresses and pick the latest one.
+  const wasSignedIn = useRef(account.signedIn);
+  useEffect(() => {
+    if (account.signedIn && !wasSignedIn.current) {
+      const me = account.me;
+      if (me) setForm((f) => ({ ...f, name: f.name || me.name, phone: f.phone || me.phone }));
+      const first = (me?.addresses ?? []).find((a) => deliverable(a.zoneId));
+      if (first && (addrChoice === "new" || !savedAddresses.some((a) => a.id === addrChoice))) chooseAddress(first.id);
+    }
+    wasSignedIn.current = account.signedIn;
+  }, [account.signedIn, account.me]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     setMounted(true);
@@ -192,7 +237,12 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       }
       const name = form.name.trim();
       saveOrder({ orderNumber: data.orderNumber, token: data.trackingToken, total: data.total, createdAt: new Date().toISOString(), name });
-      saveProfile({ name, phone: form.phone, zoneId: zone?.id, street: form.street.trim(), building: form.building.trim(), floor: form.floor.trim(), landmark: form.landmark.trim() });
+      saveProfile({ name, phone: form.phone });
+      if (orderType === "delivery" && zone) {
+        if (addrChoice !== "new") void account.markUsed(addrChoice);
+        else if (saveAddress) void account.addAddress({ label: addrLabel, zoneId: zone.id, street: form.street.trim(), building: form.building.trim(), floor: form.floor.trim(), landmark: form.landmark.trim() }).catch(() => {});
+      }
+      if (account.signedIn && account.me && !account.me.name && name) void account.setName(name).catch(() => {});
       markJustPlaced(data.trackingToken);
       clear();
       setPlaced({ orderNumber: data.orderNumber, token: data.trackingToken, name });
@@ -275,34 +325,59 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
           <AnimatePresence initial={false}>
             {orderType === "delivery" && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: easeOut }} className="overflow-hidden">
-                <div className="grid grid-cols-1 gap-4 pt-1 sm:grid-cols-2">
-                  <div className="sm:col-span-2">
-                    <label className={label} htmlFor="zone">{t.checkout.area}</label>
-                    <select id="zone" value={form.zoneId} onChange={set("zoneId")} className={`${field} ${border("zone")}`} required {...invalidAttr("zone")}>
-                      <option value="">{t.checkout.chooseArea}</option>
-                      {config.zones.map((z) => <option key={z.id} value={z.id}>{zoneName(z)} · {money(z.fee)}</option>)}
-                    </select>
-                    <ErrMsg k="zone" />
-                    <p className="mt-1 text-xs text-muted">{zone ? fill(t.checkout.areaFee, { fee: money(zone.fee), min: money(zone.minOrder), eta: zone.etaMinutes }) : t.checkout.notListed}</p>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className={label} htmlFor="street">{t.checkout.street}</label>
-                    <input id="street" value={form.street} onChange={set("street")} maxLength={160} autoComplete="street-address" className={`${field} ${border("street")}`} {...invalidAttr("street")} />
-                    <ErrMsg k="street" />
-                  </div>
-                  <div>
-                    <label className={label} htmlFor="building">{t.checkout.building}</label>
-                    <input id="building" value={form.building} onChange={set("building")} maxLength={120} className={`${field} ${border("building")}`} {...invalidAttr("building")} />
-                    <ErrMsg k="building" />
-                  </div>
-                  <div>
-                    <label className={label} htmlFor="floor">{t.checkout.floor}</label>
-                    <input id="floor" value={form.floor} onChange={set("floor")} maxLength={40} className={`${field} border-line`} />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className={label} htmlFor="landmark">{t.checkout.landmark}</label>
-                    <input id="landmark" value={form.landmark} onChange={set("landmark")} maxLength={160} placeholder={t.checkout.landmarkPlaceholder} className={`${field} border-line`} />
-                  </div>
+                <div className="space-y-3 pt-1">
+                  {savedAddresses.length > 0 && (
+                    <div className="space-y-2" role="radiogroup" aria-label={t.addresses.deliverTo}>
+                      <div className="text-sm font-medium text-ink">{t.addresses.deliverTo}</div>
+                      {savedAddresses.map((a) => {
+                        const Icon = labelIcon(a.label);
+                        const z = config.zones.find((x) => x.id === a.zoneId);
+                        const on = addrChoice === a.id;
+                        return (
+                          <button type="button" key={a.id} role="radio" aria-checked={on} disabled={!z} onClick={() => chooseAddress(a.id)} data-testid="address-card"
+                            className={`relative flex w-full items-center gap-3 rounded-2xl border-2 p-3.5 text-start transition-colors disabled:opacity-45 ${on ? "border-ink bg-paper" : "border-line hover:border-line-strong"}`}>
+                            <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${on ? "bg-ink text-white" : "bg-paper-2 text-ink"}`}><Icon className="h-4 w-4" /></span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block font-semibold text-ink">{labelText(a.label, t)}</span>
+                              <span className="block truncate text-sm text-muted">{addressSummary(a, t)}</span>
+                              <span className="block text-xs text-muted">{z ? `${zoneName(z)} · ${money(z.fee)}` : t.addresses.notDelivered}</span>
+                            </span>
+                            {on && <motion.span layoutId="addr-check" transition={spring} className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-white"><Check className="h-3.5 w-3.5" strokeWidth={3} /></motion.span>}
+                          </button>
+                        );
+                      })}
+                      <button type="button" role="radio" aria-checked={addrChoice === "new"} onClick={newAddress} data-testid="address-new"
+                        className={`flex w-full items-center gap-3 rounded-2xl border-2 border-dashed p-3.5 text-start font-semibold transition-colors ${addrChoice === "new" ? "border-ink bg-paper text-ink" : "border-line text-muted hover:border-line-strong hover:text-ink"}`}>
+                        <span className="grid h-10 w-10 place-items-center rounded-full bg-paper-2 text-ink"><Plus className="h-4 w-4" /></span>
+                        {t.addresses.addNew}
+                      </button>
+                    </div>
+                  )}
+
+                  <AnimatePresence initial={false}>
+                    {addrChoice === "new" && (
+                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: easeOut }} className="overflow-hidden">
+                        <div className="space-y-4 pt-1">
+                          <AddressForm
+                            value={{ label: addrLabel, zoneId: form.zoneId ? Number(form.zoneId) : null, street: form.street, building: form.building, floor: form.floor, landmark: form.landmark }}
+                            onChange={(v) => { setAddrLabel(v.label); setForm((f) => ({ ...f, zoneId: v.zoneId ? String(v.zoneId) : "", street: v.street, building: v.building, floor: v.floor, landmark: v.landmark })); }}
+                            zones={config.zones} lang={lang} t={t}
+                            errors={{ zone: !!err("zone"), street: !!err("street"), building: !!err("building") }}
+                          />
+                          <label className="flex items-center gap-2.5 text-sm text-ink">
+                            <input type="checkbox" checked={saveAddress} onChange={(e) => setSaveAddress(e.target.checked)} className="h-5 w-5 accent-brand" data-testid="save-address" />
+                            {t.addresses.saveIt}
+                          </label>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {!account.signedIn && account.signInAvailable && (
+                    <button type="button" onClick={() => account.setSheetOpen(true)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-700 hover:underline" data-testid="checkout-sign-in">
+                      <UserRound className="h-4 w-4" /> {t.account.syncHint}
+                    </button>
+                  )}
                 </div>
               </motion.div>
             )}

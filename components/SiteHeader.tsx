@@ -12,6 +12,7 @@ import type { Locale } from "@/lib/i18n";
 import type { Messages } from "@/messages/en";
 import type { ShopConfig } from "@/lib/types";
 import { spring } from "./motion";
+import { AccountButton } from "./AccountSheet";
 
 export function SiteHeader({ lang, t, config }: { lang: Locale; t: Messages; config: ShopConfig | null }) {
   const pathname = usePathname();
@@ -60,6 +61,7 @@ export function SiteHeader({ lang, t, config }: { lang: Locale; t: Messages; con
           >
             <Phone className="h-4 w-4" /> <span className="hidden lg:inline">{phone}</span>
           </a>
+          <AccountButton t={t} />
           <Link
             href={switchHref}
             onClick={() => { document.cookie = `lang=${other}; path=/; max-age=31536000; samesite=lax`; }}

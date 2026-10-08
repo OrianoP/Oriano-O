@@ -27,9 +27,9 @@ export function BestSellers({ picks, t, canOrder, onOpen }: { picks: MenuProduct
       </div>
 
       {/* Phones: snap-scroll rail that bleeds to the edge. Desktop: a 4-up grid. */}
-      <Stagger className="mt-7 flex snap-x snap-mandatory gap-3 overflow-x-auto px-[11vw] pb-4 no-scrollbar sm:mx-auto sm:gap-4 sm:grid sm:max-w-7xl sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-6 lg:grid-cols-4 lg:px-8" gap={0.08}>
+      <Stagger className="mt-7 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-4 no-scrollbar sm:mx-auto sm:scroll-px-0 sm:gap-4 sm:grid sm:max-w-7xl sm:snap-none sm:grid-cols-2 sm:overflow-visible sm:px-6 lg:grid-cols-4 lg:px-8" gap={0.08}>
         {picks.map((p, i) => (
-          <Item key={p.id} className="w-[78vw] shrink-0 snap-center sm:w-auto">
+          <Item key={p.id} className="w-[78vw] shrink-0 snap-start sm:w-auto">
             <motion.button
               onClick={() => onOpen(p)}
               whileHover={{ y: -6 }}

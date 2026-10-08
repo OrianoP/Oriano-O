@@ -37,10 +37,10 @@ export function SiteHeader({ lang, t, config }: { lang: Locale; t: Messages; con
   const link = "relative text-[13px] font-semibold uppercase tracking-[0.14em] text-cream-2 hover:text-cream transition-colors after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-start after:scale-x-0 after:bg-yolk after:transition-transform hover:after:scale-x-100";
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-40 pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow] duration-300 ${scrolled || !isHome ? "bg-coal/85 backdrop-blur-md shadow-[0_1px_0_rgb(255_255_255/0.06)]" : "bg-transparent"}`}>
+    <header className={`fixed inset-x-0 top-0 z-40 pt-[env(safe-area-inset-top)] transition-[background-color,box-shadow] duration-300 ${scrolled || !isHome ? "bg-coal shadow-[0_1px_0_rgb(255_255_255/0.07),0_8px_24px_-12px_rgb(0_0_0/0.5)]" : "bg-transparent"}`}>
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Link href={`/${lang}`} className="shrink-0" aria-label={t.nav.home}>
-          <Image src="/logo.png" alt="Oriano Pizza" width={1284} height={371} priority className="h-8 w-auto sm:h-9" />
+          <Image src="/logo-mark.png" alt="Oriano Pizza" width={1216} height={360} priority className="h-8 w-auto sm:h-9" />
         </Link>
 
         <nav className="ms-8 hidden items-center gap-7 md:flex">

@@ -18,7 +18,7 @@ export function SiteFooter({ lang, t, config }: { lang: Locale; t: Messages; con
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-[1.3fr_1fr_1fr]">
           <div>
-            <Image src="/logo.png" alt="Oriano Pizza" width={1284} height={371} className="h-10 w-auto" />
+            <Image src="/logo-mark.png" alt="Oriano Pizza" width={1216} height={360} className="h-10 w-auto" />
             <p className="mt-5 max-w-sm text-cream-2">{t.footer.tagline}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center gap-2 rounded-full bg-white/10 px-4 text-sm font-semibold hover:bg-white/15">

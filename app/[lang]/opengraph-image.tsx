@@ -8,7 +8,7 @@ export const contentType = "image/png";
 
 // The OG renderer's built-in font has no Arabic glyphs, so the card is in English for both languages.
 export default async function OgImage() {
-  const logo = await readFile(path.join(process.cwd(), "public/logo.png"));
+  const logo = await readFile(path.join(process.cwd(), "public/logo-mark.png"));
   const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
   let photoSrc: string | null = null;
   try {
@@ -25,7 +25,7 @@ export default async function OgImage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #0b0908 46%, rgba(11,9,8,0.75) 62%, rgba(11,9,8,0) 100%)" }} />
         <div style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 80px", width: 720 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={logoSrc} width={300} height={87} alt="" />
+          <img src={logoSrc} width={300} height={89} alt="" />
           <div style={{ marginTop: 40, fontSize: 22, letterSpacing: 6, color: "#ffd60a", fontWeight: 700 }}>LEBANON&apos;S FIRST NY STYLE PIZZERIA</div>
           <div style={{ marginTop: 14, fontSize: 86, fontWeight: 800, lineHeight: 0.95 }}>Real New York</div>
           <div style={{ fontSize: 86, fontWeight: 800, lineHeight: 0.95, color: "#ff3300" }}>pizza.</div>

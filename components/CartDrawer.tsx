@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
@@ -29,6 +30,11 @@ export function CartDrawer({ lang, t }: { lang: Locale; t: Messages }) {
     panel.current?.querySelector<HTMLElement>("[data-autofocus]")?.focus({ preventScroll: true });
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; opener?.focus?.({ preventScroll: true }); };
   }, [open, setOpen]);
+
+  // Checkout opens instantly: fetch it in the background as soon as there's something in the cart.
+  const router = useRouter();
+  const hasItems = lines.length > 0;
+  useEffect(() => { if (hasItems) router.prefetch(`/${lang}/checkout`); }, [hasItems, open, lang, router]);
 
   // The notice is one-off: clear it when the drawer closes.
   useEffect(() => { if (!open && notice) setNotice(null); }, [open, notice, setNotice]);

@@ -35,7 +35,7 @@ export type Menu = {
 
 export type DayHours = { open: string; close: string; closed?: boolean };
 
-export type Zone = { id: number; name: string; nameAr: string | null; fee: number; minOrder: number; etaMinutes: number };
+export type Zone = { id: number; name: string; nameAr: string | null; fee: number; minOrder: number; etaMinutes: number; aliases?: string | null; region?: string | null };
 
 export type ShopConfig = {
   open: boolean;

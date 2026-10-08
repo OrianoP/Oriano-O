@@ -1,11 +1,11 @@
 "use client";
 
 import { Briefcase, Home, MapPin } from "lucide-react";
-import { money } from "@/lib/menu";
 import type { Locale } from "@/lib/i18n";
 import type { Zone } from "@/lib/types";
 import type { Messages } from "@/messages/en";
 import type { AddressInput } from "@/lib/accountStore";
+import { AreaPicker } from "./AreaPicker";
 
 export const LABELS = ["Home", "Work", "Other"] as const;
 export const labelIcon = (label: string) => (label === "Home" ? Home : label === "Work" ? Briefcase : MapPin);
@@ -31,7 +31,6 @@ export function AddressForm({ value, onChange, zones, lang, t, errors = {}, idPr
     onChange({ ...value, [k]: k === "zoneId" ? (e.target.value ? Number(e.target.value) : null) : e.target.value });
   const label = "mb-1.5 block text-sm font-medium text-ink";
   const field = "h-12 w-full rounded-xl border bg-surface px-3 text-ink outline-none focus:border-ink";
-  const zone = zones.find((z) => z.id === value.zoneId);
   const err = (on?: boolean) => (on ? "border-brand" : "border-line");
   const req = (on?: boolean, id?: string) => (on ? { "data-invalid": true, "aria-invalid": true as const, "aria-describedby": id } : {});
 
@@ -54,13 +53,8 @@ export function AddressForm({ value, onChange, zones, lang, t, errors = {}, idPr
       </div>
       <div className="sm:col-span-2">
         <label className={label} htmlFor={`${idPrefix}zone`}>{t.checkout.area}</label>
-        <select id={`${idPrefix}zone`} value={value.zoneId ?? ""} onChange={set("zoneId")} className={`${field} ${err(errors.zone)}`} {...req(errors.zone)}>
-          <option value="">{t.checkout.chooseArea}</option>
-          {zones.map((z) => <option key={z.id} value={z.id}>{zoneLabel(z, lang)} · {money(z.fee)}</option>)}
-        </select>
+        <AreaPicker id={`${idPrefix}zone`} zones={zones} value={value.zoneId} onChange={(zoneId) => onChange({ ...value, zoneId })} lang={lang} t={t} invalid={errors.zone} />
         {errors.zone && <p className="mt-1 text-xs font-semibold text-brand-700">{t.checkout.required}</p>}
-        {!errors.zone && zone && <p className="mt-1 text-xs text-muted">{t.checkout.areaFee.replace("{fee}", money(zone.fee)).replace("{min}", money(zone.minOrder)).replace("{eta}", String(zone.etaMinutes))}</p>}
-        {!zone && !errors.zone && <p className="mt-1 text-xs text-muted">{t.checkout.notListed}</p>}
       </div>
       <div className="sm:col-span-2">
         <label className={label} htmlFor={`${idPrefix}street`}>{t.checkout.street}</label>

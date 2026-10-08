@@ -53,9 +53,9 @@ export function reconcileLines(lines: CartLine[], menu: Menu): { lines: CartLine
   let repriced = 0;
   const next = lines.flatMap((l) => {
     const p = menu.products.find((x) => x.id === l.productId);
-    if (!p) { removed++; return []; }
+    if (!p || p.soldOut) { removed++; return []; }
     const size = p.sizes.length ? p.sizes.find((s) => s.id === l.sizeId) : null;
-    if (p.sizes.length && !size) { removed++; return []; }
+    if (p.sizes.length && (!size || size.soldOut)) { removed++; return []; }
     const addons = p.addons.filter((a) => l.addonIds.includes(a.id));
     const addonIds = addons.map((a) => a.id);
     const price = unitPrice(p, size ?? null, addonIds);

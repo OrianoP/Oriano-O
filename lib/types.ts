@@ -9,7 +9,7 @@ export type MenuAddon = {
   priceXl: number;
 };
 
-export type MenuSize = { id: number; name: string; price: number };
+export type MenuSize = { id: number; name: string; price: number; soldOut?: boolean };
 
 export type MenuProduct = {
   id: number;
@@ -21,6 +21,8 @@ export type MenuProduct = {
   basePrice: number;
   imageUrl: string | null;
   isFeatured: boolean;
+  /** 86'd in the POS: shown but not orderable until it's back. */
+  soldOut?: boolean;
   sizes: MenuSize[];
   addons: MenuAddon[];
 };
@@ -44,6 +46,8 @@ export type ShopConfig = {
   openingHours: Record<string, DayHours>;
   maxOrderUsd: number;
   pickupMinutes: number;
+  /** Live estimate from the kitchen's current load (pickup; delivery adds the zone's minutes). */
+  eta?: { pickupMinutes: number; kitchenOrders: number };
   shopPhone: string;
   whatsapp: string;
   zones: Zone[];

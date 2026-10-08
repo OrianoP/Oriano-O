@@ -141,3 +141,19 @@ export function placeOrder(body: unknown, customerIp: string) {
 export function trackOrder(token: string) {
   return posFetch<TrackedOrder>("GET", `/api/public/orders/${encodeURIComponent(token)}`);
 }
+
+/** Opens the POS's live status stream (server-sent events) for one order; the caller pipes the body to the browser. */
+export async function openTrackStream(token: string): Promise<Response> {
+  if (PREVIEW_MODE) throw new PosError(503, "preview", "Online ordering is not connected yet.");
+  const path = `/api/public/orders/${encodeURIComponent(token)}/stream`;
+  const ts = String(Date.now());
+  const signature = createHmac("sha256", SECRET!).update(`${ts}.GET.${path}.`).digest("hex");
+  let res: Response;
+  try {
+    res = await fetch(`${POS_URL}${path}`, { headers: { "x-oriano-timestamp": ts, "x-oriano-signature": signature, accept: "text/event-stream" }, cache: "no-store" });
+  } catch {
+    throw new PosError(503, "unreachable", "We can't reach the restaurant right now.");
+  }
+  if (!res.ok || !res.body) throw new PosError(res.status || 502, "stream", "Live updates unavailable.");
+  return res;
+}

@@ -41,15 +41,29 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
     return () => clearInterval(id);
   }, [token]);
 
+  // Live push from the POS (server-sent events): a status change shows up the
+  // moment the kitchen taps it. Polling below stays as the safety net.
+  const [pushed, setPushed] = useState(false);
+  const stage = order?.stage;
+  useEffect(() => {
+    if (!order || FINAL.includes(order.stage) || typeof EventSource === "undefined") return;
+    const es = new EventSource(`/api/track/${token}/stream`);
+    es.addEventListener("hello", () => setPushed(true));
+    es.addEventListener("update", () => void refresh());
+    es.onerror = () => setPushed(false); // the browser reconnects on its own
+    return () => es.close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, stage, refresh]);
+
   // Poll while the order is in progress (faster while waiting for confirmation); fetch at once when the tab comes back.
   useEffect(() => {
     if (order && FINAL.includes(order.stage)) return;
-    const every = !order || failures > 0 ? 5000 : order.stage === "awaiting_confirmation" ? 6000 : 15000;
+    const every = !order || failures > 0 ? 5000 : pushed ? 30000 : order.stage === "awaiting_confirmation" ? 6000 : 15000;
     const id = setInterval(() => { if (document.visibilityState === "visible") void refresh(); }, every);
     const onVisible = () => { if (document.visibilityState === "visible") void refresh(); };
     document.addEventListener("visibilitychange", onVisible);
     return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVisible); };
-  }, [order, failures, refresh]);
+  }, [order, failures, pushed, refresh]);
 
   if (!order) {
     return (

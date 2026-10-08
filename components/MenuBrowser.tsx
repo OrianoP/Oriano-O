@@ -33,8 +33,9 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
   useEffect(() => { reconcile(menu); }, [menu, reconcile]);
 
   const picks = useMemo(() => {
-    const featured = menu.products.filter((p) => p.isFeatured);
-    const list = featured.length ? featured : DEFAULT_PICKS.map((n) => menu.products.find((p) => p.name === n)).filter(Boolean) as MenuProduct[];
+    const available = menu.products.filter((p) => !p.soldOut);
+    const featured = available.filter((p) => p.isFeatured);
+    const list = featured.length ? featured : DEFAULT_PICKS.map((n) => available.find((p) => p.name === n)).filter(Boolean) as MenuProduct[];
     return list.slice(0, 4);
   }, [menu]);
 
@@ -172,18 +173,19 @@ function PhotoCard({ product: p, t, canOrder, onOpen }: { product: MenuProduct; 
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.985 }}
       transition={spring}
-      className="group flex w-full flex-col overflow-hidden rounded-3xl border border-line bg-surface text-start shadow-soft hover:shadow-lift"
+      className={`group flex w-full flex-col overflow-hidden rounded-3xl border border-line bg-surface text-start shadow-soft hover:shadow-lift ${p.soldOut ? "opacity-70" : ""}`}
     >
-      <Photo src={p.imageUrl!} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="aspect-[4/3]" imgClassName="transition-transform duration-700 group-hover:scale-[1.05]" />
+      <Photo src={p.imageUrl!} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="aspect-[4/3]" imgClassName={`transition-transform duration-700 group-hover:scale-[1.05] ${p.soldOut ? "grayscale" : ""}`} />
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <span className="font-display text-[1.7rem] leading-none text-ink">{p.name}</span>
-          {p.isFeatured && <span className="shrink-0 rounded-full bg-yolk px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-coal">{t.menu.popular}</span>}
+          {p.soldOut ? <span className="shrink-0 rounded-full bg-ink px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cream">{t.menu.soldOut}</span>
+            : p.isFeatured && <span className="shrink-0 rounded-full bg-yolk px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-coal">{t.menu.popular}</span>}
         </div>
         {desc && <span className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{desc}</span>}
         <span className="mt-4 flex items-center justify-between">
           <Price p={p} t={t} />
-          {canOrder && <span className="grid h-10 w-10 place-items-center rounded-full bg-ink text-cream transition-colors group-hover:bg-brand" aria-hidden><Plus className="h-5 w-5" /></span>}
+          {canOrder && !p.soldOut && <span className="grid h-10 w-10 place-items-center rounded-full bg-ink text-cream transition-colors group-hover:bg-brand" aria-hidden><Plus className="h-5 w-5" /></span>}
         </span>
       </div>
     </motion.button>
@@ -196,14 +198,14 @@ function CompactRow({ product: p, t, canOrder, onOpen }: { product: MenuProduct;
     <motion.button
       onClick={onOpen}
       whileTap={{ scale: 0.985 }}
-      className="group flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-start hover:border-line-strong hover:shadow-soft"
+      className={`group flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-start hover:border-line-strong hover:shadow-soft ${p.soldOut ? "opacity-70" : ""}`}
     >
       <span className="min-w-0 flex-1">
-        <span className="block font-semibold text-ink">{p.name}</span>
+        <span className="block font-semibold text-ink">{p.name}{p.soldOut && <span className="ms-2 rounded-full bg-ink px-2 py-0.5 align-middle text-[10px] font-bold uppercase tracking-wider text-cream">{t.menu.soldOut}</span>}</span>
         {desc && <span className="mt-0.5 line-clamp-1 block text-sm text-muted">{desc}</span>}
       </span>
       <Price p={p} t={t} />
-      {canOrder && <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line-strong text-ink transition-colors group-hover:border-brand group-hover:bg-brand group-hover:text-white" aria-hidden><Plus className="h-4 w-4" /></span>}
+      {canOrder && !p.soldOut && <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line-strong text-ink transition-colors group-hover:border-brand group-hover:bg-brand group-hover:text-white" aria-hidden><Plus className="h-4 w-4" /></span>}
     </motion.button>
   );
 }

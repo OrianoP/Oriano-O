@@ -19,7 +19,7 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose }: {
   const add = useCart((s) => s.add);
   const reduce = useReducedMotion();
   const panel = useRef<HTMLDivElement>(null);
-  const [sizeId, setSizeId] = useState<number | undefined>(p.sizes[0]?.id);
+  const [sizeId, setSizeId] = useState<number | undefined>((p.sizes.find((s) => !s.soldOut) ?? p.sizes[0])?.id);
   const [addonIds, setAddonIds] = useState<number[]>([]);
   const [notes, setNotes] = useState("");
   const [qty, setQty] = useState(1);
@@ -130,15 +130,15 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose }: {
                 <div className="grid grid-cols-2 gap-2.5">
                   {p.sizes.map((s) => {
                     const on = sizeId === s.id;
-                    const hint = sizeHint(s.name);
+                    const hint = s.soldOut ? t.menu.soldOut : sizeHint(s.name);
                     return (
-                      <label key={s.id} className={`relative cursor-pointer rounded-2xl border-2 px-4 py-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand ${on ? "border-ink bg-paper" : "border-line hover:border-line-strong"}`}>
-                        <input type="radio" name="size" className="sr-only" checked={on} onChange={() => setSizeId(s.id)} />
+                      <label key={s.id} className={`relative rounded-2xl border-2 px-4 py-3.5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand ${s.soldOut ? "cursor-not-allowed border-line opacity-50" : on ? "cursor-pointer border-ink bg-paper" : "cursor-pointer border-line hover:border-line-strong"}`}>
+                        <input type="radio" name="size" className="sr-only" checked={on} disabled={!!s.soldOut} onChange={() => setSizeId(s.id)} />
                         <span className="flex items-baseline justify-between gap-2">
                           <span className="font-semibold text-ink">{sizeLabel(s.name, lang)}</span>
                           <span className="text-sm font-semibold tabular-nums text-ink">{money(s.price)}</span>
                         </span>
-                        {hint && <span className="mt-1 block text-xs text-muted">{hint}</span>}
+                        {hint && <span className={`mt-1 block text-xs ${s.soldOut ? "font-semibold text-brand-700" : "text-muted"}`}>{hint}</span>}
                         {on && <motion.span layoutId="size-check" transition={spring} className="absolute -end-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-ink text-white"><Check className="h-3.5 w-3.5" strokeWidth={3} /></motion.span>}
                       </label>
                     );
@@ -195,11 +195,11 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose }: {
           <motion.button
             onClick={submit}
             whileTap={{ scale: 0.98 }}
-            disabled={!canOrder || (p.sizes.length > 0 && !size)}
+            disabled={!canOrder || p.soldOut || (p.sizes.length > 0 && (!size || size.soldOut))}
             className="flex h-12 min-w-0 flex-1 items-center justify-between gap-3 rounded-full bg-brand px-5 font-semibold text-white hover:bg-brand-600 disabled:bg-paper-2 disabled:text-muted"
           >
-            <span className="truncate">{canOrder ? t.item.addToOrder : t.menu.unavailable}</span>
-            {canOrder && (
+            <span className="truncate">{p.soldOut ? t.menu.soldOut : canOrder ? t.item.addToOrder : t.menu.unavailable}</span>
+            {canOrder && !p.soldOut && (
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span key={each * qty} initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} transition={{ duration: 0.18 }} className="tabular-nums">
                   {money(each * qty)}

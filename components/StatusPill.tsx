@@ -14,6 +14,11 @@ export function StatusPill({ config, t, lang, preview, tone = "dark" }: { config
       ? next.today ? fill(t.status.opensAt, { time: formatClock(next.time, lang) }) : fill(t.status.opensOn, { day: t.days[next.day], time: formatClock(next.time, lang) })
       : t.status.closedHint;
   } else if (state === "paused") hint = config.message || t.status.pausedHint;
+  else if (state === "open" && config.eta && config.pickupEnabled) {
+    // Live pickup estimate from how busy the kitchen is right now.
+    hint = fill(t.status.readyIn, { n: config.eta.pickupMinutes });
+    if (config.eta.kitchenOrders >= 8) hint = `${t.status.kitchenBusy} · ${hint}`;
+  }
 
   const dark = tone === "dark";
   const dot = state === "open" ? "bg-basil-400 animate-pulse-dot" : state === "closed" ? "bg-cream-2" : "bg-yolk";

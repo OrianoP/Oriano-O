@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     // Product photos uploaded in the POS can be hosted anywhere over https.
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
+    remotePatterns: [{ protocol: "https", hostname: "**" }, { protocol: "http", hostname: "localhost" }],
     // Bundled photos carry a "?v=" version; other local images have no query.
     localPatterns: [{ pathname: "/photos/**" }, { pathname: "/**", search: "" }],
   },

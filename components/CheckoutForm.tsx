@@ -232,7 +232,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
                   {type === "pickup" ? <Store className="h-6 w-6 text-ink" /> : <Bike className="h-6 w-6 text-ink" />}
                   <span className="mt-3 block font-display text-2xl leading-none text-ink">{type === "pickup" ? t.checkout.pickup : t.checkout.delivery}</span>
                   <span className="mt-1.5 block text-xs text-muted">
-                    {type === "pickup" ? (enabled ? fill(t.checkout.pickupHint, { min: config.pickupMinutes }) : t.checkout.pickupOff) : enabled ? t.checkout.deliveryHint : t.checkout.deliveryOff}
+                    {type === "pickup" ? (enabled ? fill(t.checkout.pickupHint, { min: config.eta?.pickupMinutes ?? config.pickupMinutes }) : t.checkout.pickupOff) : enabled ? t.checkout.deliveryHint : t.checkout.deliveryOff}
                   </span>
                   {on && <motion.span layoutId="how-check" transition={spring} className="absolute end-3 top-3 grid h-6 w-6 place-items-center rounded-full bg-ink text-white"><Check className="h-3.5 w-3.5" strokeWidth={3} /></motion.span>}
                 </button>

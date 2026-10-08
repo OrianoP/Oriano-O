@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Barlow_Condensed, Fraunces, IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
+import { Fraunces, IBM_Plex_Sans_Arabic, Inter, Oswald } from "next/font/google";
 import "../globals.css";
 import { LOCALES, getMessages, hasLocale } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
@@ -10,8 +10,9 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
 import { MotionProvider } from "@/components/motion";
 
-// Poster-style condensed headlines, an italic serif for the human touch, Inter for reading, Plex Arabic for Arabic.
-const display = Barlow_Condensed({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-display-face", display: "swap" });
+// Oswald is cut from Alternate Gothic, the condensed gothic of New York street and subway signage:
+// bold and tight without being a novelty face. An italic serif for the human touch, Inter for reading, Plex Arabic for Arabic.
+const display = Oswald({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display-face", display: "swap" });
 const serif = Fraunces({ subsets: ["latin"], style: ["italic"], weight: ["400", "500"], variable: "--font-serif-face", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const arabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-arabic-face", display: "swap" });

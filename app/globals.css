@@ -88,7 +88,8 @@ body {
 /* Poster headlines: tight, upright, loud. */
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: 0.005em;
+  font-weight: 700;
+  letter-spacing: 0.012em;
   text-transform: uppercase;
 }
 /* Editorial accent: italic serif for the human touch. */

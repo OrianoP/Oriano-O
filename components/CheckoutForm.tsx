@@ -146,6 +146,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
     const tick = async () => {
       try { const r = await fetch("/api/config", { cache: "no-store" }); if (r.ok) setConfig(await r.json()); } catch {}
     };
+    void tick(); // live status right away; the page itself opened from the cached copy
     const id = setInterval(tick, 45_000);
     return () => clearInterval(id);
   }, []);
@@ -246,6 +247,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       markJustPlaced(data.trackingToken);
       clear();
       setPlaced({ orderNumber: data.orderNumber, token: data.trackingToken, name });
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior }); // tracking opens at the top
       router.prefetch(`/${lang}/track/${data.trackingToken}`);
     } catch {
       setSendingName(null);
@@ -261,8 +263,8 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       {(sendingName !== null || placed) && <ThankYou key="thanks" placed={placed} name={placed?.name ?? sendingName ?? ""} lang={lang} t={t} />}
     </AnimatePresence>
   );
-  if (placed) return <>{overlay}</>;
-  if (!mounted) return <>{overlay}<div className="min-h-[60vh]" /></>;
+  if (placed) return <>{overlay}<CheckoutSkeleton /></>;
+  if (!mounted) return <>{overlay}<CheckoutSkeleton /></>;
 
   if (!lines.length) {
     return (
@@ -548,27 +550,7 @@ function ThankYou({ placed, name, lang, t }: { placed: Placed | null; name: stri
         />
       ))}
       <div className="relative max-w-md">
-        <div className="relative mx-auto h-24 w-24">
-          <AnimatePresence initial={false}>
-            {done ? (
-              <motion.span
-                key="check"
-                initial={{ scale: 0.6, rotate: -30, opacity: 0 }} animate={{ scale: 1, rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                className="absolute inset-0 grid place-items-center rounded-full bg-basil-400 text-coal shadow-glow"
-              >
-                <Check className="h-12 w-12" strokeWidth={3.5} />
-              </motion.span>
-            ) : (
-              <motion.span key="ring" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 1.15, opacity: 0 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="absolute inset-0">
-                <span className="absolute inset-0 rounded-full border-4 border-white/15" />
-                <motion.span
-                  className="absolute inset-0 rounded-full border-4 border-transparent border-t-yolk border-r-brand"
-                  animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
-                />
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </div>
+        <SendRing done={done} />
         <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.45, ease: easeOut }} className="mt-8 font-display text-[clamp(3rem,10vw,5.5rem)] leading-[0.9]">
           {first ? fill(t.thanks.title, { name: first }) : t.thanks.titleNoName}
         </motion.h1>
@@ -600,5 +582,62 @@ function ThankYou({ placed, name, lang, t }: { placed: Placed | null; name: stri
         </div>
       </div>
     </motion.div>
+  );
+}
+
+/** Same shape as the checkout, shown for the instant before the cart loads. */
+export function CheckoutSkeleton() {
+  return (
+    <div className="mx-auto grid min-h-[100dvh] max-w-7xl grid-cols-1 items-start gap-5 px-4 pb-10 sm:px-6 lg:grid-cols-[1fr_400px] lg:gap-8 lg:px-8" aria-busy="true">
+      <div className="space-y-5">
+        <div className="flex items-center gap-4"><div className="img-skeleton h-11 w-11 rounded-full" /><div className="img-skeleton h-12 w-52 rounded-xl" /></div>
+        <div className="img-skeleton h-64 rounded-3xl" />
+        <div className="img-skeleton h-72 rounded-3xl" />
+      </div>
+      <div className="img-skeleton hidden h-80 rounded-3xl lg:block" />
+    </div>
+  );
+}
+
+/**
+ * The ring on the thank-you screen. While sending, an arc circles; when the
+ * order is in, the arc closes into a full ring, the disc fills green and the
+ * check draws itself, all in one movement.
+ */
+function SendRing({ done }: { done: boolean }) {
+  const R = 44, C = 2 * Math.PI * R;
+  return (
+    <div className="relative mx-auto h-24 w-24">
+      <motion.div
+        className="absolute inset-0 rounded-full bg-basil-400 shadow-glow"
+        initial={false}
+        animate={done ? { scale: 1, opacity: 1 } : { scale: 0.55, opacity: 0 }}
+        transition={done ? { delay: 0.22, type: "spring", stiffness: 260, damping: 18 } : { duration: 0.2 }}
+      />
+      <svg viewBox="0 0 96 96" className="absolute inset-0 h-full w-full -rotate-90" aria-hidden>
+        <circle cx="48" cy="48" r={R} fill="none" stroke="rgb(255 255 255 / 0.15)" strokeWidth="5" />
+        <motion.g
+          style={{ originX: "48px", originY: "48px" }}
+          animate={done ? { rotate: 0 } : { rotate: 360 }}
+          transition={done ? { duration: 0.3, ease: "easeOut" } : { repeat: Infinity, duration: 0.9, ease: "linear" }}
+        >
+          <motion.circle
+            cx="48" cy="48" r={R} fill="none" strokeWidth="5" strokeLinecap="round"
+            strokeDasharray={C}
+            initial={false}
+            animate={done ? { strokeDashoffset: 0, stroke: "#3ecf6a" } : { strokeDashoffset: C * 0.72, stroke: "#ffd60a" }}
+            transition={{ duration: done ? 0.35 : 0.2, ease: "easeOut" }}
+          />
+        </motion.g>
+      </svg>
+      <svg viewBox="0 0 96 96" className="absolute inset-0 h-full w-full" aria-hidden>
+        <motion.path
+          d="M30 49 L43 62 L67 36" fill="none" stroke="#0b0908" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round"
+          initial={false}
+          animate={done ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
+          transition={done ? { delay: 0.38, duration: 0.35, ease: "easeOut" } : { duration: 0.1 }}
+        />
+      </svg>
+    </div>
   );
 }

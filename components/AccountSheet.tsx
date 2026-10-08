@@ -11,6 +11,7 @@ import type { Messages } from "@/messages/en";
 import { SignInForm } from "./SignInForm";
 import { AddressForm, addressSummary, labelIcon, labelText, zoneLabel } from "./AddressForm";
 import { spring } from "./motion";
+import { useIsPhone } from "@/lib/useIsPhone";
 
 /** Side panel: sign in, or see your name and manage saved addresses. */
 export function AccountSheet({ lang, t, zones }: { lang: Locale; t: Messages; zones: Zone[] }) {
@@ -32,20 +33,23 @@ export function AccountSheet({ lang, t, zones }: { lang: Locale; t: Messages; zo
   }, [sheetOpen, setSheetOpen]);
 
   const fromEnd = lang === "ar" ? "-100%" : "100%";
+  const phone = useIsPhone();
+  const hidden = reduce ? { opacity: 0 } : phone ? { y: "100%" } : { x: fromEnd };
   const national = me ? lebaneseMobileNational(me.phone) : null;
 
   return (
     <AnimatePresence>
       {sheetOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-labelledby="account-title">
+        <div className="fixed inset-0 z-50 flex items-end justify-end sm:items-stretch" role="dialog" aria-modal="true" aria-labelledby="account-title">
           <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-coal/60 backdrop-blur-[2px]" onClick={() => setSheetOpen(false)} aria-label={t.item.close} />
           <motion.aside
             ref={panel}
-            initial={{ x: reduce ? 0 : fromEnd }} animate={{ x: 0 }} exit={{ x: reduce ? 0 : fromEnd }}
+            initial={hidden} animate={{ x: 0, y: 0, opacity: 1 }} exit={hidden}
             transition={{ ...spring, stiffness: 320, damping: 34 }}
-            className="relative flex h-full w-full max-w-md flex-col bg-paper shadow-2xl"
+            className="relative flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-paper shadow-2xl sm:h-full sm:max-h-none sm:max-w-md sm:rounded-none"
           >
-            <div className="shrink-0 border-b border-line bg-surface pt-[env(safe-area-inset-top)]">
+            <div className="shrink-0 border-b border-line bg-surface sm:pt-[env(safe-area-inset-top)]">
+              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-line-strong sm:hidden" aria-hidden />
               <div className="flex h-16 items-center justify-between ps-5 pe-3 sm:ps-6">
                 <h2 id="account-title" className="font-display text-3xl text-ink">{signedIn ? (me?.name ? fill(a.hello, { name: me.name.split(/\s+/)[0] }) : a.helloNoName) : a.title}</h2>
                 <button onClick={() => setSheetOpen(false)} className="grid h-11 w-11 place-items-center rounded-full text-ink hover:bg-paper-2" aria-label={t.item.close}><X className="h-5 w-5" /></button>

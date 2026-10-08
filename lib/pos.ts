@@ -63,7 +63,14 @@ export async function posFetch<T>(method: "GET" | "POST" | "PATCH" | "DELETE", p
 
 export async function getMenu(): Promise<Menu> {
   if (PREVIEW_MODE) return sampleMenu as Menu;
-  return posFetch<Menu>("GET", "/api/public/menu", { revalidate: 60, tags: ["menu"] });
+  return withoutInStoreOnly(await posFetch<Menu>("GET", "/api/public/menu", { revalidate: 60, tags: ["menu"] }));
+}
+
+/** Slices are sold at the counter only: drop them, and any category left empty. */
+function withoutInStoreOnly(menu: Menu): Menu {
+  const products = menu.products.filter((p) => p.itemType !== "slice");
+  const used = new Set(products.map((p) => p.categoryId));
+  return { ...menu, products, categories: menu.categories.filter((c) => used.has(c.id) && !/^slices?$/i.test(c.slug || c.name)) };
 }
 
 const PREVIEW_CONFIG: ShopConfig = {

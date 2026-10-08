@@ -10,6 +10,7 @@ import { sizeLabel, type Locale } from "@/lib/i18n";
 import type { Messages } from "@/messages/en";
 import { Photo } from "./Photo";
 import { spring } from "./motion";
+import { useIsPhone } from "@/lib/useIsPhone";
 
 export function CartDrawer({ lang, t }: { lang: Locale; t: Messages }) {
   const { lines, open, setOpen, setQuantity, notice, setNotice } = useCart();
@@ -34,21 +35,24 @@ export function CartDrawer({ lang, t }: { lang: Locale; t: Messages }) {
 
   const subtotal = cartSubtotal(lines);
   const fromEnd = lang === "ar" ? "-100%" : "100%";
+  const phone = useIsPhone();
+  const hidden = reduce ? { opacity: 0 } : phone ? { y: "100%" } : { x: fromEnd };
 
   return (
     <AnimatePresence>
       {mounted && open && (
-        <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <div className="fixed inset-0 z-50 flex items-end justify-end sm:items-stretch" role="dialog" aria-modal="true" aria-labelledby="cart-title">
           <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-coal/60 backdrop-blur-[2px]" onClick={() => setOpen(false)} aria-label={t.item.close} />
           <motion.aside
             ref={panel}
-            initial={{ x: reduce ? 0 : fromEnd, opacity: reduce ? 0 : 1 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: reduce ? 0 : fromEnd, opacity: reduce ? 0 : 1 }}
+            initial={hidden}
+            animate={{ x: 0, y: 0, opacity: 1 }}
+            exit={hidden}
             transition={{ ...spring, stiffness: 320, damping: 34 }}
-            className="relative flex h-full w-full max-w-md flex-col bg-paper shadow-2xl"
+            className="relative flex max-h-[88dvh] w-full flex-col overflow-hidden rounded-t-3xl bg-paper shadow-2xl sm:h-full sm:max-h-none sm:max-w-md sm:rounded-none"
           >
-            <div className="shrink-0 border-b border-line bg-surface pt-[env(safe-area-inset-top)]">
+            <div className="shrink-0 border-b border-line bg-surface sm:pt-[env(safe-area-inset-top)]">
+              <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-line-strong sm:hidden" aria-hidden />
               <div className="flex h-16 items-center justify-between ps-5 pe-3 sm:ps-6">
                 <h2 id="cart-title" className="font-display text-3xl text-ink">
                   {t.cart.title} <span className="font-sans text-base font-normal normal-case text-muted">({cartCount(lines)})</span>
@@ -66,7 +70,7 @@ export function CartDrawer({ lang, t }: { lang: Locale; t: Messages }) {
             )}
 
             {lines.length === 0 ? (
-              <div className="grid flex-1 place-items-center px-10 text-center">
+              <div className="grid flex-1 place-items-center px-10 py-10 text-center sm:py-0">
                 <div>
                   <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-paper-2 text-muted"><ShoppingBag className="h-7 w-7" /></span>
                   <p className="mt-4 font-display text-2xl text-ink">{t.cart.empty}</p>

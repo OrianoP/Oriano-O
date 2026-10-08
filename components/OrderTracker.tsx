@@ -19,6 +19,8 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
   const [failures, setFailures] = useState(0);
   const [lastOk, setLastOk] = useState<number | null>(null);
   const [justPlaced, setJustPlaced] = useState(false);
+  // Arriving from checkout: start at the top of the page.
+  useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior }); }, []);
   const stageRef = useRef(order?.stage);
   stageRef.current = order?.stage;
 
@@ -77,12 +79,18 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
   }
 
   const delivery = order.orderType === "delivery";
-  const steps: Stage[] = delivery
-    ? ["awaiting_confirmation", "confirmed", "preparing", "in_oven", "out_for_delivery", "completed"]
-    : ["awaiting_confirmation", "confirmed", "preparing", "in_oven", "ready", "completed"];
-  // A delivery order that's "ready" is waiting for the driver: show it on the oven step.
-  const stepStage: Stage = delivery && order.stage === "ready" ? "in_oven" : order.stage;
-  const current = Math.max(0, steps.indexOf(stepStage));
+  // Four plain steps. "In the oven" counts as prepping, and a delivery that's
+  // ready is still prepping until the driver leaves. While waiting for the
+  // restaurant to confirm, the first step is the one in progress.
+  const steps: Stage[] = delivery ? ["confirmed", "preparing", "out_for_delivery", "completed"] : ["confirmed", "preparing", "ready", "completed"];
+  // The step in progress: waiting → Confirmed; confirmed/preparing/oven → Prepping;
+  // ready (pickup) or on the way (delivery) → step 3; done → all ticked.
+  const s0 = order.stage;
+  const current =
+    s0 === "awaiting_confirmation" ? 0
+    : s0 === "confirmed" || s0 === "preparing" || s0 === "in_oven" || (delivery && s0 === "ready") ? 1
+    : s0 === "ready" || s0 === "out_for_delivery" ? 2
+    : s0 === "completed" ? steps.length : 0;
   const cancelled = order.stage === "cancelled";
   const done = order.stage === "completed";
   const live = !FINAL.includes(order.stage);
@@ -92,7 +100,9 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
   const eta = order.estimatedReadyAt ? new Date(order.estimatedReadyAt) : null;
   const etaMins = eta && now ? Math.max(0, Math.round((eta.getTime() - now) / 60000)) : null;
   const stageLabel = (s: Stage) =>
-    s === "ready" ? (delivery ? t.track.readyWaitingDriver : t.track.readyForPickup) : t.track.stages[s] ?? String(s);
+    s === "ready" ? (delivery ? t.track.readyWaitingDriver : t.track.readyForPickup)
+    : s === "in_oven" ? t.track.stages.preparing // no separate oven stage for customers
+    : t.track.stages[s] ?? String(s);
   const shortLabel = (s: Stage) => (t.track.short as Record<string, string>)[s] ?? stageLabel(s);
   const progress = cancelled ? 0 : done ? 1 : current / (steps.length - 1);
 

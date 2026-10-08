@@ -72,6 +72,8 @@ export type TrackedOrder = {
   deliveryArea: string | null;
   items: { name: string; size: string | null; quantity: number; totalPrice: number; notes: string | null; extras: string[] }[];
   subtotal: number;
+  discountAmount?: number;
+  couponCode?: string | null;
   deliveryFee: number;
   total: number;
   paymentMethod: string | null;
@@ -85,4 +87,5 @@ export type PlaceOrderInput = {
   address?: { zoneId: number; street: string; building: string; floor?: string; landmark?: string };
   items: { productId: number; sizeId?: number; quantity: number; addonIds: number[]; notes?: string }[];
   notes?: string;
+  couponCode?: string;
 };

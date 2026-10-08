@@ -59,7 +59,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
   const canPickup = config.pickupEnabled;
   const canDeliver = config.deliveryEnabled && config.zones.length > 0;
   const [orderType, setOrderType] = useState<"pickup" | "delivery">(canDeliver && !canPickup ? "delivery" : "pickup");
-  const [form, setForm] = useState({ name: "", phone: "", zoneId: "", street: "", building: "", floor: "", landmark: "", notes: "", website: "" });
+  const [form, setForm] = useState({ name: "", phone: "", zoneId: "", street: "", building: "", floor: "", landmark: "", notes: "", coupon: "", website: "" });
   const [agree, setAgree] = useState(false);
   const [touched, setTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -154,6 +154,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
           } : undefined,
           items: lines.map((l) => ({ productId: l.productId, sizeId: l.sizeId, quantity: l.quantity, addonIds: l.addonIds, notes: l.notes })),
           notes: form.notes.trim(),
+          couponCode: form.coupon.trim() || undefined,
           lang,
           website: form.website,
           formMs: Date.now() - openedAt.current,
@@ -305,6 +306,9 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
             <div className="sm:col-span-2">
               <label className={label} htmlFor="notes">{t.checkout.notes}</label>
               <textarea id="notes" value={form.notes} onChange={set("notes")} maxLength={300} rows={2} placeholder={t.checkout.notesPlaceholder} className={`${field} h-auto border-line py-3`} />
+              <label className={`${label} mt-4`} htmlFor="coupon">{t.checkout.coupon}</label>
+              <input id="coupon" value={form.coupon} onChange={(e) => setForm((f) => ({ ...f, coupon: e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, "").slice(0, 30) }))} maxLength={30} autoComplete="off" placeholder={t.checkout.couponPlaceholder} dir="ltr" className={`${field} border-line uppercase tracking-wider`} />
+              {form.coupon && <p className="mt-1 text-xs text-muted">{t.checkout.couponHint}</p>}
             </div>
             {/* Honeypot: hidden from people, bots fill it in. */}
             <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>

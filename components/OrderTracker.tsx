@@ -207,6 +207,7 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
           ))}
         </ul>
         <div className="mt-2 space-y-1.5 border-t border-line pt-4 text-sm">
+          {(order.discountAmount ?? 0) > 0 && <div className="flex justify-between text-basil"><span>{t.checkout.coupon}{order.couponCode ? ` · ${order.couponCode}` : ""}</span><span className="tabular-nums">−{money(order.discountAmount!)}</span></div>}
           {order.deliveryFee > 0 && <div className="flex justify-between text-muted"><span>{t.cart.delivery}{order.deliveryArea ? ` · ${order.deliveryArea}` : ""}</span><span className="tabular-nums">{money(order.deliveryFee)}</span></div>}
           <div className="flex items-baseline justify-between"><span className="font-semibold text-ink">{t.cart.total}</span><span className="font-display text-3xl text-ink">{money(order.total)}</span></div>
           <p className="flex items-center gap-2 pt-1 text-xs text-muted">

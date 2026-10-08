@@ -47,6 +47,8 @@ export type ShopConfig = {
   shopPhone: string;
   whatsapp: string;
   zones: Zone[];
+  /** Set by the site when the POS couldn't be reached — the rest of the config is a placeholder. */
+  unreachable?: boolean;
 };
 
 export type Stage =

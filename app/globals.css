@@ -1,45 +1,73 @@
 @import "tailwindcss";
 
-/* Oriano — calm, confident, photography-led. Red is reserved for actions. */
+/*
+  Oriano — "Night oven, day menu."
+  Dark, cinematic brand world (hero, story, footer) in the logo's black; warm cream
+  surfaces where people read and order (menu, checkout, tracking). Red is heat and
+  action, yolk yellow is the brand highlight, basil green means "open / live".
+*/
 @theme {
-  --color-paper: #faf7f2;
-  --color-paper-2: #f3eee6;
+  /* Light world */
+  --color-paper: #fbf7f0;
+  --color-paper-2: #f4eee3;
+  --color-paper-3: #ebe3d5;
   --color-surface: #ffffff;
-  --color-line: #e8e1d6;
-  --color-line-strong: #d6cdbf;
-  --color-ink: #1c1714;
-  --color-ink-2: #3b332d;
-  --color-muted: #6e655c;
-  --color-brand: #ff3300;
-  --color-brand-600: #e02d00;
-  --color-brand-700: #b82500;
-  --color-brand-50: #fff3ee;
-  --color-brand-100: #ffe1d5;
-  --color-yolk: #ffd60a;
-  --color-basil: #1f7a3a;
+  --color-line: #e9e1d4;
+  --color-line-strong: #d5cab9;
+  --color-ink: #15110f;
+  --color-ink-2: #3a322c;
+  --color-muted: #6f655a;
 
-  --font-display: var(--font-display-face), "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  /* Dark world */
+  --color-coal: #0b0908;
+  --color-coal-2: #151110;
+  --color-coal-3: #1f1916;
+  --color-coal-line: #2b2320;
+  --color-cream: #f6efe4;
+  --color-cream-2: #cdbfae;
+
+  --color-brand: #ff3300;
+  --color-brand-600: #e22d00;
+  --color-brand-700: #b82400;
+  --color-brand-50: #fff2ec;
+  --color-brand-100: #ffdccd;
+  --color-yolk: #ffd60a;
+  --color-yolk-600: #e6bf00;
+  --color-basil: #1f7a3a;
+  --color-basil-400: #3ecf6a;
+
+  --font-display: var(--font-display-face), Impact, "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-face), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-arabic: var(--font-arabic-face), ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-soft: 0 1px 2px rgb(28 23 20 / 0.04), 0 2px 8px rgb(28 23 20 / 0.04);
-  --shadow-lift: 0 2px 4px rgb(28 23 20 / 0.05), 0 12px 32px -12px rgb(28 23 20 / 0.18);
+  --shadow-soft: 0 1px 2px rgb(21 17 15 / 0.04), 0 2px 8px rgb(21 17 15 / 0.05);
+  --shadow-lift: 0 2px 4px rgb(21 17 15 / 0.06), 0 16px 40px -16px rgb(21 17 15 / 0.25);
+  --shadow-glow: 0 0 0 1px rgb(255 51 0 / 0.35), 0 12px 40px -8px rgb(255 51 0 / 0.55);
 
-  --animate-fade: fade 0.18s ease-out;
-  --animate-sheet: sheet 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
 
-  @keyframes fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
-  @keyframes sheet {
-    from { transform: translateY(24px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgb(62 207 106 / 0.55); }
+    60% { box-shadow: 0 0 0 7px rgb(62 207 106 / 0); }
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
   }
 }
 
 html {
-  background: var(--color-paper);
+  background: var(--color-coal);
   color: var(--color-ink);
   -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
@@ -47,47 +75,82 @@ html {
 
 body {
   overflow-x: clip;
-  /* viewport-fit=cover: keep content clear of the notch in landscape. */
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
   font-family: var(--font-sans);
   background: var(--color-paper);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: "cv11", "ss01";
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01", "tnum" 0;
 }
 
+/* Poster headlines: tight, upright, loud. */
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
 }
-
-html[lang="ar"] body,
-html[lang="ar"] .font-display {
+/* Editorial accent: italic serif for the human touch. */
+.font-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-variation-settings: "opsz" 72, "SOFT" 50, "WONK" 1;
+}
+html[lang="ar"] .font-display,
+html[lang="ar"] .font-serif,
+html[lang="ar"] body {
   font-family: var(--font-arabic);
   letter-spacing: 0;
+  text-transform: none;
+  font-style: normal;
 }
 
-/* Room at the end of the page for fixed bottom bars, so they never hide the footer or the last fields.
-   Both bars are the same height: 1px border + 12px top padding + 48px button + bottom padding / safe area. */
+/* Warm oven light used behind dark sections. */
+.oven-glow {
+  background:
+    radial-gradient(60% 50% at 20% 100%, rgb(255 51 0 / 0.22), transparent 70%),
+    radial-gradient(40% 40% at 85% 10%, rgb(255 214 10 / 0.10), transparent 70%),
+    var(--color-coal);
+}
+
+/* Cream-paper grain, very subtle, keeps the light world from feeling flat. */
+.paper-grain {
+  background-image:
+    radial-gradient(rgb(21 17 15 / 0.035) 0.5px, transparent 0.6px);
+  background-size: 7px 7px;
+}
+
+/* Image skeleton until the photo arrives. */
+.img-skeleton {
+  background: linear-gradient(100deg, var(--color-paper-2) 30%, var(--color-paper-3) 50%, var(--color-paper-2) 70%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Room at the end of the page for fixed bottom bars (cart bar on phones, checkout bar below lg). */
 @media (width < 40rem) {
-  body.has-cartbar { padding-bottom: calc(3.8125rem + max(0.75rem, env(safe-area-inset-bottom))); }
+  body.has-cartbar { padding-bottom: calc(4.25rem + max(0.75rem, env(safe-area-inset-bottom))); }
 }
 @media (width < 64rem) {
-  body:has([data-bottom-bar]) { padding-bottom: calc(3.8125rem + max(0.75rem, env(safe-area-inset-bottom))); }
+  body:has([data-bottom-bar]) { padding-bottom: calc(4.25rem + max(0.75rem, env(safe-area-inset-bottom))); }
 }
 
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
 :focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 button, a, input, select, textarea {
-  transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease, opacity .15s ease;
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease, opacity .18s ease, transform .18s var(--ease-spring);
 }
+
+/* Thin brand selection colour. */
+::selection { background: rgb(255 51 0 / 0.25); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

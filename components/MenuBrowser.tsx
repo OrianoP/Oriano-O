@@ -1,25 +1,42 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { Plus } from "lucide-react";
 import { ItemSheet } from "@/components/ItemSheet";
 import { CartBar } from "@/components/CartBar";
+import { AddedToast } from "@/components/AddedToast";
+import { BestSellers } from "@/components/BestSellers";
+import { useCart } from "@/lib/cart";
 import { cleanDescription, fromPrice, money, slugify } from "@/lib/menu";
 import { term, type Locale } from "@/lib/i18n";
 import type { Menu, MenuProduct, ShopConfig } from "@/lib/types";
 import type { Messages } from "@/messages/en";
+import { Photo } from "./Photo";
+import { Item, Reveal, Stagger, spring } from "./motion";
 
 type Group = { title?: string; products: MenuProduct[] };
 type Section = { id: string; title: string; groups: Group[] };
+
+// Chef's picks when the POS hasn't flagged any product as featured.
+const DEFAULT_PICKS = ["Pepperoni Overload Ranch", "Hot Honey Pepperoni Goat Cheese", "Truffle Chicken", "La Latina"];
 
 export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: ShopConfig; lang: Locale; t: Messages }) {
   const [selected, setSelected] = useState<MenuProduct | null>(null);
   const [active, setActive] = useState<string>("");
   const tabsRef = useRef<HTMLDivElement>(null);
-  // Which ends of the tab bar have more tabs hidden beyond them (drives the edge fades).
   const [more, setMore] = useState({ start: false, end: false });
+  const reconcile = useCart((s) => s.reconcile);
   const canOrder = config.open;
+
+  // Prices and availability may have changed since the cart was saved — fix it up quietly.
+  useEffect(() => { reconcile(menu); }, [menu, reconcile]);
+
+  const picks = useMemo(() => {
+    const featured = menu.products.filter((p) => p.isFeatured);
+    const list = featured.length ? featured : DEFAULT_PICKS.map((n) => menu.products.find((p) => p.name === n)).filter(Boolean) as MenuProduct[];
+    return list.slice(0, 4);
+  }, [menu]);
 
   // One section per category; pizzas are grouped by base (Red, White, Vodka…).
   const sections = useMemo<Section[]>(() => {
@@ -39,7 +56,6 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
     return out;
   }, [menu, lang]);
 
-  // Highlight the tab of the section in view.
   useEffect(() => {
     const els = sections.map((s) => document.getElementById(s.id)).filter(Boolean) as HTMLElement[];
     const obs = new IntersectionObserver(
@@ -47,23 +63,19 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
         const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
         if (visible) setActive(visible.target.id);
       },
-      { rootMargin: "-130px 0px -60% 0px" },
+      { rootMargin: "-140px 0px -60% 0px" },
     );
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, [sections]);
 
-  // Keep the active tab visible by scrolling only the tab bar (never the page), and only when it's out of view,
-  // so it doesn't fight the page's momentum scroll on iOS.
   useEffect(() => {
     const bar = tabsRef.current;
     const tab = bar?.querySelector<HTMLElement>(`[data-tab="${active}"]`);
     if (!bar || !tab || bar.scrollWidth <= bar.clientWidth) return;
     const b = bar.getBoundingClientRect();
     const r = tab.getBoundingClientRect();
-    const edge = 32; // the fade width
-    if (r.left >= b.left + edge && r.right <= b.right - edge) return;
-    // scrollBy works in visual (left/right) terms, so it's the same in LTR and RTL.
+    if (r.left >= b.left + 32 && r.right <= b.right - 32) return;
     bar.scrollBy({ left: r.left + r.width / 2 - (b.left + b.width / 2), behavior: "smooth" });
   }, [active]);
 
@@ -71,13 +83,9 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
     const bar = tabsRef.current;
     if (!bar) return;
     const update = () => {
-      // |scrollLeft| is the distance from the start edge in both LTR and RTL (RTL scrollLeft is ≤ 0).
       const from = Math.abs(bar.scrollLeft);
       const room = bar.scrollWidth - bar.clientWidth;
-      setMore((m) => {
-        const next = { start: from > 2, end: room - from > 2 };
-        return next.start === m.start && next.end === m.end ? m : next;
-      });
+      setMore((m) => { const n = { start: from > 2, end: room - from > 2 }; return n.start === m.start && n.end === m.end ? m : n; });
     };
     update();
     bar.addEventListener("scroll", update, { passive: true });
@@ -86,97 +94,116 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
   }, [sections]);
 
   return (
-    <section id="menu" className="scroll-mt-[calc(4rem+env(safe-area-inset-top))]">
-      <div className="sticky top-[calc(4rem+env(safe-area-inset-top))] z-30 bg-paper/95 backdrop-blur border-b border-line">
-        <div className="relative mx-auto max-w-6xl">
-        <div ref={tabsRef} className="px-4 sm:px-6 flex gap-6 overflow-x-auto overscroll-x-contain no-scrollbar">
+    <>
+      <BestSellers picks={picks} t={t} canOrder={canOrder} onOpen={setSelected} />
+
+      <section id="menu" className="scroll-mt-[calc(4rem+env(safe-area-inset-top))] pt-14 sm:pt-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <Reveal>
+            <p className="font-display text-sm tracking-[0.2em] text-brand">{t.menu.eyebrow}</p>
+            <h2 className="mt-1 font-display text-[2.6rem] leading-[0.95] text-ink sm:text-6xl">{t.menu.title}</h2>
+          </Reveal>
+        </div>
+
+        {/* Category pills, stuck under the header while you browse */}
+        <div className="sticky top-[calc(4rem+env(safe-area-inset-top))] z-30 mt-6 bg-paper/90 backdrop-blur-md">
+          <div className="relative mx-auto max-w-7xl">
+            <div ref={tabsRef} className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 py-3 no-scrollbar sm:px-6 lg:px-8">
+              {sections.map((s) => (
+                <a key={s.id} href={`#${s.id}`} data-tab={s.id} className="relative shrink-0 rounded-full px-4 py-2 text-sm font-semibold text-ink-2 transition-colors hover:text-ink">
+                  {active === s.id && <motion.span layoutId="tab-pill" transition={spring} className="absolute inset-0 rounded-full bg-ink" />}
+                  <span className={`relative transition-colors ${active === s.id ? "text-cream" : ""}`}>{s.title}</span>
+                </a>
+              ))}
+            </div>
+            <span aria-hidden className={`pointer-events-none absolute inset-y-0 start-0 w-10 bg-linear-to-r from-paper to-transparent transition-opacity rtl:bg-linear-to-l ${more.start ? "opacity-100" : "opacity-0"}`} />
+            <span aria-hidden className={`pointer-events-none absolute inset-y-0 end-0 w-12 bg-linear-to-l from-paper to-transparent transition-opacity rtl:bg-linear-to-r ${more.end ? "opacity-100" : "opacity-0"}`} />
+          </div>
+          <div className="h-px bg-line" />
+        </div>
+
+        <div className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
           {sections.map((s) => (
-            <a
-              key={s.id}
-              href={`#${s.id}`}
-              data-tab={s.id}
-              className={`shrink-0 border-b-2 py-3.5 text-sm font-semibold uppercase tracking-wider ${
-                active === s.id ? "border-brand text-ink" : "border-transparent text-muted hover:text-ink"
-              }`}
-            >
-              {s.title}
-            </a>
+            <div key={s.id} id={s.id} className="scroll-mt-[calc(8rem+env(safe-area-inset-top))] pt-10 sm:pt-14">
+              <Reveal className="flex items-end gap-4">
+                <h3 className="font-display text-4xl leading-none text-ink sm:text-5xl">{s.title}</h3>
+                <span className="mb-1.5 h-px flex-1 bg-line" />
+              </Reveal>
+              {s.groups.map((g, gi) => (
+                <div key={gi} className="mt-6">
+                  {g.title && <h4 className="mb-3 font-serif text-xl text-brand-700">{g.title}</h4>}
+                  <Stagger className={g.products.some((p) => p.imageUrl) ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3" : "grid gap-3 sm:grid-cols-2 lg:grid-cols-3"} gap={0.05}>
+                    {g.products.map((p) => (
+                      <Item key={p.id} as="li" className="list-none">
+                        {p.imageUrl ? <PhotoCard product={p} t={t} canOrder={canOrder} onOpen={() => setSelected(p)} /> : <CompactRow product={p} t={t} canOrder={canOrder} onOpen={() => setSelected(p)} />}
+                      </Item>
+                    ))}
+                  </Stagger>
+                </div>
+              ))}
+            </div>
           ))}
         </div>
-        {/* Edge fades hint that the bar scrolls sideways; only shown when there are more tabs that way. */}
-        <span
-          aria-hidden
-          className={`pointer-events-none absolute inset-y-0 start-0 w-10 bg-linear-to-r from-paper to-transparent rtl:bg-linear-to-l transition-opacity ${more.start ? "opacity-100" : "opacity-0"}`}
-        />
-        <span
-          aria-hidden
-          className={`pointer-events-none absolute inset-y-0 end-0 w-12 bg-linear-to-l from-paper to-transparent rtl:bg-linear-to-r transition-opacity ${more.end ? "opacity-100" : "opacity-0"}`}
-        />
-        </div>
-      </div>
+      </section>
 
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 pb-28">
-        {sections.map((s) => (
-          <div key={s.id} id={s.id} className="scroll-mt-[calc(7.5rem+env(safe-area-inset-top))] pt-10 sm:pt-12">
-            <h2 className="font-display text-[2rem] sm:text-4xl font-extrabold uppercase text-ink rtl:normal-case">{s.title}</h2>
-            {s.groups.map((g, gi) => (
-              <div key={gi} className="mt-6">
-                {g.title && (
-                  <div className="mb-3 flex items-center gap-3">
-                    <h3 className="shrink-0 text-xs font-semibold uppercase tracking-[0.16em] text-muted">{g.title}</h3>
-                    <span className="h-px flex-1 bg-line" />
-                  </div>
-                )}
-                <ul className="grid gap-3 md:grid-cols-2">
-                  {g.products.map((p) => (
-                    <li key={p.id}>
-                      <ProductRow product={p} t={t} canOrder={canOrder} onOpen={() => setSelected(p)} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-
-      {selected && <ItemSheet product={selected} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelected(null)} />}
+      <AnimatePresence>
+        {selected && <ItemSheet key={selected.id} product={selected} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelected(null)} />}
+      </AnimatePresence>
+      <AddedToast t={t} />
       <CartBar t={t} />
-    </section>
+    </>
   );
 }
 
-function ProductRow({ product: p, t, canOrder, onOpen }: { product: MenuProduct; t: Messages; canOrder: boolean; onOpen: () => void }) {
+function Price({ p, t }: { p: MenuProduct; t: Messages }) {
+  return (
+    <span className="font-semibold tabular-nums text-ink">
+      {p.sizes.length > 1 && <span className="me-1 text-xs font-normal text-muted">{t.menu.from}</span>}
+      {money(fromPrice(p))}
+    </span>
+  );
+}
+
+function PhotoCard({ product: p, t, canOrder, onOpen }: { product: MenuProduct; t: Messages; canOrder: boolean; onOpen: () => void }) {
   const desc = cleanDescription(p.description);
   return (
-    <button
+    <motion.button
       onClick={onOpen}
-      className="group flex w-full items-stretch gap-3 sm:gap-4 rounded-xl border border-line bg-surface p-4 text-start hover:border-line-strong hover:shadow-lift"
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.985 }}
+      transition={spring}
+      className="group flex w-full flex-col overflow-hidden rounded-3xl border border-line bg-surface text-start shadow-soft hover:shadow-lift"
     >
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center gap-2">
-          <h4 dir="auto" className="min-w-0 text-[17px] font-semibold leading-snug text-ink">{p.name}</h4>
-          {p.isFeatured && <span className="rounded-sm bg-brand-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-700">{t.menu.popular}</span>}
+      <Photo src={p.imageUrl!} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="aspect-[4/3]" imgClassName="transition-transform duration-700 group-hover:scale-[1.05]" />
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-3">
+          <span className="font-display text-[1.7rem] leading-none text-ink">{p.name}</span>
+          {p.isFeatured && <span className="shrink-0 rounded-full bg-yolk px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-coal">{t.menu.popular}</span>}
         </div>
-        {/* dir=auto keeps the "…" at the end of English descriptions on the Arabic site. */}
-        {desc && <p dir="auto" className="mt-1 text-sm leading-relaxed text-muted line-clamp-2 rtl:text-right">{desc}</p>}
-        <div className="mt-auto flex items-center justify-between pt-3">
-          <span className="font-semibold tabular-nums text-ink">
-            {p.sizes.length > 1 && <span className="me-1 text-xs font-normal text-muted">{t.menu.from}</span>}
-            {money(fromPrice(p))}
-          </span>
-          {canOrder && (
-            <span className="grid h-8 w-8 place-items-center rounded-full border border-line-strong text-ink group-hover:border-brand group-hover:bg-brand group-hover:text-white" aria-hidden>
-              <Plus className="h-4 w-4" />
-            </span>
-          )}
-        </div>
+        {desc && <span className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{desc}</span>}
+        <span className="mt-4 flex items-center justify-between">
+          <Price p={p} t={t} />
+          {canOrder && <span className="grid h-10 w-10 place-items-center rounded-full bg-ink text-cream transition-colors group-hover:bg-brand" aria-hidden><Plus className="h-5 w-5" /></span>}
+        </span>
       </div>
-      {p.imageUrl && (
-        <div className="relative h-24 w-24 sm:h-28 sm:w-28 shrink-0 overflow-hidden rounded-lg bg-paper-2">
-          <Image src={p.imageUrl} alt={p.name} fill sizes="(max-width: 640px) 96px, 112px" className="object-cover" />
-        </div>
-      )}
-    </button>
+    </motion.button>
+  );
+}
+
+function CompactRow({ product: p, t, canOrder, onOpen }: { product: MenuProduct; t: Messages; canOrder: boolean; onOpen: () => void }) {
+  const desc = cleanDescription(p.description);
+  return (
+    <motion.button
+      onClick={onOpen}
+      whileTap={{ scale: 0.985 }}
+      className="group flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-start hover:border-line-strong hover:shadow-soft"
+    >
+      <span className="min-w-0 flex-1">
+        <span className="block font-semibold text-ink">{p.name}</span>
+        {desc && <span className="mt-0.5 line-clamp-1 block text-sm text-muted">{desc}</span>}
+      </span>
+      <Price p={p} t={t} />
+      {canOrder && <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-line-strong text-ink transition-colors group-hover:border-brand group-hover:bg-brand group-hover:text-white" aria-hidden><Plus className="h-4 w-4" /></span>}
+    </motion.button>
   );
 }

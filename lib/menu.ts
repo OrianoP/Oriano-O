@@ -1,6 +1,7 @@
 import type { MenuAddon, MenuProduct, MenuSize } from "./types";
 
-export const money = (n: number) => `$${(Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, "")}`;
+// Wrapped in LTR-isolate marks so "$12" never flips to "12$" inside Arabic text.
+export const money = (n: number) => `\u2066$${(Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, "")}\u2069`;
 
 export const isXl = (size?: Pick<MenuSize, "name"> | null) => /xl|45/i.test(size?.name || "");
 

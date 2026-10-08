@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { ArrowRight, Banknote, Clock, Phone, Store } from "lucide-react";
+import { Hero } from "@/components/Hero";
 import { MenuBrowser } from "@/components/MenuBrowser";
-import { StatusPill } from "@/components/StatusPill";
+import { Item, Parallax, Pop, Reveal, Stagger } from "@/components/motion";
 import { pagePhoto, withPhotos } from "@/lib/photos";
-import { getConfigSafe, getMenuSafe, PREVIEW_MODE } from "@/lib/pos";
-import { getMessages, hasLocale, term } from "@/lib/i18n";
+import { getSiteData, PREVIEW_MODE } from "@/lib/pos";
+import { getMessages, hasLocale } from "@/lib/i18n";
 import { cleanDescription } from "@/lib/menu";
 import { ADDRESS, MAPS_URL, SITE_URL } from "@/lib/site";
 import type { Menu, ShopConfig } from "@/lib/types";
@@ -32,7 +32,7 @@ function jsonLd(menu: Menu, config: ShopConfig, lang: string) {
     description: "Lebanon's first authentic New York style pizzeria.",
     url: `${SITE_URL}/${lang}`,
     logo: `${SITE_URL}/icon-512.png`,
-    image: `${SITE_URL}/icon-512.png`,
+    image: `${SITE_URL}/${lang}/opengraph-image`,
     telephone: config.shopPhone.replace(/\s/g, ""),
     servesCuisine: ["Pizza", "New York style pizza", "American"],
     priceRange: "$$",
@@ -41,7 +41,7 @@ function jsonLd(menu: Menu, config: ShopConfig, lang: string) {
     hasMap: MAPS_URL,
     address: { "@type": "PostalAddress", addressLocality: ADDRESS.locality, addressRegion: ADDRESS.region, addressCountry: ADDRESS.country },
     areaServed: config.zones.map((z) => z.name),
-    openingHoursSpecification: hours,
+    ...(hours.length ? { openingHoursSpecification: hours } : {}),
     potentialAction: {
       "@type": "OrderAction",
       target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/${lang}`, inLanguage: lang, actionPlatform: ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"] },
@@ -57,6 +57,7 @@ function jsonLd(menu: Menu, config: ShopConfig, lang: string) {
           "@type": "MenuItem",
           name: p.name,
           description: cleanDescription(p.description) || undefined,
+          ...(p.imageUrl ? { image: `${SITE_URL}${p.imageUrl}` } : {}),
           offers: (p.sizes.length ? p.sizes : [{ name: undefined, price: p.basePrice }]).map((s) => ({
             "@type": "Offer",
             ...(s.name ? { name: s.name } : {}),
@@ -69,25 +70,14 @@ function jsonLd(menu: Menu, config: ShopConfig, lang: string) {
   };
 }
 
-/** Today's hours in Beirut, e.g. "12:00 – 23:30", or null if closed today. */
-function todayHours(config: ShopConfig) {
-  const day = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(
-    new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Beirut", weekday: "short" }).format(new Date()),
-  );
-  const h = config.openingHours[String(day)];
-  return !h || h.closed ? null : `${h.open} – ${h.close}`;
-}
-
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = getMessages(lang);
-  const [rawMenu, config] = await Promise.all([getMenuSafe(), getConfigSafe()]);
+  const { menu: rawMenu, config } = await getSiteData();
   const menu = withPhotos(rawMenu);
   const hero = pagePhoto("hero");
-  const story = pagePhoto("story");
-  const hours = todayHours(config);
-  const tel = `tel:${config.shopPhone.replace(/\s/g, "")}`;
+  const story = pagePhoto("story") || menu.products.find((p) => p.name === "Pepperoni Overload Ranch")?.imageUrl || hero;
 
   return (
     <>
@@ -97,95 +87,58 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(menu, config, lang)).replace(/</g, "\\u003c") }}
       />
 
-      <section className="border-b border-line">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-16 grid gap-6 sm:gap-10 lg:grid-cols-[1.1fr_1fr] items-center">
-          <div>
-            <p className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.16em] sm:tracking-[0.18em] text-brand">{t.hero.badge}</p>
-            <h1 className="mt-3 sm:mt-4 font-display font-extrabold uppercase leading-[0.92] text-[2.6rem] sm:text-7xl text-ink rtl:leading-[1.2] rtl:normal-case rtl:text-[2.2rem] sm:rtl:text-7xl">
-              {t.hero.titleA}
-              <span className="block text-ink-2">{t.hero.titleB}</span>
-            </h1>
-            <p className="mt-3 sm:mt-5 max-w-md text-base sm:text-lg leading-relaxed text-muted">{t.hero.subtitle}</p>
-            <div className="mt-5 sm:mt-7 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
-              <a href="#menu" className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-brand px-3 sm:px-6 text-[15px] font-semibold text-white hover:bg-brand-600">
-                {t.hero.order} <ArrowRight className="h-4 w-4 shrink-0 rtl:rotate-180" />
-              </a>
-              <a href={tel} className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-line-strong bg-surface px-3 sm:px-5 text-[15px] font-semibold text-ink hover:border-ink">
-                <Phone className="h-4 w-4 shrink-0" /> {t.hero.callToOrder}
-              </a>
-            </div>
-            <div className="mt-4 sm:mt-6">
-              <StatusPill config={config} t={t} preview={PREVIEW_MODE} />
-            </div>
-          </div>
+      <Hero t={t} lang={lang} config={config} preview={PREVIEW_MODE} photo={hero} />
 
-          {hero ? (
-            <div className="relative aspect-[16/10] lg:aspect-[3/2] overflow-hidden rounded-xl bg-paper-2 shadow-lift">
-              <Image src={hero} alt="Oriano Pizza" fill priority sizes="(max-width: 1024px) 100vw, 540px" className="object-cover" />
-            </div>
-          ) : (
-            <div className="rounded-xl border border-line bg-surface p-6 sm:p-8 shadow-soft">
-              <div className="inline-block rounded-md bg-[#040706] px-4 py-3">
-                <Image src="/logo.png" alt="Oriano Pizza" width={1284} height={371} className="h-12 w-auto" priority />
-              </div>
-              <p className="mt-6 font-display text-sm font-bold uppercase tracking-[0.16em] text-muted">{t.hero.sizesTitle}</p>
-              <dl className="mt-2 divide-y divide-line">
-                {t.hero.sizes.map(([name, size]) => (
-                  <div key={name} className="flex items-baseline justify-between py-3">
-                    <dt className="font-display text-2xl font-bold uppercase text-ink rtl:normal-case">{name}</dt>
-                    <dd className="text-muted">{size}</dd>
-                  </div>
-                ))}
-              </dl>
-              <p className="mt-4 text-sm text-muted">{t.hero.first}.</p>
-            </div>
+      {/* The light world: browse and order */}
+      <div className="paper-grain bg-paper">
+        <MenuBrowser menu={menu} config={config} lang={lang} t={t} />
+      </div>
+
+      {/* Story */}
+      <section className="oven-glow relative overflow-hidden text-cream">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
+          <Reveal>
+            <p className="font-display text-sm tracking-[0.22em] text-yolk">{t.story.eyebrow}</p>
+            <h2 className="mt-3 font-display text-[clamp(3rem,9vw,6.5rem)] leading-[0.9]">{t.story.title}</h2>
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-cream-2">{t.story.body}</p>
+            <Stagger className="mt-10 grid gap-6 sm:grid-cols-3" gap={0.12}>
+              {t.story.facts.map(([big, small], i) => (
+                <Item key={i} className="border-s-2 border-brand ps-4">
+                  <Pop className="block font-display text-5xl leading-none text-yolk" delay={0.1 * i}>{big}</Pop>
+                  <span className="mt-2 block text-sm text-cream-2">{small}</span>
+                </Item>
+              ))}
+            </Stagger>
+          </Reveal>
+          {story && (
+            <Reveal delay={0.1}>
+              <Parallax amount={50} className="relative aspect-[4/5] overflow-hidden rounded-[32px] ring-1 ring-white/10 sm:aspect-square">
+                <Image src={story} alt="" fill sizes="(max-width: 1024px) 100vw, 600px" className="scale-[1.15] object-cover" />
+              </Parallax>
+            </Reveal>
           )}
-        </div>
-
-        <div className="border-t border-line bg-surface">
-          {/* Phones: a compact three-column row (icon above two short lines). sm+: icon beside text. */}
-          <dl className="mx-auto max-w-6xl px-2 sm:px-6 grid grid-cols-3 divide-x divide-line">
-            <div className="flex flex-col items-center gap-1.5 px-2 py-3 text-center sm:flex-row sm:gap-3 sm:py-4 sm:ps-0 sm:pe-6 sm:text-start">
-              <Clock className="h-5 w-5 text-muted shrink-0" />
-              <div className="min-w-0">
-                <dt className="text-[10px] sm:text-xs uppercase tracking-wider text-muted">{hours ? t.hero.todayOpen : t.hero.todayClosed}</dt>
-                <dd className="text-xs sm:text-base font-semibold text-ink tabular-nums" dir="ltr">{hours ?? "—"}</dd>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 px-2 py-3 text-center sm:flex-row sm:gap-3 sm:py-4 sm:px-6 sm:text-start">
-              <Store className="h-5 w-5 text-muted shrink-0" />
-              <div className="min-w-0">
-                <dt className="text-[10px] sm:text-xs uppercase tracking-wider text-muted">{t.footer.address}</dt>
-                <dd className="text-xs sm:text-base font-semibold text-ink">{t.hero.service}</dd>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-1.5 px-2 py-3 text-center sm:flex-row sm:gap-3 sm:py-4 sm:ps-6 sm:pe-0 sm:text-start">
-              <Banknote className="h-5 w-5 text-muted shrink-0" />
-              <div className="min-w-0">
-                <dt className="text-[10px] sm:text-xs uppercase tracking-wider text-muted">{t.checkout.payment}</dt>
-                <dd className="text-xs sm:text-base font-semibold text-ink">{t.hero.payment}</dd>
-              </div>
-            </div>
-          </dl>
         </div>
       </section>
 
-      <MenuBrowser menu={menu} config={config} lang={lang} t={t} />
-
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 pt-8">
-        <div className={`grid gap-8 items-center rounded-xl border border-line bg-surface p-6 sm:p-10 ${story ? "lg:grid-cols-[1fr_1.1fr]" : ""}`}>
-          {story && (
-            <div className="relative aspect-square overflow-hidden rounded-lg bg-paper-2">
-              <Image src={story} alt="" fill sizes="(max-width: 1024px) 100vw, 480px" className="object-cover" />
-            </div>
-          )}
-          <div className={story ? "" : "max-w-3xl"}>
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold uppercase text-ink rtl:normal-case">{t.seo.heading}</h2>
-            {t.seo.body.map((p, i) => (
-              <p key={i} className="mt-4 leading-relaxed text-muted">{p}</p>
+      {/* How it works */}
+      <section className="paper-grain bg-paper">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <Reveal>
+            <p className="font-display text-sm tracking-[0.2em] text-brand">{t.how.eyebrow}</p>
+          </Reveal>
+          <Stagger className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" gap={0.08}>
+            {t.how.steps.map(([title, body], i) => (
+              <Item key={i} className="rounded-3xl border border-line bg-surface p-6">
+                <span className="font-display text-5xl leading-none text-brand">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="mt-4 font-display text-2xl leading-none text-ink">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
+              </Item>
             ))}
-            <p className="mt-4 text-sm text-muted">{menu.categories.map((c) => term(c.name, lang)).join(" · ")}</p>
-          </div>
+          </Stagger>
+          <Reveal className="mt-16 max-w-3xl">
+            <h2 className="font-display text-3xl text-ink sm:text-4xl">{t.seo.heading}</h2>
+            {t.seo.body.map((p, i) => <p key={i} className="mt-4 leading-relaxed text-muted">{p}</p>)}
+          </Reveal>
         </div>
       </section>
     </>

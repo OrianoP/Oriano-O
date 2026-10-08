@@ -68,7 +68,7 @@ export async function getMenu(): Promise<Menu> {
 const PREVIEW_CONFIG: ShopConfig = {
   open: false,
   reason: "paused",
-  message: "Online ordering opens soon — call us to order!",
+  message: null, // the site shows its own translated "opens soon" text
   pickupEnabled: true,
   deliveryEnabled: false,
   openingHours: Object.fromEntries(Array.from({ length: 7 }, (_, d) => [String(d), { open: "12:00", close: "23:30" }])),
@@ -104,13 +104,32 @@ export async function getMenuSafe(): Promise<Menu> {
   }
 }
 
+/** Unknown hours and no message: the UI says "call us" in the visitor's language instead of inventing a timetable. */
+const UNREACHABLE_CONFIG: ShopConfig = { ...PREVIEW_CONFIG, openingHours: {}, unreachable: true };
+
 export async function getConfigSafe(fresh = false): Promise<ShopConfig> {
   try {
     return await (fresh ? getConfigFresh() : getConfig());
   } catch (e) {
     console.error("[pos] config unavailable:", (e as Error).message);
-    return { ...PREVIEW_CONFIG, message: "We can't take online orders right now — please call us." };
+    return UNREACHABLE_CONFIG;
   }
+}
+
+/**
+ * Menu + config together. If the live menu couldn't be loaded, ordering is switched
+ * off even when the config says open: the bundled menu is only for browsing.
+ */
+export async function getSiteData(fresh = false): Promise<{ menu: Menu; config: ShopConfig }> {
+  const [menuResult, config] = await Promise.all([
+    getMenu().then((menu) => ({ menu, live: true })).catch((e) => {
+      console.error("[pos] menu unavailable, showing bundled menu:", (e as Error).message);
+      return { menu: sampleMenu as Menu, live: false };
+    }),
+    getConfigSafe(fresh),
+  ]);
+  const menuIsLive = PREVIEW_MODE || menuResult.live;
+  return { menu: menuResult.menu, config: menuIsLive ? config : { ...config, open: false, unreachable: true } };
 }
 
 export function placeOrder(body: unknown, customerIp: string) {

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Barlow_Condensed, IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
+import { Barlow_Condensed, Fraunces, IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
 import "../globals.css";
 import { LOCALES, getMessages, hasLocale } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
@@ -8,9 +8,11 @@ import { getConfigSafe } from "@/lib/pos";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
+import { MotionProvider } from "@/components/motion";
 
-// Condensed headings (New York signage feel), Inter for reading, Plex Arabic for Arabic.
-const display = Barlow_Condensed({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-display-face", display: "swap" });
+// Poster-style condensed headlines, an italic serif for the human touch, Inter for reading, Plex Arabic for Arabic.
+const display = Barlow_Condensed({ subsets: ["latin"], weight: ["500", "700", "800"], variable: "--font-display-face", display: "swap" });
+const serif = Fraunces({ subsets: ["latin"], style: ["italic"], weight: ["400", "500"], variable: "--font-serif-face", display: "swap" });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const arabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-arabic-face", display: "swap" });
 
@@ -54,10 +56,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
 }
 
 export const viewport: Viewport = {
-  themeColor: "#faf7f2",
+  themeColor: "#0b0908",
   width: "device-width",
   initialScale: 1,
-  // Lets the page draw under the notch / home indicator; env(safe-area-inset-*) pads what matters.
   viewportFit: "cover",
 };
 
@@ -68,15 +69,17 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const config = await getConfigSafe();
 
   return (
-    <html lang={lang} dir={t.dir} className={`${display.variable} ${inter.variable} ${arabic.variable}`}>
-      <body className="min-h-dvh flex flex-col">
-        <a href="#menu" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:start-2 focus:z-50 focus:bg-white focus:px-3 focus:py-2 focus:rounded-md">
-          {t.nav.menu}
-        </a>
-        <SiteHeader lang={lang} t={t} config={config} />
-        <main className="flex-1">{children}</main>
-        <SiteFooter lang={lang} t={t} config={config} />
-        <CartDrawer lang={lang} t={t} />
+    <html lang={lang} dir={t.dir} className={`${display.variable} ${serif.variable} ${inter.variable} ${arabic.variable}`}>
+      <body className="flex min-h-dvh flex-col">
+        <MotionProvider>
+          <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2">
+            {t.nav.menu}
+          </a>
+          <SiteHeader lang={lang} t={t} config={config} />
+          <main id="main" className="flex-1">{children}</main>
+          <SiteFooter lang={lang} t={t} config={config} />
+          <CartDrawer lang={lang} t={t} />
+        </MotionProvider>
       </body>
     </html>
   );

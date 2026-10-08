@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   // Bot traps: a hidden field humans never fill, and a minimum time on the form.
   if (body?.website) return fail(400, "invalid", "Invalid request.");
-  if (typeof body?.formMs !== "number" || body.formMs < 2500) return fail(400, "too_fast", "Please review your order and try again.");
+  if (typeof body?.formMs !== "number" || body.formMs < 1200) return fail(400, "too_fast", "Please review your order and try again.");
   if (!(await verifyTurnstile(body?.turnstileToken, ip))) return fail(400, "captcha", "Please complete the security check.");
   if (!lebaneseMobileNational(String(body?.customer?.phone || ""))) {
     return fail(422, "phone", "Please enter a valid Lebanese mobile number (03, 70, 71, 76, 78, 79 or 81).");

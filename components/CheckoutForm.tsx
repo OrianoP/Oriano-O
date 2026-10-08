@@ -79,6 +79,15 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
     }));
   }, []);
 
+  // Always start at the top: the cart drawer may still be releasing the page lock when this mounts.
+  useEffect(() => {
+    const top = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    top();
+    const raf = requestAnimationFrame(top);
+    const id = setTimeout(top, 120);
+    return () => { cancelAnimationFrame(raf); clearTimeout(id); };
+  }, []);
+
   // Wake the order route and its link to the restaurant while the customer fills the form.
   useEffect(() => {
     const warm = () => { fetch("/api/order", { method: "GET", cache: "no-store" }).catch(() => {}); };

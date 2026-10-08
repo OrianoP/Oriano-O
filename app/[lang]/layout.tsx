@@ -70,7 +70,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const config = await getConfigSafe();
 
   return (
-    <html lang={lang} dir={t.dir} className={`${display.variable} ${serif.variable} ${inter.variable} ${arabic.variable}`}>
+    <html lang={lang} dir={t.dir} data-scroll-behavior="smooth" className={`${display.variable} ${serif.variable} ${inter.variable} ${arabic.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <MotionProvider>
           <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2">

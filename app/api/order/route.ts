@@ -1,9 +1,19 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { placeOrder, PosError } from "@/lib/pos";
+import { placeOrder, PosError, warmPos } from "@/lib/pos";
 import { clientIp, limited, sameOrigin, verifyTurnstile } from "@/lib/guard";
 import { lebaneseMobileNational } from "@/lib/phone";
 
 const fail = (status: number, code: string, message: string) => NextResponse.json({ code, message }, { status });
+
+/**
+ * Warm-up, called when the checkout page opens: starts this function (no cold
+ * start when "Place order" is tapped) and opens the connection to the POS,
+ * waking it if the host had put it to sleep. No data is sent or returned.
+ */
+export async function GET() {
+  await warmPos();
+  return new NextResponse(null, { status: 204, headers: { "Cache-Control": "no-store" } });
+}
 
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return fail(403, "origin", "Please order from the Oriano website.");

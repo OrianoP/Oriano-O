@@ -64,6 +64,8 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
   const [touched, setTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [placed, setPlaced] = useState<Placed | null>(null);
+  // Opens the instant the customer taps "Place order"; the order number fills in when the POS answers.
+  const [sendingName, setSendingName] = useState<string | null>(null);
   const [error, setError] = useState<{ code: string; message: string } | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string>();
 
@@ -75,6 +77,14 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       name: p.name || "", phone: p.phone || "", zoneId: p.zoneId ? String(p.zoneId) : "",
       street: p.street || "", building: p.building || "", floor: p.floor || "", landmark: p.landmark || "",
     }));
+  }, []);
+
+  // Wake the order route and its link to the restaurant while the customer fills the form.
+  useEffect(() => {
+    const warm = () => { fetch("/api/order", { method: "GET", cache: "no-store" }).catch(() => {}); };
+    warm();
+    const id = setInterval(warm, 4 * 60_000);
+    return () => clearInterval(id);
   }, []);
 
   // The shop can close or pause while someone is filling the form.
@@ -141,6 +151,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       return;
     }
     setSubmitting(true);
+    setSendingName(form.name.trim());
     try {
       const res = await fetch("/api/order", {
         method: "POST",
@@ -163,6 +174,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        setSendingName(null);
         setError({ code: data.code || "server", message: errorText(data.code, data.message) });
         if (turnstileWidget.current) (window as any).turnstile?.reset?.(turnstileWidget.current);
         setTurnstileToken(undefined);
@@ -177,23 +189,32 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       setPlaced({ orderNumber: data.orderNumber, token: data.trackingToken, name });
       router.prefetch(`/${lang}/track/${data.trackingToken}`);
     } catch {
+      setSendingName(null);
       setError({ code: "network", message: errorText("network") });
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (placed) return <ThankYou placed={placed} lang={lang} t={t} />;
-  if (!mounted) return <div className="min-h-[60vh]" />;
+  // One overlay instance from the tap to the redirect, so it changes in place instead of re-opening.
+  const overlay = (
+    <AnimatePresence>
+      {(sendingName !== null || placed) && <ThankYou key="thanks" placed={placed} name={placed?.name ?? sendingName ?? ""} lang={lang} t={t} />}
+    </AnimatePresence>
+  );
+  if (placed) return <>{overlay}</>;
+  if (!mounted) return <>{overlay}<div className="min-h-[60vh]" /></>;
 
   if (!lines.length) {
     return (
+      <>{overlay}
       <div className="mx-auto max-w-md px-4 py-24 text-center">
         <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-paper-2 text-muted"><ShoppingBag className="h-7 w-7" /></span>
         <p className="mt-5 font-display text-3xl text-ink">{t.cart.empty}</p>
         <p className="mt-1 text-muted">{t.cart.emptyHint}</p>
         <Link href={`/${lang}#menu`} className="mt-7 inline-flex h-12 items-center rounded-full bg-brand px-6 font-semibold text-white hover:bg-brand-600">{t.checkout.back}</Link>
       </div>
+      </>
     );
   }
 
@@ -203,6 +224,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
   const border = (k: keyof typeof missing) => (err(k) ? "border-brand" : "border-line");
 
   return (
+    <>{overlay}
     <form onSubmit={submit} noValidate className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-5 px-4 pb-10 sm:px-6 lg:grid-cols-[1fr_400px] lg:gap-8 lg:px-8">
       {TURNSTILE_SITE_KEY && <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onLoad={renderTurnstile} onReady={renderTurnstile} />}
 
@@ -403,55 +425,96 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
         </div>
       </div>
     </form>
+    </>
   );
 }
 
-/** Full-screen "Thank you" after a successful order, then on to tracking. */
-function ThankYou({ placed, lang, t }: { placed: Placed; lang: Locale; t: Messages }) {
+/**
+ * Full-screen "Thank you". It opens the moment "Place order" is tapped
+ * (placed = null: a spinning ring while the order travels), then the ring
+ * turns into the check, the sparks fly and the order number appears when the
+ * POS confirms. After 7 s it moves on to tracking.
+ */
+function ThankYou({ placed, name, lang, t }: { placed: Placed | null; name: string; lang: Locale; t: Messages }) {
   const router = useRouter();
-  const href = `/${lang}/track/${placed.token}`;
-  const first = placed.name.split(/\s+/)[0];
+  const href = placed ? `/${lang}/track/${placed.token}` : "";
+  const first = name.split(/\s+/)[0];
+  const done = !!placed;
   useEffect(() => {
+    if (!href) return;
     const id = setTimeout(() => router.push(href), 7000);
     return () => clearTimeout(id);
   }, [href, router]);
 
   return (
-    <div className="oven-glow fixed inset-0 z-50 grid place-items-center overflow-hidden px-6 text-center text-cream">
-      {/* a few warm sparks */}
-      {Array.from({ length: 14 }).map((_, i) => (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.18 }}
+      className="oven-glow fixed inset-0 z-50 grid place-items-center overflow-hidden px-6 text-center text-cream"
+      role="status" aria-live="polite"
+    >
+      {/* a few warm sparks, once the order is in */}
+      {done && Array.from({ length: 14 }).map((_, i) => (
         <motion.span
           key={i}
           aria-hidden
           initial={{ opacity: 0, y: 0, x: 0, scale: 0.4 }}
           animate={{ opacity: [0, 1, 0], y: -140 - (i % 5) * 50, x: (i - 7) * 48, scale: [0.4, 1, 0.6] }}
-          transition={{ duration: 1.6 + (i % 4) * 0.25, delay: 0.25 + i * 0.05, ease: "easeOut" }}
+          transition={{ duration: 1.6 + (i % 4) * 0.25, delay: 0.05 + i * 0.04, ease: "easeOut" }}
           className={`absolute left-1/2 top-1/2 h-2.5 w-2.5 rounded-full ${i % 3 === 0 ? "bg-yolk" : i % 3 === 1 ? "bg-brand" : "bg-cream"}`}
         />
       ))}
       <div className="relative max-w-md">
-        <motion.span
-          initial={{ scale: 0, rotate: -30 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 260, damping: 16, delay: 0.1 }}
-          className="mx-auto grid h-24 w-24 place-items-center rounded-full bg-basil-400 text-coal shadow-glow"
-        >
-          <motion.span initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}><Check className="h-12 w-12" strokeWidth={3.5} /></motion.span>
-        </motion.span>
-        <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7, ease: easeOut }} className="mt-8 font-display text-[clamp(3rem,10vw,5.5rem)] leading-[0.9]">
+        <div className="relative mx-auto h-24 w-24">
+          <AnimatePresence initial={false}>
+            {done ? (
+              <motion.span
+                key="check"
+                initial={{ scale: 0.6, rotate: -30, opacity: 0 }} animate={{ scale: 1, rotate: 0, opacity: 1 }} transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                className="absolute inset-0 grid place-items-center rounded-full bg-basil-400 text-coal shadow-glow"
+              >
+                <Check className="h-12 w-12" strokeWidth={3.5} />
+              </motion.span>
+            ) : (
+              <motion.span key="ring" initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 1.15, opacity: 0 }} transition={{ type: "spring", stiffness: 260, damping: 18 }} className="absolute inset-0">
+                <span className="absolute inset-0 rounded-full border-4 border-white/15" />
+                <motion.span
+                  className="absolute inset-0 rounded-full border-4 border-transparent border-t-yolk border-r-brand"
+                  animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
+                />
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
+        <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.45, ease: easeOut }} className="mt-8 font-display text-[clamp(3rem,10vw,5.5rem)] leading-[0.9]">
           {first ? fill(t.thanks.title, { name: first }) : t.thanks.titleNoName}
         </motion.h1>
-        <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.7, ease: easeOut }} className="mt-4 text-lg text-cream-2">{t.thanks.subtitle}</motion.p>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm">
-          <span className="text-cream-2">{t.thanks.orderNumber}</span> <span className="font-display text-xl text-yolk" dir="ltr">#{placed.orderNumber.slice(-3)}</span> <span className="text-cream-2" dir="ltr">· {placed.orderNumber}</span>
+        <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.45, ease: easeOut }} className="mt-4 text-lg text-cream-2">
+          {done ? t.thanks.subtitle : t.thanks.sending}
         </motion.p>
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.7, ease: easeOut }} className="mt-8">
-          <Link href={href} className="inline-flex h-14 items-center gap-2 rounded-full bg-brand px-8 text-lg font-semibold text-white shadow-glow hover:bg-brand-600">
-            {t.thanks.track} <ArrowRight className="h-5 w-5 rtl:rotate-180" />
-          </Link>
-          <div className="mx-auto mt-5 h-1 w-40 overflow-hidden rounded-full bg-white/10">
-            <motion.span initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 7, ease: "linear" }} className="block h-full bg-yolk" />
-          </div>
-        </motion.div>
+        <div className="mt-6 h-12">
+          <AnimatePresence>
+            {done && (
+              <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: easeOut }} className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm">
+                <span className="text-cream-2">{t.thanks.orderNumber}</span> <span className="font-display text-xl text-yolk" dir="ltr">#{placed!.orderNumber.slice(-3)}</span> <span className="text-cream-2" dir="ltr">· {placed!.orderNumber}</span>
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </div>
+        <div className="mt-4 h-[5.5rem]">
+          <AnimatePresence>
+            {done && (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12, duration: 0.45, ease: easeOut }}>
+                <Link href={href} className="inline-flex h-14 items-center gap-2 rounded-full bg-brand px-8 text-lg font-semibold text-white shadow-glow hover:bg-brand-600">
+                  {t.thanks.track} <ArrowRight className="h-5 w-5 rtl:rotate-180" />
+                </Link>
+                <div className="mx-auto mt-5 h-1 w-40 overflow-hidden rounded-full bg-white/10">
+                  <motion.span initial={{ width: "0%" }} animate={{ width: "100%" }} transition={{ duration: 7, ease: "linear" }} className="block h-full bg-yolk" />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

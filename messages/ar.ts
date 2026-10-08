@@ -180,6 +180,7 @@ const ar: Messages = {
   thanks: {
     title: "شكراً، {name}!",
     titleNoName: "شكراً!",
+    sending: "عم نبعت طلبك عالمطبخ…",
     subtitle: "وصلنا طلبك. رح نأكّده خلال دقيقة — خلّي تلفونك قريب.",
     orderNumber: "رقم الطلب",
     track: "تتبّع طلبك",

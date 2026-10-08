@@ -157,3 +157,9 @@ export async function openTrackStream(token: string): Promise<Response> {
   if (!res.ok || !res.body) throw new PosError(res.status || 502, "stream", "Live updates unavailable.");
   return res;
 }
+
+/** Touches the POS health check so the TCP/TLS connection is open and the server awake. Never throws. */
+export async function warmPos(): Promise<void> {
+  if (PREVIEW_MODE) return;
+  try { await fetch(`${POS_URL}/api/health`, { cache: "no-store", signal: AbortSignal.timeout(8_000) }); } catch {}
+}

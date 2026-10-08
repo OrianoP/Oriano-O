@@ -178,6 +178,7 @@ const en = {
   thanks: {
     title: "Thank you, {name}!",
     titleNoName: "Thank you!",
+    sending: "Sending your order to the kitchen…",
     subtitle: "Your order is in. We'll confirm it in a minute — keep your phone nearby.",
     orderNumber: "Order",
     track: "Track your order",

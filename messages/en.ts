@@ -9,7 +9,7 @@ const en = {
     ordersTitle: "My orders",
     notFoundTitle: "Page not found",
   },
-  nav: { menu: "Menu", bestSellers: "Best sellers", myOrders: "My orders", call: "Call", language: "العربية", languageHref: "ar", home: "Oriano Pizza — home" },
+  nav: { menu: "Menu", bestSellers: "Best sellers", myOrders: "My orders", privacy: "Privacy", call: "Call", language: "العربية", languageHref: "ar", home: "Oriano Pizza — home" },
   hero: {
     eyebrow: "Lebanon's first authentic New York style pizzeria",
     titleA: "Real New York",

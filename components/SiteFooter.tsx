@@ -57,6 +57,7 @@ export function SiteFooter({ lang, t, config }: { lang: Locale; t: Messages; con
               <li><a href={`https://wa.me/${whatsapp}`} target="_blank" rel="noreferrer" className={item}><MessageCircle className="h-4 w-4 text-cream-2/70" />WhatsApp</a></li>
               {INSTAGRAM_URL && <li><a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" className={item}><Camera className="h-4 w-4 text-cream-2/70" />Instagram</a></li>}
               <li><Link href={`/${lang}/orders`} className={item}>{t.nav.myOrders}</Link></li>
+              <li><Link href={`/${lang}/privacy`} className={item}>{t.nav.privacy}</Link></li>
             </ul>
           </div>
         </div>

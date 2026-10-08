@@ -11,7 +11,7 @@ const ar: Messages = {
     ordersTitle: "طلباتي",
     notFoundTitle: "الصفحة غير موجودة",
   },
-  nav: { menu: "القائمة", bestSellers: "الأكثر طلباً", myOrders: "طلباتي", call: "اتصل", language: "English", languageHref: "en", home: "أوريانو بيتزا — الصفحة الرئيسية" },
+  nav: { menu: "القائمة", bestSellers: "الأكثر طلباً", myOrders: "طلباتي", privacy: "الخصوصية", call: "اتصل", language: "English", languageHref: "en", home: "أوريانو بيتزا — الصفحة الرئيسية" },
   hero: {
     eyebrow: "أول مطعم بيتزا نيويوركية أصلية في لبنان",
     titleA: "بيتزا نيويورك",

@@ -82,7 +82,7 @@ body {
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "cv11", "ss01", "tnum" 0;
+  font-optical-sizing: auto;
 }
 
 /* Poster headlines: tight, upright, loud. */

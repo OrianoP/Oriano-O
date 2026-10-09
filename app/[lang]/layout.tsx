@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { Fraunces, IBM_Plex_Sans_Arabic, Inter, Oswald } from "next/font/google";
+import { Bricolage_Grotesque, Fraunces, IBM_Plex_Sans_Arabic, Oswald } from "next/font/google";
 import "../globals.css";
 import { LOCALES, getMessages, hasLocale } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
@@ -15,7 +15,8 @@ import { MotionProvider } from "@/components/motion";
 // bold and tight without being a novelty face. An italic serif for the human touch, Inter for reading, Plex Arabic for Arabic.
 const display = Oswald({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display-face", display: "swap" });
 const serif = Fraunces({ subsets: ["latin"], style: ["italic"], weight: ["400", "500"], variable: "--font-serif-face", display: "swap" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+// Body text: a warm grotesque with a bit of hand-made character (pairs with Oswald headlines).
+const inter = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const arabic = IBM_Plex_Sans_Arabic({ subsets: ["arabic"], weight: ["400", "500", "600", "700"], variable: "--font-arabic-face", display: "swap" });
 
 export function generateStaticParams() {

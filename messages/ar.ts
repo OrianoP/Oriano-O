@@ -276,7 +276,7 @@ const ar: Messages = {
       cancelled: "ملغى",
     },
     short: {
-      awaiting_confirmation: "وصل",
+      awaiting_confirmation: "عم نأكّد…",
       confirmed: "تأكّد",
       preparing: "تحضير",
       in_oven: "الفرن",

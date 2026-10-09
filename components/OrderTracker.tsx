@@ -145,16 +145,18 @@ export function OrderTracker({ token, initial, lang, t }: { token: string; initi
             {steps.map((s, i) => {
               const isDone = done || i < current;
               const active = !done && i === current;
+              // Not confirmed yet: the first step says "Confirming…" (amber), never "Confirmed".
+              const waiting = i === 0 && s0 === "awaiting_confirmation";
               return (
                 <li key={s} className="flex flex-col items-center gap-1.5 text-center">
                   <motion.span
                     animate={active ? { scale: [1, 1.15, 1] } : { scale: 1 }}
                     transition={active ? { repeat: Infinity, duration: 1.8, ease: "easeInOut" } : spring}
-                    className={`grid h-7 w-7 place-items-center rounded-full border-2 text-[11px] font-bold ${isDone ? "border-ink bg-ink text-cream" : active ? "border-brand bg-brand text-white" : "border-line-strong text-muted"}`}
+                    className={`grid h-7 w-7 place-items-center rounded-full border-2 text-[11px] font-bold ${isDone ? "border-ink bg-ink text-cream" : waiting ? "border-amber-500 bg-amber-400 text-coal" : active ? "border-brand bg-brand text-white" : "border-line-strong text-muted"}`}
                   >
-                    {isDone ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : i + 1}
+                    {isDone ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : waiting ? <Clock className="h-3.5 w-3.5" strokeWidth={2.5} /> : i + 1}
                   </motion.span>
-                  <span className={`text-[11px] leading-tight sm:text-xs ${active ? "font-semibold text-ink" : isDone ? "text-ink-2" : "text-muted"}`}>{shortLabel(s)}</span>
+                  <span className={`text-[11px] leading-tight sm:text-xs ${active ? "font-semibold text-ink" : isDone ? "text-ink-2" : "text-muted"}`}>{waiting ? shortLabel("awaiting_confirmation") : shortLabel(s)}</span>
                 </li>
               );
             })}

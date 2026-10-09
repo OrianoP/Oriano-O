@@ -274,7 +274,7 @@ const en = {
       cancelled: "Cancelled",
     },
     short: {
-      awaiting_confirmation: "Received",
+      awaiting_confirmation: "Confirming…",
       confirmed: "Confirmed",
       preparing: "Prepping",
       in_oven: "Oven",

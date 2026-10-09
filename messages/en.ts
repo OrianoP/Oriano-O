@@ -26,7 +26,7 @@ const en = {
     todayClosed: "Closed today",
     service: "Pickup & delivery",
     payment: "Cash on delivery",
-    ticker: ["NY Regular 30 cm", "NY XL 45 cm", "Hand-stretched dough", "Foldable slices", "Pickup or delivery", "Cash on delivery", "Zouk Mikael"],
+    ticker: ["NY Regular 30 cm", "NY XL 45 cm", "Hand-stretched dough", "No flop", "Pickup or delivery", "Cash on delivery", "Zouk Mikael"],
   },
   status: {
     open: "Open now — taking orders",

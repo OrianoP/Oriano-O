@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { ArrowRight, Plus } from "lucide-react";
-import { cleanDescription, fromPrice, money } from "@/lib/menu";
+import { describe, fromPrice, money } from "@/lib/menu";
 import type { MenuProduct } from "@/lib/types";
 import type { Messages } from "@/messages/en";
 import { Photo } from "./Photo";
@@ -46,7 +46,7 @@ export function BestSellers({ picks, t, canOrder, onOpen }: { picks: MenuProduct
               <span className="absolute start-4 top-4 font-display text-5xl leading-none text-yolk drop-shadow">{String(i + 1).padStart(2, "0")}</span>
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <h3 className="font-display text-3xl leading-none">{p.name}</h3>
-                <p className="mt-1.5 line-clamp-2 text-sm text-cream-2">{cleanDescription(p.description)}</p>
+                <p className="mt-1.5 line-clamp-2 text-sm text-cream-2">{describe(p.description, t)}</p>
                 <div className="mt-4 flex items-center justify-between">
                   <span className="font-semibold tabular-nums">
                     {p.sizes.length > 1 && <span className="me-1 text-xs font-normal text-cream-2">{t.menu.from}</span>}{money(fromPrice(p))}

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Check, Minus, Plus, X } from "lucide-react";
 import { MAX_QTY, useCart } from "@/lib/cart";
-import { addonPrice, allowsExtras, allowsNotes, cleanDescription, isXl, money, unitPrice } from "@/lib/menu";
+import { addonPrice, allowsExtras, allowsNotes, describe, extraName, isXl, money, unitPrice } from "@/lib/menu";
 import { sizeLabel, type Locale } from "@/lib/i18n";
 import type { MenuProduct } from "@/lib/types";
 import type { Messages } from "@/messages/en";
@@ -40,7 +40,7 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
   const drink = drinks.find((d) => d.id === drinkId) || null;
   const needsDrink = mealOn && drinks.length > 0 && !drink;
   const each = unitPrice(p, size, allowsExtras(p) ? addonIds : []);
-  const desc = cleanDescription(p.description);
+  const desc = describe(p.description, t);
 
   // Dialog behaviour: lock the page, trap Tab, Escape closes, focus returns to the opener.
   useEffect(() => {
@@ -213,7 +213,7 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
                         <span className={`grid h-5.5 w-5.5 shrink-0 place-items-center rounded-md border-2 transition-colors ${on ? "border-ink bg-ink text-white" : "border-line-strong"}`} aria-hidden>
                           {on && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                         </span>
-                        <span className="flex-1 text-[15px] text-ink">{a.name}</span>
+                        <span className="flex-1 text-[15px] text-ink">{extraName(a.name, t)}</span>
                         <span className={`text-sm tabular-nums ${price === 0 ? "font-medium text-basil" : "text-muted"}`} dir={price === 0 ? undefined : "ltr"}>{price === 0 ? t.item.free : `+${money(price)}`}</span>
                       </label>
                     );

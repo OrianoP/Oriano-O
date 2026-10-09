@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { ArrowRight, Flame } from "lucide-react";
-import { cleanDescription, fromPrice, money } from "@/lib/menu";
+import { describe, fromPrice, money } from "@/lib/menu";
 import { fill, type Locale } from "@/lib/i18n";
 import type { MenuProduct } from "@/lib/types";
 import type { PublicDeal } from "@/lib/deals";
@@ -125,7 +125,7 @@ export function OfferSpotlight({ offers, deals = [], products = [], lang = "en",
                 <div className="relative flex flex-col justify-center gap-3 p-6 sm:p-8">
                   <div aria-hidden className="pointer-events-none absolute -end-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
                   <h3 className="font-display text-4xl leading-[0.95] sm:text-5xl">{p.name}</h3>
-                  {cleanDescription(p.description) && <p className="line-clamp-3 text-[15px] leading-relaxed text-white/85">{cleanDescription(p.description)}</p>}
+                  {describe(p.description, t) && <p className="line-clamp-3 text-[15px] leading-relaxed text-white/85">{describe(p.description, t)}</p>}
                   <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <span className="font-display text-5xl leading-none tabular-nums">
                       {p.sizes.length > 1 && <span className="me-1.5 align-middle font-sans text-sm font-normal text-white/80">{t.menu.from}</span>}

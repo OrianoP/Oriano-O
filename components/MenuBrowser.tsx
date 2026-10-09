@@ -11,7 +11,7 @@ import { OfferSpotlight, offerSaving } from "@/components/OfferSpotlight";
 import { DealSheet } from "@/components/DealSheet";
 import type { PublicDeal } from "@/lib/deals";
 import { useCart } from "@/lib/cart";
-import { cleanDescription, fromPrice, itemKind, money, slugify } from "@/lib/menu";
+import { describe, fromPrice, itemKind, money, slugify } from "@/lib/menu";
 import { term, type Locale } from "@/lib/i18n";
 import type { Menu, MenuProduct, ShopConfig } from "@/lib/types";
 import type { Messages } from "@/messages/en";
@@ -179,7 +179,7 @@ function Price({ p, t }: { p: MenuProduct; t: Messages }) {
 }
 
 function PhotoCard({ product: p, t, canOrder, onOpen }: { product: MenuProduct; t: Messages; canOrder: boolean; onOpen: () => void }) {
-  const desc = cleanDescription(p.description);
+  const desc = describe(p.description, t);
   return (
     <motion.button
       onClick={onOpen}
@@ -208,7 +208,7 @@ function PhotoCard({ product: p, t, canOrder, onOpen }: { product: MenuProduct; 
 }
 
 function CompactRow({ product: p, t, canOrder, onOpen }: { product: MenuProduct; t: Messages; canOrder: boolean; onOpen: () => void }) {
-  const desc = cleanDescription(p.description);
+  const desc = describe(p.description, t);
   return (
     <motion.button
       onClick={onOpen}

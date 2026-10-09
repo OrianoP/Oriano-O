@@ -132,3 +132,16 @@ export function pricePicks(deal: PublicDeal, picks: DealPick[], menu: Pick<Menu,
   }
   return out.length === picks.length ? out : null;
 }
+
+/**
+ * The deal's tag (e.g. "WEEKEND ONLY") when it adds something: not when it is
+ * just the deal's name again, and not an English-only tag on the Arabic page.
+ */
+export function dealTag(d: { tag?: string | null; name: string; nameAr?: string | null }, lang: string) {
+  const raw = (d.tag || "").trim();
+  if (!raw) return "";
+  const same = [d.name, d.nameAr || ""].some((n) => n.trim().toLowerCase() === raw.toLowerCase());
+  if (same) return "";
+  if (lang === "ar" && !/[؀-ۿ]/.test(raw)) return "";
+  return raw;
+}

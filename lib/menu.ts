@@ -30,7 +30,8 @@ export function cleanDescription(d: string | null) {
  * English rather than being guessed.
  */
 const AR_INGREDIENTS: Record<string, string> = {
-  "tomato base": "قاعدة صلصة الطماطم",
+  "tomato base": "قاعدة صلصة البندورة",
+  "red base": "قاعدة صلصة البندورة",
   "bbq base": "قاعدة صلصة الباربكيو",
   "white base": "القاعدة البيضاء",
   "truffle base": "قاعدة الترافل",
@@ -74,7 +75,7 @@ const AR_INGREDIENTS: Record<string, string> = {
   "oregano": "أوريغانو",
   "chili flakes": "رقائق الفلفل الحار",
   "mesclun": "خس مشكّل",
-  "cherry tomatoes": "طماطم كرزية",
+  "cherry tomatoes": "بندورة كرزية",
   "balsamic": "صلصة البلسميك",
   "truffle oil drizzle": "رشّة زيت الترافل",
   "olive oil drizzle": "رشّة زيت الزيتون",
@@ -111,6 +112,17 @@ export function describe(description: string | null, t: { dir: string }) {
 
 /** An extra's name in the visitor's language, for display only (the POS gets the English name). */
 export const extraName = (name: string, t: { dir: string }) => (t.dir === "rtl" ? arWord(name) ?? name : name);
+
+/** One-tap add-ons offered in the cart: dips first, then drinks (simple items only). */
+export type CartSuggestion = { id: number; name: string; price: number; sizeId?: number; sizeName?: string; imageUrl: string | null };
+export function cartSuggestions(menu: { products: MenuProduct[] }): CartSuggestion[] {
+  const simple = (p: MenuProduct) => !p.soldOut && p.sizes.length <= 1;
+  const pick = (kind: "dip" | "drink") => menu.products.filter((p) => simple(p) && itemKind(p) === kind);
+  return [...pick("dip"), ...pick("drink")].slice(0, 10).map((p) => {
+    const s = p.sizes[0];
+    return { id: p.id, name: p.name, price: s ? s.price : p.basePrice, sizeId: s?.id, sizeName: s?.name, imageUrl: p.imageUrl };
+  });
+}
 
 export function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");

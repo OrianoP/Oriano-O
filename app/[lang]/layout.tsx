@@ -4,7 +4,8 @@ import { Bricolage_Grotesque, Fraunces, IBM_Plex_Sans_Arabic, Oswald } from "nex
 import "../globals.css";
 import { LOCALES, getMessages, hasLocale } from "@/lib/i18n";
 import { SITE_URL } from "@/lib/site";
-import { getConfigSafe } from "@/lib/pos";
+import { getConfigSafe, getMenuSafe } from "@/lib/pos";
+import { cartSuggestions } from "@/lib/menu";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { CartDrawer } from "@/components/CartDrawer";
@@ -69,7 +70,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const t = getMessages(lang);
-  const config = await getConfigSafe();
+  const [config, menu] = await Promise.all([getConfigSafe(), getMenuSafe()]);
 
   return (
     <html lang={lang} dir={t.dir} data-scroll-behavior="smooth" className={`${display.variable} ${serif.variable} ${inter.variable} ${arabic.variable}`}>
@@ -81,7 +82,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           <SiteHeader lang={lang} t={t} config={config} />
           <main id="main" className="flex-1">{children}</main>
           <SiteFooter lang={lang} t={t} config={config} />
-          <CartDrawer lang={lang} t={t} />
+          <CartDrawer lang={lang} t={t} suggestions={cartSuggestions(menu)} />
           <AccountSheet lang={lang} t={t} zones={config?.zones ?? []} />
         </MotionProvider>
       </body>

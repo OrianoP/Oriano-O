@@ -32,7 +32,7 @@ export function MyOrders({ lang, t }: { lang: Locale; t: Messages }) {
           {orders.map((o) => (
             <Item key={o.token} as="li" className="list-none">
               <Link href={`/${lang}/track/${o.token}`} className="group flex items-center gap-4 rounded-3xl border border-line bg-surface p-4 hover:border-line-strong hover:shadow-lift sm:p-5">
-                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-coal font-display text-2xl text-yolk" dir="ltr">#{o.orderNumber.slice(-3)}</span>
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-coal text-yolk" aria-hidden><ReceiptText className="h-6 w-6" /></span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-semibold text-ink" dir="ltr">{o.orderNumber}</span>
                   <span className="block truncate text-sm text-muted">{formatDateTime(o.createdAt, lang)}</span>

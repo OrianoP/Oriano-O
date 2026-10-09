@@ -6,15 +6,17 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { MAX_QTY, cartCount, cartSubtotal, useCart } from "@/lib/cart";
-import { money } from "@/lib/menu";
+import { money, type CartSuggestion } from "@/lib/menu";
 import { sizeLabel, type Locale } from "@/lib/i18n";
 import type { Messages } from "@/messages/en";
 import { Photo } from "./Photo";
 import { spring } from "./motion";
 import { useIsPhone } from "@/lib/useIsPhone";
 
-export function CartDrawer({ lang, t }: { lang: Locale; t: Messages }) {
-  const { lines, open, setOpen, setQuantity, notice, setNotice } = useCart();
+export function CartDrawer({ lang, t, suggestions = [] }: { lang: Locale; t: Messages; suggestions?: CartSuggestion[] }) {
+  const { lines, open, setOpen, setQuantity, notice, setNotice, add } = useCart();
+  // Dips and drinks not in the order yet: one tap adds one.
+  const offer = suggestions.filter((s) => !lines.some((l) => l.productId === s.id)).slice(0, 8);
   const reduce = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const panel = useRef<HTMLElement>(null);
@@ -129,6 +131,22 @@ export function CartDrawer({ lang, t }: { lang: Locale; t: Messages }) {
 
             {lines.length > 0 && (
               <div className="shrink-0 space-y-3 border-t border-line bg-surface px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
+                {offer.length > 0 && (
+                  <div data-testid="cart-addons">
+                    <p className="mb-2 text-sm font-semibold text-ink">{t.cart.addOns}</p>
+                    <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 no-scrollbar sm:-mx-6 sm:px-6">
+                      {offer.map((s) => (
+                        <button key={s.id} type="button" data-testid="cart-addon"
+                          onClick={() => add({ productId: s.id, sizeId: s.sizeId, addonIds: [], notes: "", name: s.name, sizeName: s.sizeName, addonNames: [], unitPrice: s.price, imageUrl: s.imageUrl }, 1)}
+                          className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full border-2 border-line ps-3.5 pe-1.5 text-sm font-semibold text-ink hover:border-ink">
+                          <span className="whitespace-nowrap">{s.name}</span>
+                          <span className="text-xs tabular-nums text-muted" dir="ltr">{money(s.price)}</span>
+                          <span className="grid h-7 w-7 place-items-center rounded-full bg-ink text-cream" aria-hidden><Plus className="h-4 w-4" /></span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-baseline justify-between">
                   <span className="text-muted">{t.cart.subtotal}</span>
                   <span className="font-display text-3xl text-ink">{money(subtotal)}</span>

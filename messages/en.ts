@@ -122,6 +122,8 @@ const en = {
     pricesUpdated: "Some prices changed since you added these items — your order is up to date.",
     removedItems: "Some items are no longer available and were removed from your order.",
     deliveryNote: "Delivery fee is added at checkout based on your area.",
+    addOns: "Add a dip or a drink?",
+    added: "Added",
   },
   account: {
     open: "My account",

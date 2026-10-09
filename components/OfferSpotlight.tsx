@@ -5,7 +5,7 @@ import { ArrowRight, Flame } from "lucide-react";
 import { describe, fromPrice, money } from "@/lib/menu";
 import { fill, type Locale } from "@/lib/i18n";
 import type { MenuProduct } from "@/lib/types";
-import type { PublicDeal } from "@/lib/deals";
+import { dealTag, type PublicDeal } from "@/lib/deals";
 import type { Messages } from "@/messages/en";
 import { Photo } from "./Photo";
 import { Item, Reveal, Stagger, spring } from "./motion";
@@ -75,7 +75,7 @@ export function OfferSpotlight({ offers, deals = [], products = [], lang = "en",
               <div className="relative">
                 <DealPicture deal={d} products={products} className={picCls} />
                 <span className="absolute start-4 top-4 inline-flex max-w-[80%] items-center gap-1.5 truncate rounded-full bg-yolk px-3.5 py-1.5 font-display text-sm tracking-[0.08em] text-coal shadow-lift">
-                  <Flame className="h-4 w-4 shrink-0" /> {d.tag || dealPriceText(d, t)}
+                  <Flame className="h-4 w-4 shrink-0" /> {dealTag(d, lang) || dealPriceText(d, t)}
                 </span>
               </div>
               <div className="relative flex flex-col justify-center gap-3 p-6 sm:p-8">

@@ -203,18 +203,17 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
                   <span className="text-sm font-semibold text-ink">{sec.title}</span>
                   <span className="text-xs font-medium uppercase tracking-wider text-muted">{t.item.optional}</span>
                 </legend>
-                <div className="divide-y divide-line overflow-hidden rounded-2xl border border-line">
+                {/* Two-column tiles: half the scrolling of a one-per-row list. */}
+                <div className="grid grid-cols-2 gap-2">
                   {sec.list.map((a) => {
                     const price = addonPrice(a, size);
                     const on = addonIds.includes(a.id);
                     return (
-                      <label key={a.id} className={`flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors has-[:focus-visible]:bg-paper-2 ${on ? "bg-paper" : "hover:bg-paper"}`}>
+                      <label key={a.id} className={`relative flex min-h-14 cursor-pointer flex-col justify-center rounded-2xl border-2 px-3 py-2 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand ${on ? "border-ink bg-ink text-white" : "border-line text-ink hover:border-line-strong"}`}>
                         <input type="checkbox" checked={on} onChange={() => toggleAddon(a.id)} className="sr-only" />
-                        <span className={`grid h-5.5 w-5.5 shrink-0 place-items-center rounded-md border-2 transition-colors ${on ? "border-ink bg-ink text-white" : "border-line-strong"}`} aria-hidden>
-                          {on && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
-                        </span>
-                        <span className="flex-1 text-[15px] text-ink">{extraName(a.name, t)}</span>
-                        <span className={`text-sm tabular-nums ${price === 0 ? "font-medium text-basil" : "text-muted"}`} dir={price === 0 ? undefined : "ltr"}>{price === 0 ? t.item.free : `+${money(price)}`}</span>
+                        <span className="pe-5 text-sm font-semibold leading-snug">{extraName(a.name, t)}</span>
+                        {price > 0 && <span className={`text-xs tabular-nums ${on ? "text-white/75" : "text-muted"}`} dir="ltr">+{money(price)}</span>}
+                        {on && <Check className="absolute end-2.5 top-2.5 h-4 w-4" strokeWidth={3} aria-hidden />}
                       </label>
                     );
                   })}

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, Check, Flame, Minus, Plus, X } from "lucide-react";
 import { MAX_QTY, dealPickNames, useCart } from "@/lib/cart";
-import { dealTotal, pricePicks, type DealPick, type PublicDeal } from "@/lib/deals";
+import { dealTag, dealTotal, pricePicks, type DealPick, type PublicDeal } from "@/lib/deals";
 import { money } from "@/lib/menu";
 import { fill, sizeLabel, type Locale } from "@/lib/i18n";
 import type { Menu, MenuProduct } from "@/lib/types";
@@ -113,7 +113,7 @@ export function DealSheet({ deal, menu, lang, t, canOrder, onClose }: {
               <button onClick={() => setAt(choosable[choosable.indexOf(at) - 1])} className="grid h-11 w-11 place-items-center rounded-full text-ink hover:bg-paper-2" aria-label={t.deal.back}><ArrowLeft className="h-5 w-5 rtl:rotate-180" /></button>
             ) : <span className="w-2" />}
             <div className="min-w-0 flex-1">
-              <p className="flex items-center gap-1 font-display text-xs tracking-[0.16em] text-brand"><Flame className="h-3.5 w-3.5" /> {deal.tag || dealPriceText(deal, t)}</p>
+              <p className="flex items-center gap-1 font-display text-xs tracking-[0.16em] text-brand"><Flame className="h-3.5 w-3.5" /> {dealTag(deal, lang) || dealPriceText(deal, t)}</p>
               <h2 id="deal-title" className="truncate font-display text-2xl leading-tight text-ink">{name}</h2>
             </div>
             <button onClick={onClose} className="grid h-11 w-11 place-items-center rounded-full text-ink hover:bg-paper-2" aria-label={t.item.close}><X className="h-5 w-5" /></button>

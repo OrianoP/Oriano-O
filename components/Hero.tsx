@@ -16,7 +16,7 @@ export function Hero({ t, lang, config, preview, photo, offer }: { t: Messages; 
   const ticker = [...t.hero.ticker, ...t.hero.ticker];
   return (
     <section className="oven-glow relative overflow-hidden text-cream">
-      <div className="mx-auto grid min-h-[100svh] max-w-7xl grid-cols-1 items-center gap-10 px-4 pb-24 pt-[calc(6rem+env(safe-area-inset-top))] sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:px-8 lg:pb-28">
+      <div className="mx-auto grid min-h-[100svh] max-w-7xl grid-cols-1 items-center gap-8 px-4 pb-24 pt-[calc(5rem+env(safe-area-inset-top))] sm:gap-10 sm:pt-[calc(6rem+env(safe-area-inset-top))] sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:px-8 lg:pb-28">
         <div className="relative z-10">
           {offer && (
             <motion.a {...rise(0)} href="#offers" className="group mb-5 inline-flex max-w-full items-center gap-2 rounded-full bg-brand py-1.5 pe-4 ps-1.5 text-sm font-semibold text-white shadow-glow hover:bg-brand-600" data-testid="hero-offer">
@@ -33,8 +33,12 @@ export function Hero({ t, lang, config, preview, photo, offer }: { t: Messages; 
             </span>
           </motion.h1>
           <motion.p {...rise(0.28)} className="mt-4 font-display text-[clamp(1.5rem,5vw,2.75rem)] leading-none text-cream-2">{t.hero.titleC}</motion.p>
-          <motion.p {...rise(0.38)} className="mt-6 max-w-lg text-[17px] leading-relaxed text-cream-2">{t.hero.subtitle}</motion.p>
-          <motion.div {...rise(0.48)} className="mt-8 flex flex-wrap items-center gap-3">
+          {/* Phones: open/closed status right away; the longer story shows from tablets up. */}
+          <motion.div {...rise(0.33)} className="mt-5 sm:hidden">
+            <StatusPill config={config} t={t} lang={lang} preview={preview} tone="dark" />
+          </motion.div>
+          <motion.p {...rise(0.38)} className="mt-6 hidden max-w-lg text-[17px] leading-relaxed text-cream-2 sm:block">{t.hero.subtitle}</motion.p>
+          <motion.div {...rise(0.48)} className="mt-6 flex flex-wrap items-center gap-3 sm:mt-8">
             <a href={offer ? "#offers" : "#picks"} className="group inline-flex h-13 items-center gap-2 rounded-full bg-brand px-7 text-base font-semibold text-white shadow-glow transition-transform hover:bg-brand-600 active:scale-[0.98]">
               {t.hero.order} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
             </a>
@@ -45,15 +49,15 @@ export function Hero({ t, lang, config, preview, photo, offer }: { t: Messages; 
               <Phone className="h-4 w-4" /> {t.hero.callToOrder}
             </a>
           </motion.div>
-          <motion.div {...rise(0.58)} className="mt-8">
+          <motion.div {...rise(0.58)} className="mt-8 hidden sm:block">
             <StatusPill config={config} t={t} lang={lang} preview={preview} tone="dark" />
           </motion.div>
         </div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.94, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 1.1, ease: easeOut, delay: 0.25 }} className="relative">
+        <motion.div initial={{ opacity: 0, scale: 0.94, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 1.1, ease: easeOut, delay: 0.25 }} className="relative order-first lg:order-none">
           {/* Red "heat" behind the plate */}
           <div aria-hidden className="absolute -inset-10 rounded-full bg-brand/25 blur-3xl" />
-          <Parallax amount={40} className="relative aspect-[4/3] overflow-hidden rounded-[32px] shadow-[0_40px_80px_-30px_rgb(0_0_0/0.8)] ring-1 ring-white/10 lg:aspect-[5/4]">
+          <Parallax amount={40} className="relative aspect-[16/10] overflow-hidden rounded-[28px] sm:aspect-[4/3] sm:rounded-[32px] shadow-[0_40px_80px_-30px_rgb(0_0_0/0.8)] ring-1 ring-white/10 lg:aspect-[5/4]">
             {photo ? (
               <Image src={photo} alt="Oriano Pizza" fill priority quality={85} sizes="(max-width: 1024px) 100vw, 620px" className="scale-[1.12] object-cover" />
             ) : (

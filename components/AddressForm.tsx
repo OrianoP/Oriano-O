@@ -37,21 +37,6 @@ export function AddressForm({ value, onChange, zones, lang, t, errors = {}, idPr
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="sm:col-span-2">
-        <span className={label}>{t.addresses.label}</span>
-        <div className="flex gap-2">
-          {LABELS.map((l) => {
-            const Icon = labelIcon(l);
-            const on = value.label === l;
-            return (
-              <button type="button" key={l} onClick={() => onChange({ ...value, label: l })} aria-pressed={on}
-                className={`inline-flex h-10 items-center gap-1.5 rounded-full border-2 px-4 text-sm font-semibold ${on ? "border-ink bg-ink text-white" : "border-line text-ink hover:border-line-strong"}`}>
-                <Icon className="h-4 w-4" /> {labelText(l, t)}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="sm:col-span-2">
         <label className={label} htmlFor={`${idPrefix}zone`}>{t.checkout.area}</label>
         <AreaPicker id={`${idPrefix}zone`} zones={zones} value={value.zoneId} onChange={(zoneId) => onChange({ ...value, zoneId })} lang={lang} t={t} invalid={errors.zone} />
         {errors.zone && <p className="mt-1 text-xs font-semibold text-brand-700">{t.checkout.required}</p>}
@@ -73,6 +58,21 @@ export function AddressForm({ value, onChange, zones, lang, t, errors = {}, idPr
       <div className="sm:col-span-2">
         <label className={label} htmlFor={`${idPrefix}landmark`}>{t.checkout.landmark}</label>
         <input id={`${idPrefix}landmark`} value={value.landmark} onChange={set("landmark")} maxLength={160} placeholder={t.checkout.landmarkPlaceholder} className={`${field} border-line`} />
+      </div>
+      <div className="sm:col-span-2">
+        <span className={label}>{t.addresses.label}</span>
+        <div className="flex gap-2">
+          {LABELS.map((l) => {
+            const Icon = labelIcon(l);
+            const on = value.label === l;
+            return (
+              <button type="button" key={l} onClick={() => onChange({ ...value, label: l })} aria-pressed={on}
+                className={`inline-flex h-10 items-center gap-1.5 rounded-full border-2 px-4 text-sm font-semibold ${on ? "border-ink bg-ink text-white" : "border-line text-ink hover:border-line-strong"}`}>
+                <Icon className="h-4 w-4" /> {labelText(l, t)}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

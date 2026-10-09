@@ -189,7 +189,7 @@ export function consumeJustPlaced(token: string) {
 
 // Remember the customer's details for next time (this device only).
 const PROFILE_KEY = "oriano-profile";
-export type Profile = { name: string; phone: string; zoneId?: number; street?: string; building?: string; floor?: string; landmark?: string };
+export type Profile = { name: string; phone: string; zoneId?: number; street?: string; building?: string; floor?: string; landmark?: string; orderType?: "pickup" | "delivery" };
 
 export function loadProfile(): Partial<Profile> {
   try {

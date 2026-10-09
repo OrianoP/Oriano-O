@@ -10,6 +10,7 @@ import { cleanDescription, fromPrice, money } from "@/lib/menu";
 import type { Messages } from "@/messages/en";
 import { ADDRESS, MAPS_URL, SITE_URL } from "@/lib/site";
 import type { Menu, ShopConfig } from "@/lib/types";
+import { dealTag } from "@/lib/deals";
 
 // Menu and shop status refresh from the POS in the background.
 export const revalidate = 60;
@@ -77,7 +78,9 @@ function heroOffer(menu: Menu, t: Messages, lang: Locale) {
   if (d) {
     const price = d.priceMode === "fixed" && d.price != null ? money(d.price) : d.priceMode === "bogo" ? t.deal.bogo
       : d.priceMode === "percent" ? fill(t.deal.off, { n: d.percent ?? 0 }) : `${t.menu.from} ${money(d.fromPrice)}`;
-    return { tag: d.tag || price, name: lang === "ar" && d.nameAr ? d.nameAr : d.name, price: d.tag ? price : "" };
+    const name = lang === "ar" && d.nameAr ? d.nameAr : d.name;
+    const tag = dealTag(d, lang); // the price stands in when the tag adds nothing
+    return { tag: tag || price, name, price: tag ? price : "" };
   }
   const p = menu.products.find((x) => x.offerTag && !x.soldOut);
   return p ? { tag: p.offerTag!, name: p.name, price: money(fromPrice(p)) } : null;

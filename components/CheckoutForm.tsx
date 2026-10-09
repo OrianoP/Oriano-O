@@ -60,7 +60,8 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
 
   const canPickup = config.pickupEnabled;
   const canDeliver = config.deliveryEnabled && config.zones.length > 0;
-  const [orderType, setOrderType] = useState<"pickup" | "delivery">(canDeliver && !canPickup ? "delivery" : "pickup");
+  // Most orders are deliveries: start there (or on what this customer chose last time).
+  const [orderType, setOrderType] = useState<"pickup" | "delivery">(canDeliver ? "delivery" : "pickup");
   const [form, setForm] = useState({ name: "", phone: "", zoneId: "", street: "", building: "", floor: "", landmark: "", notes: "", coupon: "", website: "" });
   const [agree, setAgree] = useState(false);
   const [touched, setTouched] = useState(false);
@@ -117,6 +118,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
   useEffect(() => {
     setMounted(true);
     const p = loadProfile();
+    if (p.orderType === "pickup" && canPickup) setOrderType("pickup");
     setForm((f) => ({
       ...f,
       name: p.name || "", phone: p.phone || "", zoneId: p.zoneId ? String(p.zoneId) : "",
@@ -239,7 +241,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
       }
       const name = form.name.trim();
       saveOrder({ orderNumber: data.orderNumber, token: data.trackingToken, total: data.total, createdAt: new Date().toISOString(), name });
-      saveProfile({ name, phone: form.phone });
+      saveProfile({ name, phone: form.phone, orderType });
       if (orderType === "delivery" && zone) {
         if (addrChoice !== "new") void account.markUsed(addrChoice);
         else if (saveAddress) void account.addAddress({ label: addrLabel, zoneId: zone.id, street: form.street.trim(), building: form.building.trim(), floor: form.floor.trim(), landmark: form.landmark.trim() }).catch(() => {});
@@ -562,7 +564,7 @@ function ThankYou({ placed, name, lang, t }: { placed: Placed | null; name: stri
           <AnimatePresence>
             {done && (
               <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: easeOut }} className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm">
-                <span className="text-cream-2">{t.thanks.orderNumber}</span> <span className="font-display text-xl text-yolk" dir="ltr">#{placed!.orderNumber.slice(-3)}</span> <span className="text-cream-2" dir="ltr">· {placed!.orderNumber}</span>
+                <span className="text-cream-2">{t.thanks.orderNumber}</span> <span className="font-display text-xl text-yolk" dir="ltr">{placed!.orderNumber}</span>
               </motion.p>
             )}
           </AnimatePresence>

@@ -43,6 +43,13 @@ const ar: Messages = {
     readyIn: "الاستلام خلال حوالي {n} دقيقة",
     kitchenBusy: "المطبخ مشغول حالياً",
   },
+  offers: {
+    eyebrow: "العروض",
+    title: "لا تفوّتها",
+    cta: "خود العرض",
+    save: "وفّر {amount}",
+    tab: "🔥 العروض",
+  },
   picks: {
     eyebrow: "اختيار الشيف",
     title: "يلي الناس بترجع لأجلها",

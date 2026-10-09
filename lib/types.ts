@@ -21,6 +21,10 @@ export type MenuProduct = {
   basePrice: number;
   imageUrl: string | null;
   isFeatured: boolean;
+  /** Set in the POS (Menu → 🔥): shown first on the site with this label. */
+  offerTag?: string | null;
+  /** Optional "was" price, crossed out next to the offer price. */
+  compareAtPrice?: number | null;
   /** 86'd in the POS: shown but not orderable until it's back. */
   soldOut?: boolean;
   sizes: MenuSize[];

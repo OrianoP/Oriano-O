@@ -7,6 +7,7 @@ import { ItemSheet } from "@/components/ItemSheet";
 import { CartBar } from "@/components/CartBar";
 import { AddedToast } from "@/components/AddedToast";
 import { BestSellers } from "@/components/BestSellers";
+import { OfferSpotlight, offerSaving } from "@/components/OfferSpotlight";
 import { useCart } from "@/lib/cart";
 import { cleanDescription, fromPrice, money, slugify } from "@/lib/menu";
 import { term, type Locale } from "@/lib/i18n";
@@ -39,6 +40,7 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
     const list = featured.length ? featured : DEFAULT_PICKS.map((n) => available.find((p) => p.name === n)).filter(Boolean) as MenuProduct[];
     return list.slice(0, 4);
   }, [menu]);
+  const offers = useMemo(() => menu.products.filter((p) => p.offerTag && !p.soldOut), [menu]);
 
   // One section per category; pizzas are grouped by base (Red, White, Vodka…).
   const sections = useMemo<Section[]>(() => {
@@ -97,6 +99,7 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
 
   return (
     <>
+      <OfferSpotlight offers={offers} t={t} canOrder={canOrder} onOpen={setSelected} />
       <BestSellers picks={picks} t={t} canOrder={canOrder} onOpen={setSelected} />
 
       <section id="menu" className="scroll-mt-[calc(4rem+env(safe-area-inset-top))] pt-14 sm:pt-20">
@@ -111,6 +114,9 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
         <div className="sticky top-[calc(4rem+env(safe-area-inset-top))] z-30 mt-6 bg-paper/90 backdrop-blur-md">
           <div className="relative mx-auto max-w-7xl">
             <div ref={tabsRef} className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 py-3 no-scrollbar sm:px-6 lg:px-8">
+              {offers.length > 0 && (
+                <a href="#offers" className="shrink-0 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600" data-testid="tab-offers">{t.offers.tab}</a>
+              )}
               {sections.map((s) => (
                 <a key={s.id} href={`#${s.id}`} data-tab={s.id} className="relative shrink-0 rounded-full px-4 py-2 text-sm font-semibold text-ink-2 transition-colors hover:text-ink">
                   {active === s.id && <motion.span layoutId="tab-pill" transition={spring} className="absolute inset-0 rounded-full bg-ink" />}
@@ -158,10 +164,12 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
 }
 
 function Price({ p, t }: { p: MenuProduct; t: Messages }) {
+  const s = p.offerTag ? offerSaving(p) : null;
   return (
-    <span className="font-semibold tabular-nums text-ink">
+    <span className={`font-semibold tabular-nums ${s ? "text-brand-700" : "text-ink"}`}>
       {p.sizes.length > 1 && <span className="me-1 text-xs font-normal text-muted">{t.menu.from}</span>}
       {money(fromPrice(p))}
+      {s && <span className="ms-1.5 text-sm font-normal text-muted line-through">{money(s.was)}</span>}
     </span>
   );
 }
@@ -181,6 +189,7 @@ function PhotoCard({ product: p, t, canOrder, onOpen }: { product: MenuProduct; 
         <div className="flex items-start justify-between gap-3">
           <span className="font-display text-[1.7rem] leading-none text-ink">{p.name}</span>
           {p.soldOut ? <span className="shrink-0 rounded-full bg-ink px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cream">{t.menu.soldOut}</span>
+            : p.offerTag ? <span className="shrink-0 rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">🔥 {p.offerTag}</span>
             : p.isFeatured && <span className="shrink-0 rounded-full bg-yolk px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-coal">{t.menu.popular}</span>}
         </div>
         {desc && <span className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{desc}</span>}
@@ -202,7 +211,7 @@ function CompactRow({ product: p, t, canOrder, onOpen }: { product: MenuProduct;
       className={`group flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-start hover:border-line-strong hover:shadow-soft ${p.soldOut ? "opacity-70" : ""}`}
     >
       <span className="min-w-0 flex-1">
-        <span className="block font-semibold text-ink">{p.name}{p.soldOut && <span className="ms-2 rounded-full bg-ink px-2 py-0.5 align-middle text-[10px] font-bold uppercase tracking-wider text-cream">{t.menu.soldOut}</span>}</span>
+        <span className="block font-semibold text-ink">{p.name}{p.offerTag && !p.soldOut && <span className="ms-2 rounded-full bg-brand px-2 py-0.5 align-middle text-[10px] font-bold uppercase tracking-wider text-white">🔥 {p.offerTag}</span>}{p.soldOut && <span className="ms-2 rounded-full bg-ink px-2 py-0.5 align-middle text-[10px] font-bold uppercase tracking-wider text-cream">{t.menu.soldOut}</span>}</span>
         {desc && <span className="mt-0.5 line-clamp-1 block text-sm text-muted">{desc}</span>}
       </span>
       <Price p={p} t={t} />

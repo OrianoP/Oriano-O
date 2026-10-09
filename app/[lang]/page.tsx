@@ -87,7 +87,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(menu, config, lang)).replace(/</g, "\\u003c") }}
       />
 
-      <Hero t={t} lang={lang} config={config} preview={PREVIEW_MODE} photo={hero} />
+      <Hero t={t} lang={lang} config={config} preview={PREVIEW_MODE} photo={hero} offer={menu.products.find((p) => p.offerTag && !p.soldOut) ?? null} />
 
       {/* The light world: browse and order */}
       <div className="paper-grain bg-paper">
@@ -113,7 +113,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           {story && (
             <Reveal delay={0.1}>
               <Parallax amount={50} className="relative aspect-[4/5] overflow-hidden rounded-[32px] ring-1 ring-white/10 sm:aspect-square">
-                <Image src={story} alt="" fill sizes="(max-width: 1024px) 100vw, 600px" className="scale-[1.15] object-cover" />
+                <Image src={story} alt="" fill quality={85} sizes="(max-width: 1024px) 100vw, 680px" className="scale-[1.15] object-cover" />
               </Parallax>
             </Reveal>
           )}

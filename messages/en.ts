@@ -41,6 +41,13 @@ const en = {
     readyIn: "Pickup in about {n} min",
     kitchenBusy: "The kitchen is busy right now",
   },
+  offers: {
+    eyebrow: "Offers",
+    title: "Don't miss these",
+    cta: "Get the offer",
+    save: "Save {amount}",
+    tab: "🔥 Offers",
+  },
   picks: {
     eyebrow: "Chef's picks",
     title: "The ones people come back for",

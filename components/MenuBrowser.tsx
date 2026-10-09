@@ -19,7 +19,8 @@ type Group = { title?: string; products: MenuProduct[] };
 type Section = { id: string; title: string; groups: Group[] };
 
 // Chef's picks when the POS hasn't flagged any product as featured.
-const DEFAULT_PICKS = ["Pepperoni Overload Ranch", "Hot Honey Pepperoni Goat Cheese", "Truffle Chicken", "La Latina"];
+// Shown until the owner stars dishes in the POS (Menu → ☆). Old and current names both match.
+const DEFAULT_PICKS = ["Pepperoni Overload Ranch", "Hot Pepperoni Goat Cheese", "Hot Honey Pepperoni Goat Cheese", "Truffle Chicken", "La Latina"];
 
 export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: ShopConfig; lang: Locale; t: Messages }) {
   const [selected, setSelected] = useState<MenuProduct | null>(null);

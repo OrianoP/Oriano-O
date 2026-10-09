@@ -100,6 +100,12 @@ const ar: Messages = {
     quantity: "الكمية",
     regularHint: "لشخص أو شخصين",
     xlHint: "لـ 3–4 أشخاص · 8 شرائح كبيرة",
+    freeExtras: "إضافات مجانية",
+    meal: "كمّل وجبتك",
+    mealSub: "علبة بطاطا + مشروب من اختيارك",
+    chooseDrink: "اختر مشروبك",
+    pickDrink: "اختر مشروباً لوجبتك",
+    mealDrink: "مشروب الوجبة",
   },
   cart: {
     title: "طلبك",

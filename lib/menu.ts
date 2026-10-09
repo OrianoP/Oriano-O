@@ -27,3 +27,22 @@ export function cleanDescription(d: string | null) {
 export function slugify(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
+
+/*
+ * What an item can be customised with. Drinks: nothing (no extras, no
+ * instructions). Fries and other sides: instructions only. Dips: no extras.
+ * Goes by type and, as a safety net, by name.
+ */
+const DRINK = /water|pepsi|7 ?up|miranda|ice ?tea|cola|soda|juice|lemonade|energy|drink/i;
+const DIP = /ranch|buffalo|sauce|dip|garlic mayo|honey mustard/i;
+const SIDE = /fries|wedges|nuggets|wings/i;
+export function itemKind(p: Pick<MenuProduct, "itemType" | "name">): "drink" | "dip" | "side" | "food" {
+  const t = String(p.itemType || "");
+  if (t === "pizza" || t === "slice") return "food";
+  if (t === "drink" || DRINK.test(p.name)) return "drink";
+  if (t === "dip" || DIP.test(p.name)) return "dip";
+  if (t === "side" || SIDE.test(p.name)) return "side";
+  return "food";
+}
+export const allowsExtras = (p: Pick<MenuProduct, "itemType" | "name">) => itemKind(p) === "food";
+export const allowsNotes = (p: Pick<MenuProduct, "itemType" | "name">) => itemKind(p) !== "drink";

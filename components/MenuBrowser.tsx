@@ -11,7 +11,7 @@ import { OfferSpotlight, offerSaving } from "@/components/OfferSpotlight";
 import { DealSheet } from "@/components/DealSheet";
 import type { PublicDeal } from "@/lib/deals";
 import { useCart } from "@/lib/cart";
-import { cleanDescription, fromPrice, money, slugify } from "@/lib/menu";
+import { cleanDescription, fromPrice, itemKind, money, slugify } from "@/lib/menu";
 import { term, type Locale } from "@/lib/i18n";
 import type { Menu, MenuProduct, ShopConfig } from "@/lib/types";
 import type { Messages } from "@/messages/en";
@@ -158,7 +158,7 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
       </section>
 
       <AnimatePresence>
-        {selected && <ItemSheet key={selected.id} product={selected} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelected(null)} />}
+        {selected && <ItemSheet key={selected.id} product={selected} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelected(null)} drinks={menu.products.filter((d) => itemKind(d) === "drink" && !d.soldOut)} />}
         {selectedDeal && <DealSheet key={`d${selectedDeal.id}`} deal={selectedDeal} menu={menu} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelectedDeal(null)} />}
       </AnimatePresence>
       <AddedToast t={t} />
@@ -183,6 +183,7 @@ function PhotoCard({ product: p, t, canOrder, onOpen }: { product: MenuProduct; 
   return (
     <motion.button
       onClick={onOpen}
+      data-testid={`menu-item-${p.id}`}
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.985 }}
       transition={spring}
@@ -211,6 +212,7 @@ function CompactRow({ product: p, t, canOrder, onOpen }: { product: MenuProduct;
   return (
     <motion.button
       onClick={onOpen}
+      data-testid={`menu-item-${p.id}`}
       whileTap={{ scale: 0.985 }}
       className={`group flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-start hover:border-line-strong hover:shadow-soft ${p.soldOut ? "opacity-70" : ""}`}
     >

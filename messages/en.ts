@@ -98,6 +98,12 @@ const en = {
     quantity: "Quantity",
     regularHint: "Serves 1–2",
     xlHint: "Serves 3–4 · 8 big slices",
+    freeExtras: "Free extras",
+    meal: "Complete your meal",
+    mealSub: "A box of fries + a drink of your choice",
+    chooseDrink: "Choose your drink",
+    pickDrink: "Choose a drink for your meal",
+    mealDrink: "Meal drink",
   },
   cart: {
     title: "Your order",

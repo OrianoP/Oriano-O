@@ -8,6 +8,8 @@ import { CartBar } from "@/components/CartBar";
 import { AddedToast } from "@/components/AddedToast";
 import { BestSellers } from "@/components/BestSellers";
 import { OfferSpotlight, offerSaving } from "@/components/OfferSpotlight";
+import { DealSheet } from "@/components/DealSheet";
+import type { PublicDeal } from "@/lib/deals";
 import { useCart } from "@/lib/cart";
 import { cleanDescription, fromPrice, money, slugify } from "@/lib/menu";
 import { term, type Locale } from "@/lib/i18n";
@@ -25,6 +27,7 @@ const DEFAULT_PICKS = ["Pepperoni Overload Ranch", "Hot Pepperoni Goat Cheese", 
 
 export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: ShopConfig; lang: Locale; t: Messages }) {
   const [selected, setSelected] = useState<MenuProduct | null>(null);
+  const [selectedDeal, setSelectedDeal] = useState<PublicDeal | null>(null);
   const [active, setActive] = useState<string>("");
   const tabsRef = useRef<HTMLDivElement>(null);
   const [more, setMore] = useState({ start: false, end: false });
@@ -99,7 +102,7 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
 
   return (
     <>
-      <OfferSpotlight offers={offers} t={t} canOrder={canOrder} onOpen={setSelected} />
+      <OfferSpotlight offers={offers} deals={menu.deals ?? []} products={menu.products} lang={lang} t={t} canOrder={canOrder} onOpen={setSelected} onOpenDeal={setSelectedDeal} />
       <BestSellers picks={picks} t={t} canOrder={canOrder} onOpen={setSelected} />
 
       <section id="menu" className="scroll-mt-[calc(4rem+env(safe-area-inset-top))] pt-14 sm:pt-20">
@@ -114,7 +117,7 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
         <div className="sticky top-[calc(4rem+env(safe-area-inset-top))] z-30 mt-6 bg-paper/90 backdrop-blur-md">
           <div className="relative mx-auto max-w-7xl">
             <div ref={tabsRef} className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 py-3 no-scrollbar sm:px-6 lg:px-8">
-              {offers.length > 0 && (
+              {(offers.length > 0 || !!menu.deals?.length) && (
                 <a href="#offers" className="shrink-0 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600" data-testid="tab-offers">{t.offers.tab}</a>
               )}
               {sections.map((s) => (
@@ -156,6 +159,7 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
 
       <AnimatePresence>
         {selected && <ItemSheet key={selected.id} product={selected} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelected(null)} />}
+        {selectedDeal && <DealSheet key={`d${selectedDeal.id}`} deal={selectedDeal} menu={menu} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelectedDeal(null)} />}
       </AnimatePresence>
       <AddedToast t={t} />
       <CartBar t={t} />

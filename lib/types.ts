@@ -1,4 +1,5 @@
 // Shapes returned by the POS public API (oriano-pos-v4 server/online.ts).
+import type { PublicDeal } from "./deals";
 
 export type MenuAddon = {
   id: number;
@@ -35,6 +36,8 @@ export type Menu = {
   categories: { id: number; name: string; slug: string; sortOrder: number | null }[];
   labels: { id: number; categoryId: number | null; name: string; sortOrder: number | null }[];
   products: MenuProduct[];
+  /** Combos and offers built in the POS (Menu → Deals), running today. */
+  deals?: PublicDeal[];
 };
 
 export type DayHours = { open: string; close: string; closed?: boolean };

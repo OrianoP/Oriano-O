@@ -218,7 +218,8 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
             zoneId: Number(form.zoneId), street: form.street.trim(), building: form.building.trim(),
             floor: form.floor.trim(), landmark: form.landmark.trim(),
           } : undefined,
-          items: lines.map((l) => ({ productId: l.productId, sizeId: l.sizeId, quantity: l.quantity, addonIds: l.addonIds, notes: l.notes })),
+          items: lines.filter((l) => !l.deal).map((l) => ({ productId: l.productId, sizeId: l.sizeId, quantity: l.quantity, addonIds: l.addonIds, notes: l.notes })),
+          deals: lines.filter((l) => l.deal).map((l) => ({ dealId: l.deal!.dealId, quantity: l.quantity, picks: l.deal!.picks, notes: l.notes })),
           notes: form.notes.trim(),
           couponCode: form.coupon.trim() || undefined,
           lang,
@@ -467,7 +468,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
                 {l.imageUrl ? <Photo src={l.imageUrl} alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-lg" imgClassName="h-full w-full" /> : <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-paper-2 font-display text-lg text-muted">{l.quantity}×</span>}
                 <span className="min-w-0 flex-1 text-sm">
                   <span className="block font-semibold text-ink">{l.quantity} × {l.name}</span>
-                  {(l.sizeName || l.addonNames.length > 0) && <span className="block text-muted">{[l.sizeName && sizeLabel(l.sizeName, lang), ...l.addonNames.map((a) => `+ ${a}`)].filter(Boolean).join(" · ")}</span>}
+                  {(l.sizeName || l.addonNames.length > 0) && <span className="block text-muted">{[l.sizeName && sizeLabel(l.sizeName, lang), ...l.addonNames.map((a) => (l.deal ? a : `+ ${a}`))].filter(Boolean).join(" · ")}</span>}
                   {l.notes && <span className="block italic text-muted">“{l.notes}”</span>}
                 </span>
                 <span className="text-sm font-semibold tabular-nums text-ink">{money(l.unitPrice * l.quantity)}</span>

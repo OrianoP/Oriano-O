@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { unitPrice } from "./menu";
 import type { Menu } from "./types";
+import { dealTotal, pricePicks, type DealPick } from "./deals";
 
 export const MAX_QTY = 20;
 export const MAX_LINES = 30;
@@ -22,6 +23,8 @@ export type CartLine = {
   addonNames: string[];
   unitPrice: number;
   imageUrl?: string | null;
+  /** A deal (POS → Menu → Deals): what was picked in each step. productId is 0. */
+  deal?: { dealId: number; picks: DealPick[] };
 };
 
 export type LastAdded = { name: string; quantity: number; at: number };
@@ -44,14 +47,29 @@ type CartState = {
   reconcile: (menu: Menu) => { removed: number; repriced: number };
 };
 
-export const lineKey = (l: Pick<CartLine, "productId" | "sizeId" | "addonIds" | "notes">) =>
-  [l.productId, l.sizeId ?? "", [...l.addonIds].sort((a, b) => a - b).join("."), l.notes.trim().toLowerCase()].join("|");
+export const lineKey = (l: Pick<CartLine, "productId" | "sizeId" | "addonIds" | "notes" | "deal">) =>
+  l.deal
+    ? ["deal", l.deal.dealId, l.deal.picks.map((p) => `${p.slotId}.${p.productId}.${p.sizeId ?? ""}`).join(","), l.notes.trim().toLowerCase()].join("|")
+    : [l.productId, l.sizeId ?? "", [...l.addonIds].sort((a, b) => a - b).join("."), l.notes.trim().toLowerCase()].join("|");
+
+/** "Beirut Classic (XL)" for each item picked in a deal. */
+export const dealPickNames = (picks: { product: { name: string }; sizeName: string | null }[], short: (size: string) => string = (s) => s) =>
+  picks.map((p) => (p.sizeName ? `${p.product.name} (${short(p.sizeName)})` : p.product.name));
+const shortSize = (s: string) => (/xl|45/i.test(s) ? "XL" : /regular|30/i.test(s) ? "Regular" : s);
 
 /** Pure version of reconcile, so the checkout can preview changes without writing. */
 export function reconcileLines(lines: CartLine[], menu: Menu): { lines: CartLine[]; removed: number; repriced: number } {
   let removed = 0;
   let repriced = 0;
   const next = lines.flatMap((l) => {
+    if (l.deal) {
+      const deal = menu.deals?.find((d) => d.id === l.deal!.dealId);
+      const priced = deal ? pricePicks(deal, l.deal.picks, menu) : null;
+      if (!deal || !priced) { removed++; return []; }
+      const price = dealTotal(deal, priced);
+      if (Math.abs(price - l.unitPrice) > 0.004) repriced++;
+      return [{ ...l, unitPrice: price, addonNames: dealPickNames(priced, shortSize) }];
+    }
     const p = menu.products.find((x) => x.id === l.productId);
     if (!p || p.soldOut) { removed++; return []; }
     const size = p.sizes.length ? p.sizes.find((s) => s.id === l.sizeId) : null;

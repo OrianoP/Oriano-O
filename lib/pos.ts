@@ -70,7 +70,12 @@ export async function getMenu(): Promise<Menu> {
 function withoutInStoreOnly(menu: Menu): Menu {
   const products = menu.products.filter((p) => p.itemType !== "slice");
   const used = new Set(products.map((p) => p.categoryId));
-  return { ...menu, products, categories: menu.categories.filter((c) => used.has(c.id) && !/^slices?$/i.test(c.slug || c.name)) };
+  const ids = new Set(products.map((p) => p.id));
+  // Deals keep only what can still be picked; a deal with an empty step is dropped.
+  const deals = (menu.deals ?? [])
+    .map((d) => ({ ...d, slots: d.slots.map((s) => ({ ...s, options: s.options.filter((o) => ids.has(o.productId)) })) }))
+    .filter((d) => d.slots.every((s) => s.options.length));
+  return { ...menu, products, deals, categories: menu.categories.filter((c) => used.has(c.id) && !/^slices?$/i.test(c.slug || c.name)) };
 }
 
 const PREVIEW_CONFIG: ShopConfig = {

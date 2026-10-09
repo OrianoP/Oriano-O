@@ -3,16 +3,15 @@
 import Image from "next/image";
 import { motion } from "motion/react";
 import { ArrowDown, ArrowRight, Flame, Phone } from "lucide-react";
-import { fromPrice, money } from "@/lib/menu";
 import { StatusPill } from "./StatusPill";
 import { Parallax, easeOut } from "./motion";
 import type { Locale } from "@/lib/i18n";
-import type { MenuProduct, ShopConfig } from "@/lib/types";
+import type { ShopConfig } from "@/lib/types";
 import type { Messages } from "@/messages/en";
 
 const rise = (delay: number) => ({ initial: { opacity: 0, y: 28 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.9, ease: easeOut, delay } });
 
-export function Hero({ t, lang, config, preview, photo, offer }: { t: Messages; lang: Locale; config: ShopConfig; preview: boolean; photo: string | null; offer?: MenuProduct | null }) {
+export function Hero({ t, lang, config, preview, photo, offer }: { t: Messages; lang: Locale; config: ShopConfig; preview: boolean; photo: string | null; offer?: { tag: string; name: string; price: string } | null }) {
   const tel = `tel:${config.shopPhone.replace(/\s/g, "")}`;
   const ticker = [...t.hero.ticker, ...t.hero.ticker];
   return (
@@ -22,7 +21,7 @@ export function Hero({ t, lang, config, preview, photo, offer }: { t: Messages; 
           {offer && (
             <motion.a {...rise(0)} href="#offers" className="group mb-5 inline-flex max-w-full items-center gap-2 rounded-full bg-brand py-1.5 pe-4 ps-1.5 text-sm font-semibold text-white shadow-glow hover:bg-brand-600" data-testid="hero-offer">
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-yolk text-coal"><Flame className="h-4 w-4" /></span>
-              <span className="truncate"><span className="font-display tracking-[0.08em]">{offer.offerTag}</span> · {offer.name} · {money(fromPrice(offer))}</span>
+              <span className="truncate"><span className="font-display tracking-[0.08em]">{offer.tag}</span> · {offer.name}{offer.price ? ` · ${offer.price}` : ""}</span>
               <ArrowRight className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5 rtl:rotate-180" />
             </motion.a>
           )}

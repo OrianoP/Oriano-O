@@ -108,7 +108,7 @@ export function CartDrawer({ lang, t }: { lang: Locale; t: Messages }) {
                           <p className="shrink-0 font-semibold tabular-nums text-ink">{money(l.unitPrice * l.quantity)}</p>
                         </div>
                         {(l.sizeName || l.addonNames.length > 0) && (
-                          <p className="mt-0.5 text-sm text-muted">{[l.sizeName && sizeLabel(l.sizeName, lang), ...l.addonNames.map((a) => `+ ${a}`)].filter(Boolean).join(" · ")}</p>
+                          <p className="mt-0.5 text-sm text-muted">{[l.sizeName && sizeLabel(l.sizeName, lang), ...l.addonNames.map((a) => (l.deal ? a : `+ ${a}`))].filter(Boolean).join(" · ")}</p>
                         )}
                         {l.notes && <p className="mt-0.5 text-sm italic text-muted">“{l.notes}”</p>}
                         <div className="mt-2.5 inline-flex items-center rounded-full border border-line bg-paper">

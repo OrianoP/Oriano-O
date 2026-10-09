@@ -49,6 +49,14 @@ export async function POST(req: NextRequest) {
           notes: typeof i.notes === "string" ? i.notes : "",
         }))
       : [],
+    deals: Array.isArray(body.deals)
+      ? body.deals.slice(0, 10).map((d: any) => ({
+          dealId: Number(d.dealId),
+          quantity: Number(d.quantity),
+          picks: Array.isArray(d.picks) ? d.picks.slice(0, 40).map((p: any) => ({ slotId: String(p.slotId).slice(0, 20), productId: Number(p.productId), sizeId: p.sizeId ? Number(p.sizeId) : null })) : [],
+          notes: typeof d.notes === "string" ? d.notes : "",
+        }))
+      : [],
     notes: typeof body.notes === "string" ? body.notes : "",
     couponCode: typeof body.couponCode === "string" && body.couponCode.trim() ? body.couponCode.trim().toUpperCase().slice(0, 50) : undefined,
     // So the POS can WhatsApp the customer in the language they ordered in.

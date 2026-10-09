@@ -5,8 +5,9 @@ import { MenuBrowser } from "@/components/MenuBrowser";
 import { Item, Parallax, Pop, Reveal, Stagger } from "@/components/motion";
 import { pagePhoto, withPhotos } from "@/lib/photos";
 import { getSiteData, PREVIEW_MODE } from "@/lib/pos";
-import { getMessages, hasLocale } from "@/lib/i18n";
-import { cleanDescription } from "@/lib/menu";
+import { fill, getMessages, hasLocale, type Locale } from "@/lib/i18n";
+import { cleanDescription, fromPrice, money } from "@/lib/menu";
+import type { Messages } from "@/messages/en";
 import { ADDRESS, MAPS_URL, SITE_URL } from "@/lib/site";
 import type { Menu, ShopConfig } from "@/lib/types";
 
@@ -70,6 +71,18 @@ function jsonLd(menu: Menu, config: ShopConfig, lang: string) {
   };
 }
 
+/** The first deal (or item on offer), for the banner at the top of the page. */
+function heroOffer(menu: Menu, t: Messages, lang: Locale) {
+  const d = menu.deals?.[0];
+  if (d) {
+    const price = d.priceMode === "fixed" && d.price != null ? money(d.price) : d.priceMode === "bogo" ? t.deal.bogo
+      : d.priceMode === "percent" ? fill(t.deal.off, { n: d.percent ?? 0 }) : `${t.menu.from} ${money(d.fromPrice)}`;
+    return { tag: d.tag || price, name: lang === "ar" && d.nameAr ? d.nameAr : d.name, price: d.tag ? price : "" };
+  }
+  const p = menu.products.find((x) => x.offerTag && !x.soldOut);
+  return p ? { tag: p.offerTag!, name: p.name, price: money(fromPrice(p)) } : null;
+}
+
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
@@ -87,7 +100,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd(menu, config, lang)).replace(/</g, "\\u003c") }}
       />
 
-      <Hero t={t} lang={lang} config={config} preview={PREVIEW_MODE} photo={hero} offer={menu.products.find((p) => p.offerTag && !p.soldOut) ?? null} />
+      <Hero t={t} lang={lang} config={config} preview={PREVIEW_MODE} photo={hero} offer={heroOffer(menu, t, lang)} />
 
       {/* The light world: browse and order */}
       <div className="paper-grain bg-paper">

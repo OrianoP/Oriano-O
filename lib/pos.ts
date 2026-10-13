@@ -66,9 +66,15 @@ export async function getMenu(): Promise<Menu> {
   return withoutInStoreOnly(await posFetch<Menu>("GET", "/api/public/menu", { revalidate: 60, tags: ["menu"] }));
 }
 
-/** Slices are sold at the counter only: drop them, and any category left empty. */
+/**
+ * Slices are sold at the counter only: drop them, and any category left empty.
+ * Anything in the Dips category is a dip, whatever type it was saved with in the POS.
+ */
 function withoutInStoreOnly(menu: Menu): Menu {
-  const products = menu.products.filter((p) => p.itemType !== "slice");
+  const dipCats = new Set(menu.categories.filter((c) => /dip|sauce/i.test(c.slug || c.name)).map((c) => c.id));
+  const products = menu.products
+    .filter((p) => p.itemType !== "slice")
+    .map((p) => (p.categoryId != null && dipCats.has(p.categoryId) && p.itemType !== "dip" ? { ...p, itemType: "dip" } : p));
   const used = new Set(products.map((p) => p.categoryId));
   const ids = new Set(products.map((p) => p.id));
   // Deals keep only what can still be picked; a deal with an empty step is dropped.

@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { PREVIEW_MODE, PosError, posFetch } from "@/lib/pos";
 import { clientIp, limited, sameOrigin } from "@/lib/guard";
-import { GOOGLE_CLIENT_ID, SESSION_COOKIE, type AccountMe, type AccountState } from "@/lib/account";
+import { GOOGLE_CLIENT_ID, SESSION_COOKIE, SIGN_IN_ENABLED, type AccountMe, type AccountState } from "@/lib/account";
 
 /**
  * Customer accounts, forwarded to the POS. The POS session token lives only
@@ -55,7 +55,7 @@ async function handle(req: NextRequest, path: string[]) {
     if (first === "me" && req.method === "GET") {
       if (!tok) {
         const avail = await posFetch<{ signIn: boolean }>("GET", "/api/public/account/available").catch(() => ({ signIn: false }));
-        return NextResponse.json({ signedIn: false, me: null, signInAvailable: avail.signIn || !!GOOGLE_CLIENT_ID, phoneSignIn: avail.signIn } satisfies AccountState, { headers: { "Cache-Control": "no-store" } });
+        return NextResponse.json({ signedIn: false, me: null, signInAvailable: SIGN_IN_ENABLED && (avail.signIn || !!GOOGLE_CLIENT_ID), phoneSignIn: SIGN_IN_ENABLED && avail.signIn } satisfies AccountState, { headers: { "Cache-Control": "no-store" } });
       }
       const me = await posFetch<PosMe>("GET", "/api/public/account/me", { customerToken: tok });
       return NextResponse.json({ signedIn: true, me: toMe(me), ...ON } satisfies AccountState, { headers: { "Cache-Control": "no-store" } });

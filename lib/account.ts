@@ -22,7 +22,14 @@ export type AccountState =
   | { signedIn: true; me: AccountMe; signInAvailable: true; phoneSignIn: boolean }
   | { signedIn: false; me: null; signInAvailable: boolean; phoneSignIn: boolean };
 
+/**
+ * Sign-in (Google / WhatsApp code) is off: name, addresses and orders are
+ * remembered on the customer's phone instead. Set NEXT_PUBLIC_SIGN_IN=on in
+ * Vercel to bring accounts back.
+ */
+export const SIGN_IN_ENABLED = process.env.NEXT_PUBLIC_SIGN_IN === "on";
+
 /** Public: the OAuth client ID of the "Continue with Google" button (empty = no button). */
-export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+export const GOOGLE_CLIENT_ID = SIGN_IN_ENABLED ? process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "" : "";
 
 export const SESSION_COOKIE = "oriano_session";

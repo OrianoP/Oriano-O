@@ -53,7 +53,7 @@ export function AccountSheet({ lang, t, zones }: { lang: Locale; t: Messages; zo
             <div className="shrink-0 border-b border-line bg-surface sm:pt-[env(safe-area-inset-top)]">
               <div className="mx-auto mt-2 h-1.5 w-10 rounded-full bg-line-strong sm:hidden" aria-hidden />
               <div className="flex h-16 items-center justify-between ps-5 pe-3 sm:ps-6">
-                <h2 id="account-title" className="font-display text-3xl text-ink">{signedIn ? (me?.name ? fill(a.hello, { name: me.name.split(/\s+/)[0] }) : a.helloNoName) : a.title}</h2>
+                <h2 id="account-title" className="font-display text-3xl text-ink">{signedIn ? (me?.name ? fill(a.hello, { name: me.name.split(/\s+/)[0] }) : a.helloNoName) : signInAvailable ? a.title : a.titleLocal}</h2>
                 <button onClick={() => setSheetOpen(false)} className="grid h-11 w-11 place-items-center rounded-full text-ink hover:bg-paper-2" aria-label={t.item.close}><X className="h-5 w-5" /></button>
               </div>
             </div>

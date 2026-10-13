@@ -156,3 +156,21 @@ button, a, input, select, textarea {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/*
+ * Preview look, only on a device that opened the site with ?look=corner (or
+ * corner-red): half a pizza comes in from the bottom-right corner with its
+ * crust edge in view. ?look=classic undoes it. Customers never see it.
+ */
+html[data-look^="corner"] .menu-photo {
+  background: radial-gradient(100% 100% at 100% 100%, #3a2a22 0%, #151110 70%);
+  animation: none;
+}
+html[data-look="corner-red"] .menu-photo {
+  background: radial-gradient(100% 100% at 100% 100%, #f0512a 0%, #c8321a 75%);
+}
+html[data-look^="corner"] .menu-photo img {
+  -webkit-mask-image: radial-gradient(ellipse 50% 43% at 50% 53%, #000 93%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 43% at 50% 53%, #000 93%, transparent 100%);
+  transform: translate(27%, 28%) scale(1.4);
+}

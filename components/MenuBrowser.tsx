@@ -189,7 +189,7 @@ function PhotoCard({ product: p, t, canOrder, onOpen }: { product: MenuProduct; 
       transition={spring}
       className={`group flex w-full flex-col overflow-hidden rounded-3xl border border-line bg-surface text-start shadow-soft hover:shadow-lift ${p.soldOut ? "opacity-70" : ""}`}
     >
-      <Photo src={p.imageUrl!} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="aspect-[4/3]" imgClassName={`transition-transform duration-700 group-hover:scale-[1.05] ${p.soldOut ? "grayscale" : ""}`} />
+      <Photo src={p.imageUrl!} alt={p.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="menu-photo aspect-[4/3]" imgClassName={`transition-transform duration-700 group-hover:scale-[1.05] ${p.soldOut ? "grayscale" : ""}`} />
       <div className="flex flex-1 flex-col p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <span className="font-display text-[1.7rem] leading-none text-ink">{p.name}</span>

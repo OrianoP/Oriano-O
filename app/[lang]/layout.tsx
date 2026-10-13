@@ -66,6 +66,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const LOOK_SCRIPT = `try{var q=new URLSearchParams(location.search).get("look");if(q==="classic")localStorage.removeItem("oriano_look");else if(q==="corner"||q==="corner-red")localStorage.setItem("oriano_look",q);var l=localStorage.getItem("oriano_look");if(l)document.documentElement.setAttribute("data-look",l)}catch(e){}`;
+
 export default async function RootLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
@@ -73,7 +75,11 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const [config, menu] = await Promise.all([getConfigSafe(), getMenuSafe()]);
 
   return (
-    <html lang={lang} dir={t.dir} data-scroll-behavior="smooth" className={`${display.variable} ${serif.variable} ${inter.variable} ${arabic.variable}`}>
+    <html lang={lang} dir={t.dir} data-scroll-behavior="smooth" className={`${display.variable} ${serif.variable} ${inter.variable} ${arabic.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Preview of a new photo look on this device only: ?look=corner or ?look=corner-red turns it on, ?look=classic undoes it. */}
+        <script dangerouslySetInnerHTML={{ __html: LOOK_SCRIPT }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <MotionProvider>
           <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-white focus:px-3 focus:py-2">

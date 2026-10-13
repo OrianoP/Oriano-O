@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Check, Minus, Plus, X } from "lucide-react";
 import { MAX_QTY, useCart } from "@/lib/cart";
-import { addonPrice, allowsExtras, allowsNotes, describe, extraName, isXl, money, unitPrice } from "@/lib/menu";
+import { addonPrice, allowsExtras, allowsNotes, describe, extraName, halfName, halfUnitPrice, isXl, money, unitPrice } from "@/lib/menu";
 import { sizeLabel, type Locale } from "@/lib/i18n";
 import type { MenuProduct } from "@/lib/types";
 import type { Messages } from "@/messages/en";
@@ -13,9 +13,10 @@ import { spring } from "./motion";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] }: {
+export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [], halfOptions = [] }: {
   product: MenuProduct; lang: Locale; t: Messages; canOrder: boolean; onClose: () => void;
   drinks?: MenuProduct[]; // for "Complete your meal": the customer picks one
+  halfOptions?: MenuProduct[]; // pizzas with the same base that can be the other half
 }) {
   const add = useCart((s) => s.add);
   const reduce = useReducedMotion();
@@ -39,7 +40,18 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
   const mealOn = !!meal && addonIds.includes(meal.id);
   const drink = drinks.find((d) => d.id === drinkId) || null;
   const needsDrink = mealOn && drinks.length > 0 && !drink;
-  const each = unitPrice(p, size, allowsExtras(p) ? addonIds : []);
+  // Half & half: the other half has the same base; priced as the average of the two pies.
+  const [halfOn, setHalfOn] = useState(false);
+  const [halfId, setHalfId] = useState<number | null>(null);
+  const partner = halfOn ? halfOptions.find((o) => o.id === halfId) || null : null;
+  const halfEach = partner ? halfUnitPrice(p, size, partner, showExtras ? addonIds : []) : null;
+  const needsHalf = halfOn && halfEach === null;
+  const halfList = useRef<HTMLDivElement>(null);
+  // Switching half & half on: bring the pizzas to choose from into view.
+  useEffect(() => {
+    if (halfOn) requestAnimationFrame(() => halfList.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" }));
+  }, [halfOn, reduce]);
+  const each = halfEach ?? unitPrice(p, size, allowsExtras(p) ? addonIds : []);
   const desc = describe(p.description, t);
 
   // Dialog behaviour: lock the page, trap Tab, Escape closes, focus returns to the opener.
@@ -75,7 +87,8 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
     add({
       productId: p.id, sizeId: size?.id, addonIds: showExtras ? addonIds : [],
       notes: [showNotes ? notes.trim() : "", mealOn && drink ? `${t.item.mealDrink}: ${drink.name}` : ""].filter(Boolean).join(" · "),
-      name: p.name, sizeName: size?.name,
+      name: partner && halfEach !== null ? halfName(p, partner) : p.name, sizeName: size?.name,
+      ...(partner && halfEach !== null ? { halfProductId: partner.id } : {}),
       addonNames: showExtras ? p.addons.filter((a) => addonIds.includes(a.id)).map((a) => (a.category === "combo" && drink ? `${a.name} (+ ${drink.name})` : a.name)) : [],
       unitPrice: each, imageUrl: p.imageUrl,
     }, qty);
@@ -115,13 +128,20 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
         </button>
 
         <div aria-hidden className={`absolute inset-x-0 top-0 z-10 flex h-16 items-center border-b border-line bg-surface/95 ps-5 pe-16 backdrop-blur transition-opacity duration-150 sm:ps-6 ${titleBar ? "opacity-100" : "pointer-events-none opacity-0"}`}>
-          <p className="truncate text-base font-semibold text-ink">{p.name}</p>
+          <p className="truncate text-base font-semibold text-ink">{partner && halfEach !== null ? halfName(p, partner) : p.name}</p>
         </div>
 
         <div onScroll={onScroll} className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain">
           {p.imageUrl ? (
             <div className="relative">
               <Photo src={p.imageUrl} alt={p.name} fill sizes="(max-width: 640px) 100vw, 576px" className="aspect-[16/10] sm:aspect-[3/2]" priority />
+              {/* Half & half: the other pizza fills the right half of the photo */}
+              {partner?.imageUrl && halfEach !== null && (
+                <div className="absolute inset-0 [clip-path:inset(0_0_0_50%)] rtl:[clip-path:inset(0_50%_0_0)]" data-testid="half-photo">
+                  <Photo src={partner.imageUrl} alt={partner.name} fill sizes="(max-width: 640px) 100vw, 576px" className="h-full w-full" />
+                  <span className="absolute inset-y-0 start-1/2 w-1 -translate-x-1/2 bg-white/90 shadow rtl:translate-x-1/2" aria-hidden />
+                </div>
+              )}
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-surface to-transparent" />
             </div>
           ) : (
@@ -131,7 +151,13 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
           <div className="space-y-7 px-5 pb-5 sm:px-7">
             {/* relative: paints above the photo's gradient even when the Arabic font sits taller */}
             <div className={`relative ${p.imageUrl ? "-mt-2 rtl:mt-1" : "pe-12 pt-6"}`}>
-              <h2 id="item-title" className="font-display text-4xl leading-none text-ink sm:text-5xl">{p.name}</h2>
+              {partner && halfEach !== null ? (
+                <h2 id="item-title" className="font-display text-3xl leading-[1.05] text-ink sm:text-4xl">
+                  <span className="block">{`\u2066½ ${p.name}\u2069`}</span><span className="block text-brand-700">{`\u2066½ ${partner.name}\u2069`}</span>
+                </h2>
+              ) : (
+                <h2 id="item-title" className="font-display text-4xl leading-none text-ink sm:text-5xl">{p.name}</h2>
+              )}
               {desc && <p className="mt-2.5 text-[15px] leading-relaxed text-muted">{desc}</p>}
             </div>
 
@@ -150,7 +176,7 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
                         <input type="radio" name="size" className="sr-only" checked={on} disabled={!!s.soldOut} onChange={() => setSizeId(s.id)} />
                         <span className="flex items-baseline justify-between gap-2">
                           <span className="font-semibold text-ink">{sizeLabel(s.name, lang)}</span>
-                          <span className="text-sm font-semibold tabular-nums text-ink">{money(s.price)}</span>
+                          <span className="text-sm font-semibold tabular-nums text-ink">{money(partner ? halfUnitPrice(p, s, partner, []) ?? s.price : s.price)}</span>
                         </span>
                         {hint && <span className={`mt-1 block text-xs ${s.soldOut ? "font-semibold text-brand-700" : "text-muted"}`}>{hint}</span>}
                         {on && <motion.span layoutId="size-check" transition={spring} className="absolute -end-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full bg-ink text-white"><Check className="h-3.5 w-3.5" strokeWidth={3} /></motion.span>}
@@ -159,6 +185,49 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
                   })}
                 </div>
               </fieldset>
+            )}
+
+            {halfOptions.length > 0 && (
+              <section data-testid="half-half">
+                <button type="button" onClick={() => { setHalfOn((on) => !on); setHalfId(null); }} aria-pressed={halfOn} aria-expanded={halfOn}
+                  className={`flex w-full items-center gap-3.5 rounded-3xl border-2 p-3.5 text-start transition-colors ${halfOn ? "border-ink bg-paper" : "border-line hover:border-line-strong"}`} data-testid="half-toggle">
+                  <span className="relative grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-full border-2 border-ink" aria-hidden>
+                    <span className="absolute inset-y-0 start-0 w-1/2 bg-brand" /><span className="absolute inset-y-0 end-0 w-1/2 bg-yolk" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold text-ink">{t.item.half}</span>
+                    <span className="block text-sm text-muted">{t.item.halfSub}</span>
+                  </span>
+                  <span className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${halfOn ? "bg-ink" : "bg-line-strong"}`} aria-hidden>
+                    <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-[inset-inline-start] ${halfOn ? "start-6" : "start-1"}`} />
+                  </span>
+                </button>
+                {halfOn && (
+                  <div ref={halfList} className="mt-3 scroll-mb-28">
+                    <p className="mb-2 text-sm font-semibold text-ink">{t.item.halfPick}</p>
+                    <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={t.item.halfPick}>
+                      {halfOptions.map((o) => {
+                        const price = halfUnitPrice(p, size, o, []);
+                        const on = o.id === halfId;
+                        return (
+                          <button key={o.id} type="button" role="radio" aria-checked={on} disabled={price === null} onClick={() => setHalfId(o.id)}
+                            className={`relative flex min-h-16 items-center gap-2.5 rounded-2xl border-2 p-2 text-start transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${on ? "border-ink bg-ink text-white" : "border-line text-ink hover:border-line-strong"}`}
+                            data-testid={`half-option-${o.id}`}>
+                            <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-paper-2">
+                              {o.imageUrl && <Photo src={o.imageUrl} alt="" fill sizes="44px" className="h-full w-full" />}
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="line-clamp-2 block text-[13px] font-semibold leading-tight">{o.name}</span>
+                              <span className={`block text-xs tabular-nums ${on ? "text-white/75" : "text-muted"}`}>{price === null ? t.menu.soldOut : money(price)}</span>
+                            </span>
+                            {on && <Check className="absolute end-2 top-2 h-4 w-4" strokeWidth={3} aria-hidden />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </section>
             )}
 
             {meal && (
@@ -237,17 +306,17 @@ export function ItemSheet({ product: p, lang, t, canOrder, onClose, drinks = [] 
 
         <div className="flex shrink-0 items-center gap-3 border-t border-line bg-surface px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-4">
           <div className="flex items-center rounded-full border border-line" role="group" aria-label={t.item.quantity}>
-            <button className="grid h-12 w-12 place-items-center text-ink disabled:opacity-30" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1} aria-label={t.item.decrease}><Minus className="h-4 w-4" /></button>
+            <button className="grid h-12 w-10 place-items-center text-ink disabled:opacity-30 min-[400px]:w-12" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1} aria-label={t.item.decrease}><Minus className="h-4 w-4" /></button>
             <span className="w-6 text-center font-semibold tabular-nums" aria-live="polite">{qty}</span>
-            <button className="grid h-12 w-12 place-items-center text-ink disabled:opacity-30" onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))} disabled={qty >= MAX_QTY} aria-label={t.item.increase}><Plus className="h-4 w-4" /></button>
+            <button className="grid h-12 w-10 place-items-center text-ink disabled:opacity-30 min-[400px]:w-12" onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))} disabled={qty >= MAX_QTY} aria-label={t.item.increase}><Plus className="h-4 w-4" /></button>
           </div>
           <motion.button
             onClick={submit}
             whileTap={{ scale: 0.98 }}
-            disabled={!canOrder || p.soldOut || (p.sizes.length > 0 && (!size || size.soldOut)) || needsDrink}
-            className="flex h-12 min-w-0 flex-1 items-center justify-between gap-3 rounded-full bg-brand px-5 font-semibold text-white hover:bg-brand-600 disabled:bg-paper-2 disabled:text-muted"
+            disabled={!canOrder || p.soldOut || (p.sizes.length > 0 && (!size || size.soldOut)) || needsDrink || needsHalf}
+            className="flex h-12 min-w-0 flex-1 items-center justify-between gap-2 rounded-full bg-brand px-4 font-semibold text-white min-[400px]:gap-3 min-[400px]:px-5 hover:bg-brand-600 disabled:bg-paper-2 disabled:text-muted"
           >
-            <span className="truncate">{p.soldOut ? t.menu.soldOut : !canOrder ? t.menu.unavailable : needsDrink ? t.item.pickDrink : t.item.addToOrder}</span>
+            <span className="truncate">{p.soldOut ? t.menu.soldOut : !canOrder ? t.menu.unavailable : needsHalf ? t.item.halfPickShort : needsDrink ? t.item.pickDrink : t.item.addToOrder}</span>
             {canOrder && !p.soldOut && (
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.span key={each * qty} initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} transition={{ duration: 0.18 }} className="tabular-nums">

@@ -105,6 +105,11 @@ const ar: Messages = {
     mealSub: "علبة بطاطا + مشروب من اختيارك",
     chooseDrink: "اختر مشروبك",
     pickDrink: "اختر مشروباً لوجبتك",
+    half: "نص ونص",
+    halfSub: "بيتزتين بعجينة وحدة، نفس القاعدة",
+    halfPick: "اختار النص التاني",
+    halfPickShort: "اختار النص التاني",
+    halfOff: "بيتزا كاملة",
     mealDrink: "مشروب الوجبة",
   },
   cart: {

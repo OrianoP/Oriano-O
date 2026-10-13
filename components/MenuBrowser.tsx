@@ -11,7 +11,7 @@ import { OfferSpotlight, offerSaving } from "@/components/OfferSpotlight";
 import { DealSheet } from "@/components/DealSheet";
 import type { PublicDeal } from "@/lib/deals";
 import { useCart } from "@/lib/cart";
-import { describe, fromPrice, itemKind, money, slugify } from "@/lib/menu";
+import { describe, fromPrice, halfPartners, itemKind, money, slugify } from "@/lib/menu";
 import { term, type Locale } from "@/lib/i18n";
 import type { Menu, MenuProduct, ShopConfig } from "@/lib/types";
 import type { Messages } from "@/messages/en";
@@ -158,7 +158,7 @@ export function MenuBrowser({ menu, config, lang, t }: { menu: Menu; config: Sho
       </section>
 
       <AnimatePresence>
-        {selected && <ItemSheet key={selected.id} product={selected} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelected(null)} drinks={menu.products.filter((d) => itemKind(d) === "drink" && !d.soldOut)} />}
+        {selected && <ItemSheet key={selected.id} product={selected} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelected(null)} drinks={menu.products.filter((d) => itemKind(d) === "drink" && !d.soldOut)} halfOptions={halfPartners(selected, menu)} />}
         {selectedDeal && <DealSheet key={`d${selectedDeal.id}`} deal={selectedDeal} menu={menu} lang={lang} t={t} canOrder={canOrder} onClose={() => setSelectedDeal(null)} />}
       </AnimatePresence>
       <AddedToast t={t} />

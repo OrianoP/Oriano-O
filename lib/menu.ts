@@ -15,6 +15,36 @@ export function unitPrice(p: MenuProduct, size: MenuSize | null | undefined, add
   return base + p.addons.filter((a) => addonIds.includes(a.id)).reduce((s, a) => s + addonPrice(a, size), 0);
 }
 
+/*
+ * Half & half: two real pizzas with the same base (Red with Red, White with
+ * White…), same size, priced as the average of the two pies. Same rules as
+ * the POS, which checks them again when the order comes in.
+ */
+export function halfEligible(p: MenuProduct, labels: { id: number; name: string }[]) {
+  if (p.itemType !== "pizza" || p.soldOut || p.labelId == null || !p.sizes.length) return false;
+  if (/salad/i.test(labels.find((l) => l.id === p.labelId)?.name || "")) return false;
+  return !/^(half|½)\b/i.test(p.name.trim()) && !/half\s*[&+/]\s*half/i.test(p.name);
+}
+/** The pizzas that can be the other half of `p`. */
+export function halfPartners(p: MenuProduct, menu: { products: MenuProduct[]; labels: { id: number; name: string }[] }) {
+  if (!halfEligible(p, menu.labels)) return [];
+  return menu.products.filter((x) => x.id !== p.id && x.labelId === p.labelId && halfEligible(x, menu.labels));
+}
+/** The partner's size matching the chosen one (same name, or the same Regular/XL). */
+export function halfSize(partner: MenuProduct, size: MenuSize | null | undefined) {
+  if (!size) return undefined;
+  return partner.sizes.find((s) => s.name === size.name) ?? partner.sizes.find((s) => isXl(s) === isXl(size));
+}
+/** Price of one half & half pie (with extras), or null when that size isn't available. */
+export function halfUnitPrice(p: MenuProduct, size: MenuSize | null | undefined, partner: MenuProduct, addonIds: number[]) {
+  const ps = halfSize(partner, size);
+  if (!size || !ps || ps.soldOut) return null;
+  const base = Math.round(((size.price + ps.price) / 2) * 100) / 100;
+  return base + p.addons.filter((a) => addonIds.includes(a.id)).reduce((s, a) => s + addonPrice(a, size), 0);
+}
+// LTR isolate: the English names keep "½ A / ½ B" order on the Arabic page too.
+export const halfName = (p: { name: string }, partner: { name: string }) => `\u2066½ ${p.name} / ½ ${partner.name}\u2069`;
+
 export function fromPrice(p: MenuProduct) {
   return p.sizes.length ? Math.min(...p.sizes.map((s) => s.price)) : p.basePrice;
 }

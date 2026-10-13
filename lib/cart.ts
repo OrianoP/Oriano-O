@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { unitPrice } from "./menu";
+import { halfEligible, halfName, halfUnitPrice, unitPrice } from "./menu";
 import type { Menu } from "./types";
 import { dealTotal, pricePicks, type DealPick } from "./deals";
 
@@ -25,6 +25,8 @@ export type CartLine = {
   imageUrl?: string | null;
   /** A deal (POS → Menu → Deals): what was picked in each step. productId is 0. */
   deal?: { dealId: number; picks: DealPick[] };
+  /** Half & half: the second half's product (same base, same size). */
+  halfProductId?: number;
 };
 
 export type LastAdded = { name: string; quantity: number; at: number };
@@ -47,10 +49,10 @@ type CartState = {
   reconcile: (menu: Menu) => { removed: number; repriced: number };
 };
 
-export const lineKey = (l: Pick<CartLine, "productId" | "sizeId" | "addonIds" | "notes" | "deal">) =>
+export const lineKey = (l: Pick<CartLine, "productId" | "sizeId" | "addonIds" | "notes" | "deal" | "halfProductId">) =>
   l.deal
     ? ["deal", l.deal.dealId, l.deal.picks.map((p) => `${p.slotId}.${p.productId}.${p.sizeId ?? ""}`).join(","), l.notes.trim().toLowerCase()].join("|")
-    : [l.productId, l.sizeId ?? "", [...l.addonIds].sort((a, b) => a - b).join("."), l.notes.trim().toLowerCase()].join("|");
+    : [l.productId, l.sizeId ?? "", [...l.addonIds].sort((a, b) => a - b).join("."), l.notes.trim().toLowerCase(), l.halfProductId ? `h${l.halfProductId}` : ""].join("|");
 
 /** "Beirut Classic (XL)" for each item picked in a deal. */
 export const dealPickNames = (picks: { product: { name: string }; sizeName: string | null }[], short: (size: string) => string = (s) => s) =>
@@ -76,6 +78,16 @@ export function reconcileLines(lines: CartLine[], menu: Menu): { lines: CartLine
     if (p.sizes.length && (!size || size.soldOut)) { removed++; return []; }
     const addons = p.addons.filter((a) => l.addonIds.includes(a.id));
     const addonIds = addons.map((a) => a.id);
+    if (l.halfProductId) {
+      // The second half must still be on the menu, with the same base and that size.
+      const partner = menu.products.find((x) => x.id === l.halfProductId);
+      const hp = partner && partner.labelId === p.labelId && halfEligible(p, menu.labels) && halfEligible(partner, menu.labels)
+        ? halfUnitPrice(p, size ?? null, partner, addonIds) : null;
+      if (!partner || hp === null) { removed++; return []; }
+      if (Math.abs(hp - l.unitPrice) > 0.004 || addonIds.length !== l.addonIds.length) repriced++;
+      const hb = { ...l, productId: p.id, sizeId: size?.id, addonIds, name: halfName(p, partner), sizeName: size?.name, addonNames: addons.map((a) => a.name), unitPrice: hp, imageUrl: p.imageUrl };
+      return [{ ...hb, key: lineKey(hb) }];
+    }
     const price = unitPrice(p, size ?? null, addonIds);
     if (Math.abs(price - l.unitPrice) > 0.004 || addonIds.length !== l.addonIds.length) repriced++;
     const base = { ...l, productId: p.id, sizeId: size?.id, addonIds, name: p.name, sizeName: size?.name, addonNames: addons.map((a) => a.name), unitPrice: price, imageUrl: p.imageUrl };

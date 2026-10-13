@@ -103,6 +103,11 @@ const en = {
     mealSub: "A box of fries + a drink of your choice",
     chooseDrink: "Choose your drink",
     pickDrink: "Choose a drink for your meal",
+    half: "Half & half",
+    halfSub: "Two pizzas on one pie, same base",
+    halfPick: "Choose the other half",
+    halfPickShort: "Pick the 2nd half",
+    halfOff: "Whole pizza",
     mealDrink: "Meal drink",
   },
   cart: {

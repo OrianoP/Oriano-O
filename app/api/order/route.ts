@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
           quantity: Number(i.quantity),
           addonIds: Array.isArray(i.addonIds) ? i.addonIds.map(Number) : [],
           notes: typeof i.notes === "string" ? i.notes : "",
+          ...(i.halfProductId ? { halfProductId: Number(i.halfProductId) } : {}),
         }))
       : [],
     deals: Array.isArray(body.deals)

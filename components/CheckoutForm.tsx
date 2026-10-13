@@ -220,7 +220,7 @@ export function CheckoutForm({ menu, config: initialConfig, lang, t, preview }: 
             zoneId: Number(form.zoneId), street: form.street.trim(), building: form.building.trim(),
             floor: form.floor.trim(), landmark: form.landmark.trim(),
           } : undefined,
-          items: lines.filter((l) => !l.deal).map((l) => ({ productId: l.productId, sizeId: l.sizeId, quantity: l.quantity, addonIds: l.addonIds, notes: l.notes })),
+          items: lines.filter((l) => !l.deal).map((l) => ({ productId: l.productId, sizeId: l.sizeId, quantity: l.quantity, addonIds: l.addonIds, notes: l.notes, ...(l.halfProductId ? { halfProductId: l.halfProductId } : {}) })),
           deals: lines.filter((l) => l.deal).map((l) => ({ dealId: l.deal!.dealId, quantity: l.quantity, picks: l.deal!.picks, notes: l.notes })),
           notes: form.notes.trim(),
           couponCode: form.coupon.trim() || undefined,

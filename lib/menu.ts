@@ -57,6 +57,10 @@ const AR_INGREDIENTS: Record<string, string> = {
   "triple pepperoni": "بيبروني مضاعف ثلاث مرات",
   "extra pepperoni": "بيبروني إضافي",
   "italian sausage": "سجق إيطالي",
+  "sausage": "سجق",
+  "prosciutto cotto": "بروشوتو كوتو",
+  "honey on the crust": "عسل على الحافة",
+  "served with bbq and ranch dips": "مع صلصة باربكيو وصلصة رانش على الجنب",
   "chorizo sausage": "سجق شوريزو",
   "chorizo": "شوريزو",
   "fresh mushroom": "فطر طازج",
@@ -103,10 +107,11 @@ export function describe(description: string | null, t: { dir: string }) {
   if (whole) return whole;
   const size = d.match(/^(\d+)\s*(ml|cc)(\s+can)?$/i); // "330ml can", "50cc"
   if (size) return `${size[3] ? "علبة " : ""}${size[1]} مل`;
+  // Each comma part as a whole first ("served with BBQ and ranch dips"), then its "and" pieces.
   return d
-    .split(/\s*,\s*|\s+and\s+|\s*&\s*/i)
+    .split(/\s*,\s*/)
     .filter(Boolean)
-    .map((part) => arWord(part) ?? part)
+    .map((part) => arWord(part) ?? part.split(/\s+and\s+|\s*&\s*/i).map((w) => arWord(w) ?? w).join(" و"))
     .join("، ");
 }
 

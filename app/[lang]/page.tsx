@@ -8,7 +8,7 @@ import { getSiteData, PREVIEW_MODE } from "@/lib/pos";
 import { fill, getMessages, hasLocale, type Locale } from "@/lib/i18n";
 import { cleanDescription, fromPrice, money } from "@/lib/menu";
 import type { Messages } from "@/messages/en";
-import { ADDRESS, MAPS_URL, SITE_URL } from "@/lib/site";
+import { ADDRESS, INSTAGRAM_URL, MAPS_URL, SITE_URL } from "@/lib/site";
 import type { Menu, ShopConfig } from "@/lib/types";
 import { dealTag } from "@/lib/deals";
 
@@ -41,6 +41,7 @@ function jsonLd(menu: Menu, config: ShopConfig, lang: string) {
     currenciesAccepted: "USD, LBP",
     paymentAccepted: "Cash",
     hasMap: MAPS_URL,
+    sameAs: [INSTAGRAM_URL],
     address: { "@type": "PostalAddress", addressLocality: ADDRESS.locality, addressRegion: ADDRESS.region, addressCountry: ADDRESS.country },
     areaServed: config.zones.map((z) => z.name),
     ...(hours.length ? { openingHoursSpecification: hours } : {}),

@@ -148,12 +148,27 @@ export function describe(description: string | null, t: { dir: string }) {
 /** An extra's name in the visitor's language, for display only (the POS gets the English name). */
 export const extraName = (name: string, t: { dir: string }) => (t.dir === "rtl" ? arWord(name) ?? name : name);
 
-/** One-tap add-ons offered in the cart: dips first, then drinks (simple items only). */
+/**
+ * One-tap add-ons offered in the cart (simple items only). The owner's best
+ * sellers lead: Ranch and Hot Honey are the only dips offered (other dips only
+ * if both are missing), then drinks with Pepsi Diet and Pepsi Max first.
+ */
+const TOP_DIPS = [/^ranch( (dip|sauce))?$/i, /^hot honey( (dip|sauce))?$/i];
+const TOP_DRINKS = [/^(pepsi diet|diet pepsi)$/i, /^pepsi max$/i];
+const rank = (p: MenuProduct, top: RegExp[]) => {
+  const i = top.findIndex((re) => re.test(p.name.trim().replace(/\s+/g, " ")));
+  return i < 0 ? top.length : i;
+};
+/** Drinks with the best sellers (Pepsi Diet, Pepsi Max) first. */
+export const drinksFirst = (list: MenuProduct[]) => [...list].sort((a, b) => rank(a, TOP_DRINKS) - rank(b, TOP_DRINKS));
 export type CartSuggestion = { id: number; name: string; price: number; sizeId?: number; sizeName?: string; imageUrl: string | null };
 export function cartSuggestions(menu: { products: MenuProduct[] }): CartSuggestion[] {
   const simple = (p: MenuProduct) => !p.soldOut && p.sizes.length <= 1;
-  const pick = (kind: "dip" | "drink") => menu.products.filter((p) => simple(p) && itemKind(p) === kind);
-  return [...pick("dip"), ...pick("drink")].slice(0, 10).map((p) => {
+  const pick = (kind: "dip" | "drink", top: RegExp[]) =>
+    menu.products.filter((p) => simple(p) && itemKind(p) === kind).sort((a, b) => rank(a, top) - rank(b, top));
+  const dips = pick("dip", TOP_DIPS);
+  const topDips = dips.filter((p) => rank(p, TOP_DIPS) < TOP_DIPS.length);
+  return [...(topDips.length ? topDips : dips.slice(0, 2)), ...pick("drink", TOP_DRINKS)].slice(0, 10).map((p) => {
     const s = p.sizes[0];
     return { id: p.id, name: p.name, price: s ? s.price : p.basePrice, sizeId: s?.id, sizeName: s?.name, imageUrl: p.imageUrl };
   });
